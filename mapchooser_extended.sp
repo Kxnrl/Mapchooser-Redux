@@ -369,7 +369,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 	
 	SetMenuOptionFlags(g_hVoteMenu, MENUFLAG_BUTTON_NOVOTE);
 	
-	SetMenuTitle(g_hVoteMenu, "选择下一张地图");
+	SetMenuTitle(g_hVoteMenu, "选择下一张地图\n ");
 	SetVoteResultCallback(g_hVoteMenu, Handler_MapVoteFinished);
 
 	char map[256];
@@ -377,7 +377,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 	if(inputlist == INVALID_HANDLE)
 	{
 		int nominateCount = GetArraySize(g_aNominateList);
-		int voteSize = 5;
+		int voteSize = 6;
 
 		int nominationsToAdd = nominateCount >= voteSize ? voteSize : nominateCount;
 
@@ -458,7 +458,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 		CloseHandle(inputlist);
 	}
 
-	if(5 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
+	if(6 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
 		SetMenuPagination(g_hVoteMenu, MENU_NO_PAGINATION);
 	
 	VoteMenuToAll(g_hVoteMenu, 15);
@@ -639,7 +639,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
 		case MenuAction_Display:
 		{
 			char buffer[256];
-			Format(buffer, 256, "%T", "Vote Nextmap", param1);
+			Format(buffer, 256, "%T\n ", "Vote Nextmap", param1);
 			Handle panel = view_as<Handle>(param2);
 			SetPanelTitle(panel, buffer);
 		}
@@ -745,7 +745,7 @@ void CreateNextVote()
 		}	
 	}
 
-	int limit = (5 < GetArraySize(tempMaps) ? 5 : GetArraySize(tempMaps));
+	int limit = (6 < GetArraySize(tempMaps) ? 6 : GetArraySize(tempMaps));
 
 	for(int i = 0; i < limit; i++)
 	{
@@ -799,7 +799,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 				InternalRemoveNominationByOwner(owner);
 				return Nominate_InvalidMap;
 			}
-			Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-预定");
+			Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
 			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 		}
 
@@ -812,7 +812,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		return Nominate_Replaced;
 	}
 
-	if(g_iNominateCount >= 5 && !force)
+	if(g_iNominateCount >= 6 && !force)
 	{
 		return Nominate_VoteFull;
 	}
@@ -825,7 +825,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 			PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
 			return Nominate_InvalidMap;
 		}
-		Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-预定");
+		Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
 		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 	}
 
@@ -833,7 +833,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 	PushArrayCell(g_aNominateOwners, owner);
 	g_iNominateCount++;
 	
-	while(GetArraySize(g_aNominateList) > 5)
+	while(GetArraySize(g_aNominateList) > 6)
 	{
 		char oldmap[256];
 		GetArrayString(g_aNominateList, 0, oldmap, 256);
@@ -1054,7 +1054,7 @@ public int Native_CanNominate(Handle plugin, int numParams)
 	if(g_bMapVoteCompleted)
 		return view_as<int>(CanNominate_No_VoteComplete);
 	
-	if(g_iNominateCount >= 5)
+	if(g_iNominateCount >= 6)
 		return view_as<int>(CanNominate_No_VoteFull);
 	
 	return view_as<int>(CanNominate_Yes);

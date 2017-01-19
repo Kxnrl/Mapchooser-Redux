@@ -89,7 +89,7 @@ public Action Command_Nominate(int client, int args)
 
 void AttemptNominate(int client)
 {
-	SetMenuTitle(g_hMapMenu, "%T", "Nominate Title", client);
+	SetMenuTitle(g_hMapMenu, "%T\n ", "Nominate Title", client);
 	DisplayMenu(g_hMapMenu, client, MENU_TIME_FOREVER);
 
 	return;
@@ -221,19 +221,19 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 			{
 				if((status & MAPSTATUS_EXCLUDE_CURRENT) == MAPSTATUS_EXCLUDE_CURRENT)
 				{
-					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Current Map", trans);
+					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Current Map", param1, trans);
 					return RedrawMenuItem(display);
 				}
 				
 				if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
 				{
-					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Recently Played", trans);
+					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Recently Played", param1, trans);
 					return RedrawMenuItem(display);
 				}
 				
 				if((status & MAPSTATUS_EXCLUDE_NOMINATED) == MAPSTATUS_EXCLUDE_NOMINATED)
 				{
-					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Nominated", trans);
+					Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Nominated", param1, trans);
 					return RedrawMenuItem(display);
 				}
 			}
