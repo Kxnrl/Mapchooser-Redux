@@ -129,7 +129,7 @@ void BuildMapMenu()
 			status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
 
 		char szTrans[256];
-		if(GetMapDesc(map, szTrans, 256))
+		if(GetMapDesc(map, szTrans, 256, true))
 			AddMenuItem(g_hMapMenu, map, szTrans);
 		else
 			AddMenuItem(g_hMapMenu, map, map);
@@ -215,7 +215,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 			char display[150];
 			char trans[128];
 			strcopy(buffer, 100, map);
-			GetMapDesc(map, trans, 128);
+			GetMapDesc(map, trans, 128, false);
 
 			if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
 			{
@@ -293,7 +293,7 @@ void BuildKvMapData()
 	KvRewind(g_hKvMapData);
 }
 
-stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
+stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName)
 {
 	if(!g_hKvMapData)
 		return false;
@@ -304,7 +304,8 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
 	KvGetString(g_hKvMapData, "Desc", desc, maxLen, map);
 	KvRewind(g_hKvMapData);
 	
-	Format(desc, maxLen, "%s\n%s", map, desc);
+	if(includeName)
+		Format(desc, maxLen, "%s\n%s", map, desc);
 
 	return true;
 }
