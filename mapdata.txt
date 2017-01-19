@@ -1,0 +1,10 @@
+"MapData"
+{
+	"ze_santassination_v3"
+	{
+		"Desc"	"[狮子王: 8+2关|神器|BOSS|刺激] *神图*"
+		"Price"	"1500"
+		"Size"	"139"
+		"Nice"	"1"
+	}
+}
