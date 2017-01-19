@@ -203,13 +203,10 @@ public void OnMapTimeLeftChanged()
 
 void SetupTimeleftTimer()
 {
-	int timeleft;
-	if(GetMapTimeLeft(timeleft) && timeleft > 0)
+	int timeLeft;
+	if(GetMapTimeLeft(timeLeft) && timeLeft > 0)
 	{
-		int timeLimit;
-		GetMapTimeLimit(timeLimit);
-
-		if(timeleft - 300 < 0 && !g_bMapVoteCompleted && !g_bHasVoteStarted)
+		if(timeLeft - 300 < 0 && !g_bMapVoteCompleted && !g_bHasVoteStarted)
 			SetupWarningTimer(WarningType_Vote);
 		else
 		{
@@ -220,8 +217,10 @@ void SetupTimeleftTimer()
 					KillTimer(g_tVote);
 					g_tVote = INVALID_HANDLE;
 				}	
-				
-				g_tVote = CreateTimer(float(timeLimit - 300), Timer_StartWarningTimer, _, TIMER_FLAG_NO_MAPCHANGE);
+
+				int timeLimit;
+				GetMapTimeLimit(timeLimit);
+				g_tVote = CreateTimer(float(timeLimit*60 - 300), Timer_StartWarningTimer, _, TIMER_FLAG_NO_MAPCHANGE);
 			}
 		}		
 	}
