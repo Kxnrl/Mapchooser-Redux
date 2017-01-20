@@ -783,14 +783,14 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		char oldmap[256];
 		GetArrayString(g_aNominateList, index, oldmap, 256);
 
-		if(IsNiceMap(oldmap))
+		if(IsNiceMap(oldmap) || IsBigMap(oldmap))
 		{
 			int credits = GetMapPrice(oldmap);
 			Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
 			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
 		}
 
-		if(IsNiceMap(map))
+		if(IsNiceMap(map) || IsBigMap(map))
 		{
 			int credits = GetMapPrice(map);
 			if(Store_GetClientCredits(owner) < credits)
@@ -816,7 +816,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 	{
 		return Nominate_VoteFull;
 	}
-	
+
 	if(IsNiceMap(map) || IsBigMap(map))
 	{
 		int credits = GetMapPrice(map);
