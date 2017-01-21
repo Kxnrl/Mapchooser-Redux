@@ -200,13 +200,26 @@ void ResetRTV()
 
 public Action Timer_ChangeMap(Handle hTimer)
 {
-	g_bInChange = false;
-
-	LogMessage("RTV changing map manually");
+	SetConVarInt(FindConVar("mp_halftime"), 0);
+	SetConVarInt(FindConVar("mp_timelimit"), 0);
+	SetConVarInt(FindConVar("mp_maxrounds"), 0);
+	SetConVarInt(FindConVar("mp_roundtime"), 1);
 	
-	char map[128];
-	if (GetNextMap(map, 128))
-		ForceChangeLevel(map, "RTV after mapvote");
+	CS_TerminateRound(10.0, CSRoundEnd_Draw, true);
+	
+	if(FindPluginByFile("zombiereloaded.smx"))
+		return Plugin_Stop;
+
+	for(int client = 1; client <= MaxClients; ++client)
+	{
+		if(!IsClientInGame(client))
+			continue;
+		
+		if(!IsPlayerAlive(client))
+			continue;
+		
+		ForcePlayerSuicide(client);
+	}
 
 	return Plugin_Stop;
 }

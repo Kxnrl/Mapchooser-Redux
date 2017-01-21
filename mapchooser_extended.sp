@@ -538,7 +538,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 public Action Timer_ChangeMaprtv(Handle hTimer)
 {
 	g_bChangeMapInProgress = false;
-	
+
 	SetConVarInt(FindConVar("mp_halftime"), 0);
 	SetConVarInt(FindConVar("mp_timelimit"), 0);
 	SetConVarInt(FindConVar("mp_maxrounds"), 0);
