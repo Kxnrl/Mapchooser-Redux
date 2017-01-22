@@ -1,6 +1,8 @@
 #include <mapchooser>
 #include <mapchooser_extended>
 #include <nextmap>
+#include <cstrike>
+#include <sdktools>
 #undef REQUIRE_PLUGIN
 #include <kztimer>
 
