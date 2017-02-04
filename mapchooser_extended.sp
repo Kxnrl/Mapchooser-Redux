@@ -544,8 +544,14 @@ public Action Timer_ChangeMaprtv(Handle hTimer)
 	SetConVarInt(FindConVar("mp_maxrounds"), 0);
 	SetConVarInt(FindConVar("mp_roundtime"), 1);
 	
-	CS_TerminateRound(10.0, CSRoundEnd_Draw, true);
+	CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
 	
+	if(FindPluginByFile("KZTimerGlobal.smx"))
+	{
+		CreateTimer(10.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
+		return Plugin_Stop;
+	}
+
 	if(FindPluginByFile("zombiereloaded.smx"))
 		return Plugin_Stop;
 

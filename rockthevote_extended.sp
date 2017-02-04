@@ -5,6 +5,7 @@
 #include <sdktools>
 #undef REQUIRE_PLUGIN
 #include <kztimer>
+#include <cg_core>
 
 #pragma newdecls required
 
@@ -183,7 +184,10 @@ void StartRTV()
 
 	if(CanMapChooserStartVote())
 	{
-		InitiateMapChooserVote(MapChange_RoundEnd);
+		if(FindPluginByFile("KZTimerGlobal.smx"))
+			InitiateMapChooserVote(MapChange_Instant);
+		else
+			InitiateMapChooserVote(MapChange_RoundEnd);
 		
 		ResetRTV();
 
@@ -207,8 +211,14 @@ public Action Timer_ChangeMap(Handle hTimer)
 	SetConVarInt(FindConVar("mp_maxrounds"), 0);
 	SetConVarInt(FindConVar("mp_roundtime"), 1);
 	
-	CS_TerminateRound(10.0, CSRoundEnd_Draw, true);
+	CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
 	
+	if(FindPluginByFile("KZTimerGlobal.smx"))
+	{
+		CreateTimer(10.0, Timer_ChangeMapKZ, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
+		return Plugin_Stop;
+	}
+
 	if(FindPluginByFile("zombiereloaded.smx"))
 		return Plugin_Stop;
 
@@ -223,6 +233,27 @@ public Action Timer_ChangeMap(Handle hTimer)
 		ForcePlayerSuicide(client);
 	}
 
+	return Plugin_Stop;
+}
+
+public Action Timer_ChangeMapKZ(Handle hTimer, Handle dp)
+{
+	PrintToChatAll("debug: Timer_ChangeMapKZ");
+	char map[256];
+	
+	if(dp == INVALID_HANDLE)
+	{
+		if(!GetNextMap(map, 256))
+			return Plugin_Stop;	
+	}
+	else
+	{
+		ResetPack(dp);
+		ReadPackString(dp, map, 256);
+	}
+
+	ForceChangeLevel(map, "Map Vote");
+	
 	return Plugin_Stop;
 }
 
@@ -243,7 +274,7 @@ bool IsAllowClient(int client)
 	if(!g_bKzTimer)
 		return true;
 	
-	if(KZTimer_GetSkillGroup(client) >= 3)
+	if(KZTimer_GetSkillGroup(client) >= 2 || CG_IsClientVIP(client) || CG_GetClientGId(client) > 9900)
 		return true;
 	
 	PrintToChat(client, "[\x04MCE\x01]  \x07你的KZ等级不够,禁止RTV");
