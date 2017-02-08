@@ -112,6 +112,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnConfigsExecuted()
 {
+	CheckMapCycle();
+	BuildKvMapData();
+
 	if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != INVALID_HANDLE)
 		if(g_iMapFileSerial == -1)
 			SetFailState("Unable to create a valid map list.");
@@ -127,8 +130,6 @@ public void OnConfigsExecuted()
 
 	ClearArray(g_aNominateList);
 	ClearArray(g_aNominateOwners);
-
-	BuildKvMapData();
 }
 
 public void OnMapEnd()
@@ -1149,15 +1150,106 @@ void BuildKvMapData()
 	char path[128];
 	BuildPath(Path_SM, path, 128, "configs/mapdata.txt");
 	
-	if(!FileExists(path))
-	{
-		if(g_hKvMapData != INVALID_HANDLE)
-			CloseHandle(g_hKvMapData);
-		g_hKvMapData = INVALID_HANDLE;
-		return;
-	}
-
+	if(g_hKvMapData != INVALID_HANDLE)
+		CloseHandle(g_hKvMapData);
+	
 	g_hKvMapData = CreateKeyValues("MapData", "", "");
-	FileToKeyValues(g_hKvMapData, path);
+	
+	if(!FileExists(path))
+		KeyValuesToFile(g_hKvMapData, path);
+	else
+		FileToKeyValues(g_hKvMapData, path);
+
 	KvRewind(g_hKvMapData);
+	
+	char map[128];
+	GetCurrentMap(map, 128);
+	if(!KvJumpToKey(g_hKvMapData, map))
+	{
+		KvJumpToKey(g_hKvMapData, map, true);
+		Format(map, 128, "maps/%s.bsp", map);
+		KvSetString(g_hKvMapData, "Desc", "不详: 尚未明朗");
+		KvSetNum(g_hKvMapData, "Price", 0);
+		KvSetNum(g_hKvMapData, "Size", FileSize(map)/1048576+1);
+		KvSetNum(g_hKvMapData, "Nice", 0);
+		KvRewind(g_hKvMapData);
+		KeyValuesToFile(g_hKvMapData, path);
+	}
+}
+
+void CheckMapCycle()
+{
+	char path[128];
+	Format(path, 128, "mapcycle.txt");
+	
+	int counts, number;
+
+	Handle hFile;
+	if((hFile = OpenFile(path, "r")) != INVALID_HANDLE)
+	{
+		char fileline[128];
+		while(ReadFileLine(hFile, fileline, 128))
+        {
+			if(fileline[0] == '\0')
+				continue;
+
+			counts++;
+        }
+		CloseHandle(hFile);
+	}
+	
+	Handle hDirectory;
+	if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
+	{
+		FileType type = FileType_Unknown;
+		char filename[128];
+		while(ReadDirEntry(hDirectory, filename, 128, type))
+		{
+			if(type != FileType_File)
+				continue;
+
+			if(StrContains(filename, ".bsp", false) == -1)
+				continue;
+			
+			if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false))
+			{
+				char path2[128];
+				Format(path2, 128, "maps/%s", filename);
+				if(DeleteFile(path2))
+					LogMessage("Delete Offical map: %s", path2);
+				
+				continue;
+			}
+			
+			number++;
+		}
+		CloseHandle(hDirectory);
+	}
+	
+	if(counts == number)
+		return;
+	
+	LogMessage("Build New MapCycle[old: %d current: %d]", counts, number);
+
+	if((hFile = OpenFile(path, "w+")) != INVALID_HANDLE)
+	{
+		if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
+		{
+			FileType type = FileType_Unknown;
+			char filename[128];
+			while(ReadDirEntry(hDirectory, filename, 128, type))
+			{
+				if(type == FileType_File)
+				{
+					if(StrContains(filename, ".bsp", false) != -1)
+					{
+						ReplaceString(filename, 128, ".bsp", "", false);
+						WriteFileLine(hFile, filename);
+					}
+				}
+			}
+			CloseHandle(hDirectory);
+		}
+		CloseHandle(hFile);
+	}
 }
