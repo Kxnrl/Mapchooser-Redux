@@ -35,8 +35,6 @@ public void OnPluginStart()
 	int arraySize = ByteCountToCells(256);	
 	g_aMapList = CreateArray(arraySize);
 
-	RegConsoleCmd("sm_nominate", Command_Nominate);
-
 	g_aMapTrie = CreateTrie();
 }
 
@@ -65,7 +63,7 @@ public void OnNominationRemoved(const char[] map, int owner)
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if(!client || sArgs[0] == '!')
+	if(!client)
 		return;
 
 	if(StrContains(sArgs, "nominat", false) == -1)
@@ -75,16 +73,6 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 		return;
 
 	AttemptNominate(client);
-}
-
-public Action Command_Nominate(int client, int args)
-{
-	if(!client || !IsNominateAllowed(client))
-		return Plugin_Handled;
-	
-	AttemptNominate(client);
-
-	return Plugin_Handled;
 }
 
 void AttemptNominate(int client)

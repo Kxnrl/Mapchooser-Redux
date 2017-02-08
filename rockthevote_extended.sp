@@ -38,8 +38,6 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases");
 	LoadTranslations("rockthevote.phrases");
 	LoadTranslations("basevotes.phrases");
-	
-	RegConsoleCmd("sm_rtv", Command_RTV);
 
 	RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 	RegAdminCmd("mce_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
@@ -101,22 +99,12 @@ public void OnClientDisconnect(int client)
 		StartRTV();
 }
 
-public Action Command_RTV(int client, int args)
-{
-	if(!g_bCanRTV || !client || !IsAllowClient(client))
-		return Plugin_Handled;
-	
-	AttemptRTV(client);
-
-	return Plugin_Handled;
-}
-
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if(!g_bCanRTV || !client || sArgs[0] == '!' || !IsAllowClient(client))
+	if(!g_bCanRTV || !client || !IsAllowClient(client))
 		return;
 	
-	if(StrContains(sArgs, "rtv", false) == -1)
+	if(!StrEqual(sArgs, "!rtv", false) && !StrEqual(sArgs, "rtv", false))
 		return;
 
 	AttemptRTV(client);
