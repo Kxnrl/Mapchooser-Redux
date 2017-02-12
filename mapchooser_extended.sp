@@ -378,7 +378,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 	if(inputlist == INVALID_HANDLE)
 	{
 		int nominateCount = GetArraySize(g_aNominateList);
-		int voteSize = 6;
+		int voteSize = 5;
 
 		int nominationsToAdd = nominateCount >= voteSize ? voteSize : nominateCount;
 
@@ -459,7 +459,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 		CloseHandle(inputlist);
 	}
 
-	if(6 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
+	if(5 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
 		SetMenuPagination(g_hVoteMenu, MENU_NO_PAGINATION);
 	
 	VoteMenuToAll(g_hVoteMenu, 15);
@@ -752,7 +752,7 @@ void CreateNextVote()
 		}	
 	}
 
-	int limit = (6 < GetArraySize(tempMaps) ? 6 : GetArraySize(tempMaps));
+	int limit = (5 < GetArraySize(tempMaps) ? 5 : GetArraySize(tempMaps));
 
 	for(int i = 0; i < limit; i++)
 	{
@@ -819,7 +819,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		return Nominate_Replaced;
 	}
 
-	if(g_iNominateCount >= 6 && !force)
+	if(g_iNominateCount >= 5 && !force)
 	{
 		return Nominate_VoteFull;
 	}
@@ -840,7 +840,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 	PushArrayCell(g_aNominateOwners, owner);
 	g_iNominateCount++;
 	
-	while(GetArraySize(g_aNominateList) > 6)
+	while(GetArraySize(g_aNominateList) > 5)
 	{
 		char oldmap[256];
 		GetArrayString(g_aNominateList, 0, oldmap, 256);
@@ -1061,7 +1061,7 @@ public int Native_CanNominate(Handle plugin, int numParams)
 	if(g_bMapVoteCompleted)
 		return view_as<int>(CanNominate_No_VoteComplete);
 	
-	if(g_iNominateCount >= 6)
+	if(g_iNominateCount >= 5)
 		return view_as<int>(CanNominate_No_VoteFull);
 	
 	return view_as<int>(CanNominate_Yes);
