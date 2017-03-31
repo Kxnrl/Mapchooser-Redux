@@ -790,25 +790,19 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		char oldmap[256];
 		GetArrayString(g_aNominateList, index, oldmap, 256);
 
-		if(IsNiceMap(oldmap) || IsBigMap(oldmap))
-		{
-			int credits = GetMapPrice(oldmap);
-			Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
-		}
+		int credits = GetMapPrice(oldmap);
+		Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
 
-		if(IsNiceMap(map) || IsBigMap(map))
+		credits = GetMapPrice(map);
+		if(Store_GetClientCredits(owner) < credits)
 		{
-			int credits = GetMapPrice(map);
-			if(Store_GetClientCredits(owner) < credits)
-			{
-				PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
-				InternalRemoveNominationByOwner(owner);
-				return Nominate_InvalidMap;
-			}
-			Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+			PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
+			InternalRemoveNominationByOwner(owner);
+			return Nominate_InvalidMap;
 		}
+		Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 
 		Call_StartForward(g_NominationsResetForward);
 		Call_PushString(oldmap);
@@ -820,21 +814,16 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 	}
 
 	if(g_iNominateCount >= 5 && !force)
+		return Nominate_VoteFull;
+
+	int credits = GetMapPrice(map);
+	if(Store_GetClientCredits(owner) < credits)
 	{
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
 		return Nominate_VoteFull;
 	}
-
-	if(IsNiceMap(map) || IsBigMap(map))
-	{
-		int credits = GetMapPrice(map);
-		if(Store_GetClientCredits(owner) < credits)
-		{
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
-			return Nominate_InvalidMap;
-		}
-		Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
-		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
-	}
+	Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
+	PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 
 	PushArrayString(g_aNominateList, map);
 	PushArrayCell(g_aNominateOwners, owner);
@@ -852,7 +841,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		RemoveFromArray(g_aNominateList, 0);
 		RemoveFromArray(g_aNominateOwners, 0);
 	}
-	
+
 	return Nominate_Added;
 }
 
@@ -1092,15 +1081,16 @@ stock void AddExtendToMenu(Handle menu, MapChange when)
 stock int GetMapPrice(const char[] map)
 {
 	if(!g_hKvMapData)
-		return 0;
+		return 100;
 	
-	if(!KvJumpToKey(g_hKvMapData, map, false))
-		return 0;
-	
-	int credits = KvGetNum(g_hKvMapData, "Price", 0);
 	KvRewind(g_hKvMapData);
-	
-	return credits;
+
+	if(!KvJumpToKey(g_hKvMapData, map, false))
+		return 100;
+
+	int credits = KvGetNum(g_hKvMapData, "Price", 0);
+
+	return (credits > 100) ? credits : 100;
 }
 
 stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
@@ -1108,12 +1098,13 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
 	if(!g_hKvMapData)
 		return false;
 	
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
-	
+
 	KvGetString(g_hKvMapData, "Desc", desc, maxLen, map);
-	KvRewind(g_hKvMapData);
-	
+
 	Format(desc, maxLen, "%s\n%s", map, desc);
 
 	return true;
@@ -1124,11 +1115,13 @@ stock bool IsNiceMap(const char[] map)
 	if(!g_hKvMapData)
 		return false;
 	
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
 	
 	bool result = KvGetNum(g_hKvMapData, "Nice", 0) == 1 ? true : false;
-	KvRewind(g_hKvMapData);
+
 	return result;
 }
 
@@ -1136,12 +1129,14 @@ stock bool IsBigMap(const char[] map)
 {
 	if(!g_hKvMapData)
 		return false;
-	
+
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
 	
 	bool result = KvGetNum(g_hKvMapData, "Size", 0) > 149 ? true : false;
-	KvRewind(g_hKvMapData);
+
 	return result;
 }
 
@@ -1169,12 +1164,14 @@ void BuildKvMapData()
 		KvJumpToKey(g_hKvMapData, map, true);
 		Format(map, 128, "maps/%s.bsp", map);
 		KvSetString(g_hKvMapData, "Desc", "不详: 尚未明朗");
-		KvSetNum(g_hKvMapData, "Price", 0);
+		KvSetNum(g_hKvMapData, "Price", 100);
 		KvSetNum(g_hKvMapData, "Size", FileSize(map)/1048576+1);
 		KvSetNum(g_hKvMapData, "Nice", 0);
 		KvRewind(g_hKvMapData);
 		KeyValuesToFile(g_hKvMapData, path);
 	}
+	
+	KvRewind(g_hKvMapData);
 }
 
 void CheckMapCycle()
