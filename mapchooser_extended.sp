@@ -32,7 +32,6 @@ int g_iRunoffCount;
 bool g_bHasVoteStarted;
 bool g_bWaitingForVote;
 bool g_bMapVoteCompleted;
-bool g_bChangeMapAtRoundEnd;
 bool g_bChangeMapInProgress;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
@@ -84,8 +83,6 @@ public void OnPluginStart()
 	RegAdminCmd("sm_mapvote", Command_Mapvote, ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
 	RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
 
-	//HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
-
 	g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
 	g_MapVoteStartForward = CreateGlobalForward("OnMapVoteStart", ET_Ignore);
@@ -130,13 +127,45 @@ public void OnConfigsExecuted()
 
 	ClearArray(g_aNominateList);
 	ClearArray(g_aNominateOwners);
+
+	if(GetArraySize(g_aOldMapList) < 1)
+	{
+		char filepath[128];
+		Handle file;
+		BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
+	
+		if(!FileExists(filepath))
+		{
+			file = OpenFile(filepath, "w");
+			CloseHandle(file);
+			return;
+		}
+
+		if((file = OpenFile(filepath, "r")) != INVALID_HANDLE)
+		{
+			ClearArray(g_aOldMapList);
+
+			char fileline[128];
+
+			while(ReadFileLine(file, fileline, 128))
+			{
+				TrimString(fileline);
+				
+				if(!StrContains(fileline, "de_", false) || !StrContains(fileline, "cs_", false) || !StrContains(fileline, "gd_", false) || !StrContains(fileline, "train", false) || !StrContains(fileline, "ar_", false))
+					continue;
+				
+				PushArrayString(g_aOldMapList, fileline);
+			}
+
+			CloseHandle(file);
+		}
+	}
 }
 
 public void OnMapEnd()
 {
 	g_bHasVoteStarted = false;
 	g_bWaitingForVote = false;
-	g_bChangeMapAtRoundEnd = false;
 	g_bChangeMapInProgress = false;
 
 	g_tVote = INVALID_HANDLE;
@@ -144,12 +173,36 @@ public void OnMapEnd()
 	g_tWarning = INVALID_HANDLE;
 	g_iRunoffCount = 0;
 	
-	char map[256];
-	GetCurrentMap(map, 256);
+	char map[128];
+	GetCurrentMap(map, 128);
 	PushArrayString(g_aOldMapList, map);
 
-	if(GetArraySize(g_aOldMapList) > 20)
+	if(GetArraySize(g_aOldMapList) > 30)
 		RemoveFromArray(g_aOldMapList, 0);
+	
+	char filepath[128];
+	BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
+
+	if(FileExists(filepath))
+		DeleteFile(filepath);
+
+	Handle file = OpenFile(filepath, "w");
+
+	if(file == INVALID_HANDLE)
+	{
+		LogError("Open old map list fialed");
+		return;
+	}
+
+	int size = GetArraySize(g_aOldMapList);
+
+	for(int i = 0; i < size; ++i)
+	{
+		GetArrayString(g_aOldMapList, i, map, 128);
+		WriteFileLine(file, map);
+	}
+
+	CloseHandle(file);
 }
 
 public void OnClientDisconnect(int client)
@@ -289,20 +342,6 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
 		return Plugin_Stop;
 	}
 	return Plugin_Continue;
-}
-
-public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
-{
-	if(g_bChangeMapAtRoundEnd)
-	{
-		g_bChangeMapAtRoundEnd = false;
-		CreateTimer(2.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
-		g_bChangeMapInProgress = true;
-		
-		Handle Event_MatchEnd = CreateEvent("cs_win_panel_match", true);
-		if(Event_MatchEnd)
-			FireEvent(Event_MatchEnd, false);
-	}
 }
 
 public Action Command_Mapvote(int client, int args)
@@ -523,8 +562,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 		{
 			SetNextMap(map);
 			SetConVarString(FindConVar("nextlevel"), map);
-			g_bChangeMapAtRoundEnd = true;
-			
+
 			SetConVarInt(FindConVar("mp_timelimit"), 1);
 		}
 		
@@ -1204,11 +1242,13 @@ void CheckMapCycle()
 		{
 			if(type != FileType_File)
 				continue;
+			
+			TrimString(filename);
 
 			if(StrContains(filename, ".bsp", false) == -1)
 				continue;
 			
-			if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false))
+			if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false) || !StrContains(filename, "gd_", false) || !StrContains(filename, "train", false) || !StrContains(filename, "ar_", false))
 			{
 				char path2[128];
 				Format(path2, 128, "maps/%s", filename);
@@ -1217,7 +1257,7 @@ void CheckMapCycle()
 				
 				continue;
 			}
-			
+
 			number++;
 		}
 		CloseHandle(hDirectory);
