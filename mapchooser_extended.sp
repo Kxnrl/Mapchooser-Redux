@@ -32,7 +32,6 @@ int g_iRunoffCount;
 bool g_bHasVoteStarted;
 bool g_bWaitingForVote;
 bool g_bMapVoteCompleted;
-bool g_bChangeMapAtRoundEnd;
 bool g_bChangeMapInProgress;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
@@ -84,8 +83,6 @@ public void OnPluginStart()
 	RegAdminCmd("sm_mapvote", Command_Mapvote, ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
 	RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
 
-	//HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
-
 	g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
 	g_MapVoteStartForward = CreateGlobalForward("OnMapVoteStart", ET_Ignore);
@@ -130,13 +127,45 @@ public void OnConfigsExecuted()
 
 	ClearArray(g_aNominateList);
 	ClearArray(g_aNominateOwners);
+
+	if(GetArraySize(g_aOldMapList) < 1)
+	{
+		char filepath[128];
+		Handle file;
+		BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
+	
+		if(!FileExists(filepath))
+		{
+			file = OpenFile(filepath, "w");
+			CloseHandle(file);
+			return;
+		}
+
+		if((file = OpenFile(filepath, "r")) != INVALID_HANDLE)
+		{
+			ClearArray(g_aOldMapList);
+
+			char fileline[128];
+
+			while(ReadFileLine(file, fileline, 128))
+			{
+				TrimString(fileline);
+				
+				if(!StrContains(fileline, "de_", false) || !StrContains(fileline, "cs_", false) || !StrContains(fileline, "gd_", false) || !StrContains(fileline, "train", false) || !StrContains(fileline, "ar_", false))
+					continue;
+				
+				PushArrayString(g_aOldMapList, fileline);
+			}
+
+			CloseHandle(file);
+		}
+	}
 }
 
 public void OnMapEnd()
 {
 	g_bHasVoteStarted = false;
 	g_bWaitingForVote = false;
-	g_bChangeMapAtRoundEnd = false;
 	g_bChangeMapInProgress = false;
 
 	g_tVote = INVALID_HANDLE;
@@ -144,12 +173,36 @@ public void OnMapEnd()
 	g_tWarning = INVALID_HANDLE;
 	g_iRunoffCount = 0;
 	
-	char map[256];
-	GetCurrentMap(map, 256);
+	char map[128];
+	GetCurrentMap(map, 128);
 	PushArrayString(g_aOldMapList, map);
 
-	if(GetArraySize(g_aOldMapList) > 20)
+	if(GetArraySize(g_aOldMapList) > 30)
 		RemoveFromArray(g_aOldMapList, 0);
+	
+	char filepath[128];
+	BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
+
+	if(FileExists(filepath))
+		DeleteFile(filepath);
+
+	Handle file = OpenFile(filepath, "w");
+
+	if(file == INVALID_HANDLE)
+	{
+		LogError("Open old map list fialed");
+		return;
+	}
+
+	int size = GetArraySize(g_aOldMapList);
+
+	for(int i = 0; i < size; ++i)
+	{
+		GetArrayString(g_aOldMapList, i, map, 128);
+		WriteFileLine(file, map);
+	}
+
+	CloseHandle(file);
 }
 
 public void OnClientDisconnect(int client)
@@ -289,20 +342,6 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
 		return Plugin_Stop;
 	}
 	return Plugin_Continue;
-}
-
-public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
-{
-	if(g_bChangeMapAtRoundEnd)
-	{
-		g_bChangeMapAtRoundEnd = false;
-		CreateTimer(2.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
-		g_bChangeMapInProgress = true;
-		
-		Handle Event_MatchEnd = CreateEvent("cs_win_panel_match", true);
-		if(Event_MatchEnd)
-			FireEvent(Event_MatchEnd, false);
-	}
 }
 
 public Action Command_Mapvote(int client, int args)
@@ -523,8 +562,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 		{
 			SetNextMap(map);
 			SetConVarString(FindConVar("nextlevel"), map);
-			g_bChangeMapAtRoundEnd = true;
-			
+
 			SetConVarInt(FindConVar("mp_timelimit"), 1);
 		}
 		
@@ -736,6 +774,15 @@ void CreateNextVote()
 {
 	assert(g_aNextMapList)
 	ClearArray(g_aNextMapList);
+	
+	bool neednicemap = false;
+	if(FindPluginByFile("zombiereloaded.smx"))
+	{
+		char time[32];
+		FormatTime(time, 64, "%H:%M:%S", GetTime());
+		if(StrContains(time, "19:") != -1 || StrContains(time, "20:") != -1 || StrContains(time, "21:") != -1 || StrContains(time, "22:") != -1)
+			neednicemap = true;
+	}
 
 	char map[256];
 	Handle tempMaps  = CloneArray(g_aMapList);
@@ -743,13 +790,24 @@ void CreateNextVote()
 	GetCurrentMap(map, 256);
 	RemoveStringFromArray(tempMaps, map);
 	
-	if(GetArraySize(tempMaps) > 20)
+	if(GetArraySize(tempMaps) > 30)
 	{
 		for(int i = 0; i < GetArraySize(g_aOldMapList); i++)
 		{
 			GetArrayString(g_aOldMapList, i, map, 256);
 			RemoveStringFromArray(tempMaps, map);
 		}	
+	}
+	
+	if(neednicemap)
+	{
+		for(int x; x < GetArraySize(tempMaps); ++x)
+		{
+			GetArrayString(tempMaps, x, map, 256);
+			RemoveStringFromArray(tempMaps, map);
+			if(x > 0)
+				x--;
+		}
 	}
 
 	int limit = (5 < GetArraySize(tempMaps) ? 5 : GetArraySize(tempMaps));
@@ -758,7 +816,7 @@ void CreateNextVote()
 	{
 		int b = GetRandomInt(0, GetArraySize(tempMaps) - 1);
 		GetArrayString(tempMaps, b, map, 256);
-		if(IsNiceMap(map) || IsBigMap(map))
+		if((!neednicemap && IsNiceMap(map)) || IsBigMap(map))
 			continue;
 		PushArrayString(g_aNextMapList, map);
 		RemoveFromArray(tempMaps, b);
@@ -790,25 +848,19 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		char oldmap[256];
 		GetArrayString(g_aNominateList, index, oldmap, 256);
 
-		if(IsNiceMap(oldmap) || IsBigMap(oldmap))
-		{
-			int credits = GetMapPrice(oldmap);
-			Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
-		}
+		int credits = GetMapPrice(oldmap);
+		Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
 
-		if(IsNiceMap(map) || IsBigMap(map))
+		credits = GetMapPrice(map);
+		if(Store_GetClientCredits(owner) < credits)
 		{
-			int credits = GetMapPrice(map);
-			if(Store_GetClientCredits(owner) < credits)
-			{
-				PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
-				InternalRemoveNominationByOwner(owner);
-				return Nominate_InvalidMap;
-			}
-			Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+			PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
+			InternalRemoveNominationByOwner(owner);
+			return Nominate_InvalidMap;
 		}
+		Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 
 		Call_StartForward(g_NominationsResetForward);
 		Call_PushString(oldmap);
@@ -820,21 +872,16 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 	}
 
 	if(g_iNominateCount >= 5 && !force)
+		return Nominate_VoteFull;
+
+	int credits = GetMapPrice(map);
+	if(Store_GetClientCredits(owner) < credits)
 	{
+		PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
 		return Nominate_VoteFull;
 	}
-
-	if(IsNiceMap(map) || IsBigMap(map))
-	{
-		int credits = GetMapPrice(map);
-		if(Store_GetClientCredits(owner) < credits)
-		{
-			PrintToChat(owner, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
-			return Nominate_InvalidMap;
-		}
-		Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
-		PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
-	}
+	Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-预定");
+	PrintToChat(owner, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 
 	PushArrayString(g_aNominateList, map);
 	PushArrayCell(g_aNominateOwners, owner);
@@ -852,7 +899,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
 		RemoveFromArray(g_aNominateList, 0);
 		RemoveFromArray(g_aNominateOwners, 0);
 	}
-	
+
 	return Nominate_Added;
 }
 
@@ -1092,15 +1139,16 @@ stock void AddExtendToMenu(Handle menu, MapChange when)
 stock int GetMapPrice(const char[] map)
 {
 	if(!g_hKvMapData)
-		return 0;
+		return 100;
 	
-	if(!KvJumpToKey(g_hKvMapData, map, false))
-		return 0;
-	
-	int credits = KvGetNum(g_hKvMapData, "Price", 0);
 	KvRewind(g_hKvMapData);
-	
-	return credits;
+
+	if(!KvJumpToKey(g_hKvMapData, map, false))
+		return 100;
+
+	int credits = KvGetNum(g_hKvMapData, "Price", 0);
+
+	return (credits > 100) ? credits : 100;
 }
 
 stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
@@ -1108,12 +1156,13 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen)
 	if(!g_hKvMapData)
 		return false;
 	
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
-	
+
 	KvGetString(g_hKvMapData, "Desc", desc, maxLen, map);
-	KvRewind(g_hKvMapData);
-	
+
 	Format(desc, maxLen, "%s\n%s", map, desc);
 
 	return true;
@@ -1124,11 +1173,13 @@ stock bool IsNiceMap(const char[] map)
 	if(!g_hKvMapData)
 		return false;
 	
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
 	
 	bool result = KvGetNum(g_hKvMapData, "Nice", 0) == 1 ? true : false;
-	KvRewind(g_hKvMapData);
+
 	return result;
 }
 
@@ -1136,12 +1187,14 @@ stock bool IsBigMap(const char[] map)
 {
 	if(!g_hKvMapData)
 		return false;
-	
+
+	KvRewind(g_hKvMapData);
+
 	if(!KvJumpToKey(g_hKvMapData, map, false))
 		return false;
 	
 	bool result = KvGetNum(g_hKvMapData, "Size", 0) > 149 ? true : false;
-	KvRewind(g_hKvMapData);
+
 	return result;
 }
 
@@ -1169,12 +1222,14 @@ void BuildKvMapData()
 		KvJumpToKey(g_hKvMapData, map, true);
 		Format(map, 128, "maps/%s.bsp", map);
 		KvSetString(g_hKvMapData, "Desc", "不详: 尚未明朗");
-		KvSetNum(g_hKvMapData, "Price", 0);
+		KvSetNum(g_hKvMapData, "Price", 100);
 		KvSetNum(g_hKvMapData, "Size", FileSize(map)/1048576+1);
 		KvSetNum(g_hKvMapData, "Nice", 0);
 		KvRewind(g_hKvMapData);
 		KeyValuesToFile(g_hKvMapData, path);
 	}
+	
+	KvRewind(g_hKvMapData);
 }
 
 void CheckMapCycle()
@@ -1207,11 +1262,13 @@ void CheckMapCycle()
 		{
 			if(type != FileType_File)
 				continue;
+			
+			TrimString(filename);
 
 			if(StrContains(filename, ".bsp", false) == -1)
 				continue;
 			
-			if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false))
+			if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false) || !StrContains(filename, "gd_", false) || !StrContains(filename, "train", false) || !StrContains(filename, "ar_", false))
 			{
 				char path2[128];
 				Format(path2, 128, "maps/%s", filename);
@@ -1220,7 +1277,7 @@ void CheckMapCycle()
 				
 				continue;
 			}
-			
+
 			number++;
 		}
 		CloseHandle(hDirectory);
