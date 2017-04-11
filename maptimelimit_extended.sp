@@ -43,7 +43,7 @@ public void OnClientPostAdminCheck(int client)
 	
 	g_bVoted[client] = false;
 	g_iVoters++;
-	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.6);
+	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.7);
 }
 
 public void OnClientDisconnect(int client)
@@ -56,7 +56,7 @@ public void OnClientDisconnect(int client)
 	
 	g_iVoters--;
 
-	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.6);
+	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.7);
 }
 
 public Action Command_Ext(int client, int args)
@@ -68,14 +68,14 @@ void AttemptEXT(int client)
 {
 	if(g_bVoted[client])
 	{
-		PrintToChat(client, "[\x04MCE\x01]  您已经发起了投票(现有%d票,仍需%d票)", g_iVotes, g_iVotesNeeded);
+		PrintToChat(client, "[\x04MCE\x01]  您已经发起了投票延长地图(现有%d票,仍需%d票)", g_iVotes, g_iVotesNeeded);
 		return;
 	}
 
 	g_iVotes++;
 	g_bVoted[client] = true;
 
-	PrintToChatAll("[\x04MCE\x01]  %N 要滚动投票. (%d 票同意, 至少需要 %d 票)", client, g_iVotes, g_iVotesNeeded);
+	PrintToChatAll("[\x04MCE\x01]  %N 要滚动投票延长地图. (%d 票同意, 至少需要 %d 票)", client, g_iVotes, g_iVotesNeeded);
 	
 	if(g_iVotes >= g_iVotesNeeded)
 		StartEXT();
