@@ -138,9 +138,8 @@ public void OnConfigsExecuted()
 		if(!FileExists(filepath))
 			return;
 
-		Handle file = INVALID_HANDLE;
-
-		if((file = OpenFile(filepath, "r+")) != INVALID_HANDLE)
+		Handle file;
+		if((file = OpenFile(filepath, "r")) != INVALID_HANDLE)
 		{
 			ClearArray(g_aOldMapList);
 
