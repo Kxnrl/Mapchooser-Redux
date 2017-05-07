@@ -144,12 +144,19 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
 			NominateResult result = NominateMap(map, false, param1);
 			
+			if(result == Nominate_InvalidMap)
+			{
+				PrintToChat(param1, "[\x04MCE\x01]  预定[\x04%s\x01]失败", map);
+				return 0;
+			}
+
 			if(result == Nominate_AlreadyInVote)
 			{
 				PrintToChat(param1, "[\x04MCE\x01]  %t", "Map Already Nominated");
 				return 0;
 			}
-			else if(result == Nominate_VoteFull)
+			
+			if(result == Nominate_VoteFull)
 			{
 				PrintToChat(param1, "[\x04MCE\x01]  %t", "Max Nominations");
 				return 0;
