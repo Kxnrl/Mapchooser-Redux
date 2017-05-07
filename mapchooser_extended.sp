@@ -87,6 +87,8 @@ public void OnPluginStart()
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
 	g_MapVoteStartForward = CreateGlobalForward("OnMapVoteStart", ET_Ignore);
 	g_MapVoteEndForward = CreateGlobalForward("OnMapVoteEnd", ET_Ignore, Param_String);
+	
+	HookEvent("cs_win_panel_match", Event_WinPanel, EventHookMode_Post);
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -131,17 +133,14 @@ public void OnConfigsExecuted()
 	if(GetArraySize(g_aOldMapList) < 1)
 	{
 		char filepath[128];
-		Handle file;
 		BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
 	
 		if(!FileExists(filepath))
-		{
-			file = OpenFile(filepath, "w");
-			CloseHandle(file);
 			return;
-		}
 
-		if((file = OpenFile(filepath, "r")) != INVALID_HANDLE)
+		Handle file = INVALID_HANDLE;
+
+		if((file = OpenFile(filepath, "r+")) != INVALID_HANDLE)
 		{
 			ClearArray(g_aOldMapList);
 
@@ -150,7 +149,7 @@ public void OnConfigsExecuted()
 			while(ReadFileLine(file, fileline, 128))
 			{
 				TrimString(fileline);
-				
+
 				if(!StrContains(fileline, "de_", false) || !StrContains(fileline, "cs_", false) || !StrContains(fileline, "gd_", false) || !StrContains(fileline, "train", false) || !StrContains(fileline, "ar_", false))
 					continue;
 				
@@ -385,7 +384,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
 	g_eChangeTime = when;
 	
 	g_bWaitingForVote = false;
-		
+
 	g_bHasVoteStarted = true;
 
 
@@ -780,33 +779,40 @@ void CreateNextVote()
 	{
 		char time[32];
 		FormatTime(time, 64, "%H:%M:%S", GetTime());
-		if(StrContains(time, "19:") != -1 || StrContains(time, "20:") != -1 || StrContains(time, "21:") != -1 || StrContains(time, "22:") != -1)
+		if(StrContains(time, "19:") == 0 || StrContains(time, "20:") == 0 || StrContains(time, "21:") == 0 || StrContains(time, "22:") == 0)
+		{
 			neednicemap = true;
+			LogMessage("[%s] neednicemap = true", time);
+		}
 	}
 
-	char map[256];
-	Handle tempMaps  = CloneArray(g_aMapList);
+	Handle tempMaps = CloneArray(g_aMapList);
 	
+	char map[256];
 	GetCurrentMap(map, 256);
 	RemoveStringFromArray(tempMaps, map);
 	
 	if(GetArraySize(tempMaps) > 30)
 	{
-		for(int i = 0; i < GetArraySize(g_aOldMapList); i++)
+		int asize = GetArraySize(g_aOldMapList);
+		for(int i = 0; i < asize; i++)
 		{
 			GetArrayString(g_aOldMapList, i, map, 256);
 			RemoveStringFromArray(tempMaps, map);
 		}	
 	}
+	else LogError("no enough to create NextVote Maplist");
 	
 	if(neednicemap)
 	{
-		for(int x; x < GetArraySize(tempMaps); ++x)
+		for(int x = 0; x < GetArraySize(tempMaps); ++x)
 		{
 			GetArrayString(tempMaps, x, map, 256);
-			RemoveStringFromArray(tempMaps, map);
-			if(x > 0)
-				x--;
+			if(!IsNiceMap(map))
+			{
+				RemoveStringFromArray(tempMaps, map);
+				if(x > 0) x--;
+			}
 		}
 	}
 
@@ -1309,4 +1315,36 @@ void CheckMapCycle()
 		}
 		CloseHandle(hFile);
 	}
+}
+
+public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
+{
+	char cmap[128], nmap[128];
+	GetCurrentMap(cmap, 128);
+	GetNextMap(nmap, 128);
+	if(!IsMapValid(nmap))
+		GetArrayString(g_aMapList, GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
+	
+	if(StrEqual(nmap, cmap))
+		GetArrayString(g_aMapList, GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
+	
+	Handle pack;
+	CreateDataTimer(45.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE);
+	WritePackString(pack, nmap);
+	ResetPack(pack);
+}
+
+public Action Timer_Monitor(Handle timer, Handle pack)
+{
+	char cmap[128], nmap[128];
+	GetCurrentMap(cmap, 128);
+	ReadPackString(pack, nmap, 128);
+
+	if(StrEqual(nmap, cmap))
+		return Plugin_Stop;
+	
+	LogError("Map has not been changed");
+	ForceChangeLevel(nmap, "BUG: Map not change");
+	
+	return Plugin_Stop;
 }
