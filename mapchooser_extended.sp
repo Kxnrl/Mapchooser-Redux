@@ -33,6 +33,7 @@ bool g_bHasVoteStarted;
 bool g_bWaitingForVote;
 bool g_bMapVoteCompleted;
 bool g_bChangeMapInProgress;
+bool g_bChangeMapAtRoundEnd;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
 
@@ -125,6 +126,7 @@ public void OnConfigsExecuted()
 
 	g_iExtends = 0;
 	g_bMapVoteCompleted = false;
+	g_bChangeMapAtRoundEnd = false;
 	g_iNominateCount = 0;
 
 	ClearArray(g_aNominateList);
@@ -547,23 +549,21 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 	}
 	else
 	{
-		if(g_eChangeTime == MapChange_MapEnd)
-			SetNextMap(map);
-		else if(g_eChangeTime == MapChange_Instant)
+		if(g_eChangeTime == MapChange_Instant)
 		{
+			g_bChangeMapInProgress = true;
 			CreateTimer(10.0 , Timer_ChangeMaprtv);
-			SetNextMap(map);
-			SetConVarString(FindConVar("nextlevel"), map);
-			g_bChangeMapInProgress = false;
 		}
-		else
+		else if(g_eChangeTime == MapChange_RoundEnd)
 		{
-			SetNextMap(map);
-			SetConVarString(FindConVar("nextlevel"), map);
-
+			g_bChangeMapInProgress = true;
+			g_bChangeMapAtRoundEnd = true;
 			SetConVarInt(FindConVar("mp_timelimit"), 1);
 		}
-		
+
+		SetNextMap(map);
+		SetConVarString(FindConVar("nextlevel"), map);
+
 		g_bHasVoteStarted = false;
 		g_bMapVoteCompleted = true;
 		
@@ -572,37 +572,30 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 	}	
 }
 
-public Action Timer_ChangeMaprtv(Handle hTimer)
+public void CG_OnRoundEnd(int winner)
 {
-	g_bChangeMapInProgress = false;
-
 	SetConVarInt(FindConVar("mp_halftime"), 0);
 	SetConVarInt(FindConVar("mp_timelimit"), 0);
 	SetConVarInt(FindConVar("mp_maxrounds"), 0);
 	SetConVarInt(FindConVar("mp_roundtime"), 1);
+
+	if(g_bChangeMapAtRoundEnd)
+		CreateTimer(60.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
 	
+	g_bChangeMapAtRoundEnd = false;
+}
+
+public Action Timer_ChangeMaprtv(Handle hTimer)
+{
+	SetConVarInt(FindConVar("mp_halftime"), 0);
+	SetConVarInt(FindConVar("mp_timelimit"), 0);
+	SetConVarInt(FindConVar("mp_maxrounds"), 0);
+	SetConVarInt(FindConVar("mp_roundtime"), 1);
+
 	CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
-	
-	if(FindPluginByFile("KZTimerGlobal.smx"))
-	{
-		CreateTimer(10.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
-		return Plugin_Stop;
-	}
 
-	if(FindPluginByFile("zombiereloaded.smx"))
-		return Plugin_Stop;
+	CreateTimer(60.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
 
-	for(int client = 1; client <= MaxClients; ++client)
-	{
-		if(!IsClientInGame(client))
-			continue;
-		
-		if(!IsPlayerAlive(client))
-			continue;
-		
-		ForcePlayerSuicide(client);
-	}
-	
 	return Plugin_Stop;
 }
 
