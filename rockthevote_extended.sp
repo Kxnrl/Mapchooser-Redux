@@ -76,7 +76,7 @@ public void OnClientPostAdminCheck(int client)
 	
 	g_bVoted[client] = false;
 
-	g_iVoters++;
+	g_iVoters = GetClientCount(true)-1;
 	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.6);
 }
 
@@ -88,8 +88,7 @@ public void OnClientDisconnect(int client)
 	if(g_bVoted[client])
 		g_iVotes--;
 	
-	g_iVoters--;
-
+	g_iVoters = GetClientCount(true)-1;
 	g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.6);
 
 	if(!g_bCanRTV)
@@ -228,7 +227,10 @@ public Action Timer_ChangeMapKZ(Handle hTimer, Handle dp)
 	if(dp == INVALID_HANDLE)
 	{
 		if(!GetNextMap(map, 256))
+		{
+			LogError("Timer_ChangeMapKZ -> !GetNextMap");
 			return Plugin_Stop;	
+		}
 	}
 	else
 	{

@@ -556,7 +556,6 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 		}
 		else if(g_eChangeTime == MapChange_RoundEnd)
 		{
-			g_bChangeMapInProgress = true;
 			g_bChangeMapAtRoundEnd = true;
 			SetConVarInt(FindConVar("mp_timelimit"), 1);
 		}
@@ -574,14 +573,17 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 
 public void CG_OnRoundEnd(int winner)
 {
+	if(!g_bChangeMapAtRoundEnd)
+		return;
+
 	SetConVarInt(FindConVar("mp_halftime"), 0);
 	SetConVarInt(FindConVar("mp_timelimit"), 0);
 	SetConVarInt(FindConVar("mp_maxrounds"), 0);
 	SetConVarInt(FindConVar("mp_roundtime"), 1);
 
-	if(g_bChangeMapAtRoundEnd)
-		CreateTimer(60.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
-	
+	CreateTimer(35.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
+
+	g_bChangeMapInProgress = true;
 	g_bChangeMapAtRoundEnd = false;
 }
 
@@ -594,7 +596,7 @@ public Action Timer_ChangeMaprtv(Handle hTimer)
 
 	CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
 
-	CreateTimer(60.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(35.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
 
 	return Plugin_Stop;
 }
@@ -736,7 +738,10 @@ public Action Timer_ChangeMap(Handle hTimer, Handle dp)
 	if(dp == INVALID_HANDLE)
 	{
 		if(!GetNextMap(map, 256))
+		{
+			LogError("Timer_ChangeMap -> !GetNextMap");
 			return Plugin_Stop;	
+		}
 	}
 	else
 	{
@@ -1336,7 +1341,8 @@ public Action Timer_Monitor(Handle timer, Handle pack)
 		return Plugin_Stop;
 	
 	LogError("Map has not been changed");
-	ForceChangeLevel(nmap, "BUG: Map not change");
-	
+	//ForceChangeLevel(nmap, "BUG: Map not change");
+	ServerCommand("map %s", nmap);
+
 	return Plugin_Stop;
 }
