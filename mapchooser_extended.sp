@@ -59,6 +59,8 @@ enum WarningType
 #define LINE_SPACER "##linespacer##"
 #define FAILURE_TIMER_LENGTH 5
 
+//https://github.com/powerlord/sourcemod-mapchooser-extended
+
 public Plugin myinfo =
 {
 	name		= "MapChooser Redux",
@@ -88,7 +90,7 @@ public void OnPluginStart()
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
 	g_MapVoteStartForward = CreateGlobalForward("OnMapVoteStart", ET_Ignore);
 	g_MapVoteEndForward = CreateGlobalForward("OnMapVoteEnd", ET_Ignore, Param_String);
-	
+
 	HookEvent("cs_win_panel_match", Event_WinPanel, EventHookMode_Post);
 }
 
@@ -1290,13 +1292,61 @@ void CheckMapCycle()
 		return;
 	
 	LogMessage("Build New MapCycle[old: %d current: %d]", counts, number);
+	
+	DeleteFile("gamemodes_server.txt");
+	
+	char mgname[32];
+
+	if(FindPluginByFile("ct.smx"))						//TTT
+		strcopy(mgname, 32, "\"cg_ttt_maps\" \"0\"");
+	else if(FindPluginByFile("zombiereloaded.smx"))		// ZE
+		strcopy(mgname, 32, "\"cg_ze_maps\" \"0\"");
+	else if(FindPluginByFile("KZTimerGlobal.smx"))		// KZ
+		strcopy(mgname, 32, "\"cg_kz_maps\" \"0\"");
+	else if(FindPluginByFile("mg_stats.smx"))			// MG
+		strcopy(mgname, 32, "\"cg_mg_maps\" \"0\"");
+	else if(FindPluginByFile("sm_hosties.smx"))			// JB
+		strcopy(mgname, 32, "\"cg_jb_maps\" \"0\"");
+
+	Handle gamemode = OpenFile("gamemodes_server.txt", "w+");
+	WriteFileLine(gamemode, "\"GameModes_Server.txt\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"gameTypes\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"classic\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"gameModes\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"casual\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"maxplayers\" \"64\"");
+	WriteFileLine(gamemode, "\"exec\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"exec\" \"gamemode_casual.cfg\"");
+	WriteFileLine(gamemode, "\"exec\" \"gamemode_casual_server.cfg\"");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "\"mapgroupsMP\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, mgname);
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "\"mapgroups\"");
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, mgname);
+	WriteFileLine(gamemode, "{");
+	WriteFileLine(gamemode, "\"name\" \"ze_cg_maps\"");
+	WriteFileLine(gamemode, "\"maps\"");
+	WriteFileLine(gamemode, "{");
 
 	if((hFile = OpenFile(path, "w+")) != INVALID_HANDLE)
 	{
 		if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
 		{
 			FileType type = FileType_Unknown;
-			char filename[128];
+			char filename[128], mapbuffer[128];
 			while(ReadDirEntry(hDirectory, filename, 128, type))
 			{
 				if(type == FileType_File)
@@ -1305,6 +1355,8 @@ void CheckMapCycle()
 					{
 						ReplaceString(filename, 128, ".bsp", "", false);
 						WriteFileLine(hFile, filename);
+						Format(mapbuffer, 128, "\"%s\" \"\"", filename);
+						WriteFileLine(gamemode, mapbuffer);
 					}
 				}
 			}
@@ -1312,6 +1364,13 @@ void CheckMapCycle()
 		}
 		CloseHandle(hFile);
 	}
+
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	WriteFileLine(gamemode, "}");
+	
+	CloseHandle(gamemode);
 }
 
 public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
@@ -1326,7 +1385,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
 		GetArrayString(g_aMapList, GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
 	
 	Handle pack;
-	CreateDataTimer(45.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE);
+	CreateDataTimer(32.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE);
 	WritePackString(pack, nmap);
 	ResetPack(pack);
 }
@@ -1342,7 +1401,7 @@ public Action Timer_Monitor(Handle timer, Handle pack)
 	
 	LogError("Map has not been changed");
 	//ForceChangeLevel(nmap, "BUG: Map not change");
-	ServerCommand("map %s", nmap);
+	ServerCommand("changelevel %s", nmap);
 
 	return Plugin_Stop;
 }
