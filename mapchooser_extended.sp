@@ -66,7 +66,7 @@ public Plugin myinfo =
 	name		= "MapChooser Redux",
 	author		= "Kyle",
 	description = "Automated Map Voting with Extensions",
-	version		= "1.0",
+	version		= "1.1",
 	url			= "http://steamcommunity.com/id/_xQy_/"
 };
 
@@ -1298,15 +1298,15 @@ void CheckMapCycle()
 	char mgname[32];
 
 	if(FindPluginByFile("ct.smx"))						//TTT
-		strcopy(mgname, 32, "\"cg_ttt_maps\" \"0\"");
+		strcopy(mgname, 32, "\"cg_ttt_maps\"");
 	else if(FindPluginByFile("zombiereloaded.smx"))		// ZE
-		strcopy(mgname, 32, "\"cg_ze_maps\" \"0\"");
+		strcopy(mgname, 32, "\"cg_ze_maps\"");
 	else if(FindPluginByFile("KZTimerGlobal.smx"))		// KZ
-		strcopy(mgname, 32, "\"cg_kz_maps\" \"0\"");
+		strcopy(mgname, 32, "\"cg_kz_maps\"");
 	else if(FindPluginByFile("mg_stats.smx"))			// MG
-		strcopy(mgname, 32, "\"cg_mg_maps\" \"0\"");
+		strcopy(mgname, 32, "\"cg_mg_maps\"");
 	else if(FindPluginByFile("sm_hosties.smx"))			// JB
-		strcopy(mgname, 32, "\"cg_jb_maps\" \"0\"");
+		strcopy(mgname, 32, "\"cg_jb_maps\"");
 
 	Handle gamemode = OpenFile("gamemodes_server.txt", "w+");
 	WriteFileLine(gamemode, "\"GameModes_Server.txt\"");
@@ -1327,7 +1327,11 @@ void CheckMapCycle()
 	WriteFileLine(gamemode, "}");
 	WriteFileLine(gamemode, "\"mapgroupsMP\"");
 	WriteFileLine(gamemode, "{");
-	WriteFileLine(gamemode, mgname);
+	
+	char fixs_1[32];
+	Format(fixs_1, 32, "%s \"0\"", mgname);
+	WriteFileLine(gamemode, fixs_1);
+
 	WriteFileLine(gamemode, "}");
 	WriteFileLine(gamemode, "}");
 	WriteFileLine(gamemode, "}");
@@ -1337,7 +1341,11 @@ void CheckMapCycle()
 	WriteFileLine(gamemode, "{");
 	WriteFileLine(gamemode, mgname);
 	WriteFileLine(gamemode, "{");
-	WriteFileLine(gamemode, "\"name\" \"ze_cg_maps\"");
+
+	char fixs_2[32];
+	Format(fixs_2, 32, "\"name\" %s", mgname)
+	WriteFileLine(gamemode, fixs_2);
+
 	WriteFileLine(gamemode, "\"maps\"");
 	WriteFileLine(gamemode, "{");
 
