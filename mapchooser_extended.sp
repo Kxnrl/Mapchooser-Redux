@@ -114,8 +114,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnConfigsExecuted()
 {
-	CheckMapCycle();
 	BuildKvMapData();
+	CheckMapCycle();
+	CheckMapData();
 
 	if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != INVALID_HANDLE)
 		if(g_iMapFileSerial == -1)
@@ -1219,21 +1220,57 @@ void BuildKvMapData()
 		FileToKeyValues(g_hKvMapData, path);
 
 	KvRewind(g_hKvMapData);
-	
+
 	char map[128];
 	GetCurrentMap(map, 128);
+	AddMapData(map);
+}
+
+void AddMapData(char[] map)
+{
+	if(g_hKvMapData == INVALID_HANDLE)
+		return;
+
 	if(!KvJumpToKey(g_hKvMapData, map))
 	{
 		KvJumpToKey(g_hKvMapData, map, true);
-		Format(map, 128, "maps/%s.bsp", map);
 		KvSetString(g_hKvMapData, "Desc", "不详: 尚未明朗");
 		KvSetNum(g_hKvMapData, "Price", 100);
+		Format(map, 128, "maps/%s.bsp", map);
 		KvSetNum(g_hKvMapData, "Size", FileSize(map)/1048576+1);
 		KvSetNum(g_hKvMapData, "Nice", 0);
 		KvRewind(g_hKvMapData);
-		KeyValuesToFile(g_hKvMapData, path);
+		KeyValuesToFile(g_hKvMapData, "addons/sourcemod/configs/mapdata.txt");
 	}
+
+	KvRewind(g_hKvMapData);
+}
+
+void CheckMapData()
+{
+	if(g_hKvMapData == INVALID_HANDLE)
+		return;
+
+	if(!KvGotoFirstSubKey(g_hKvMapData, true))
+		return;
 	
+	char map[128], path[128];
+	do
+	{
+		KvGetSectionName(g_hKvMapData, map, 128);
+		Format(path, 128, "maps/%s.bsp", map);
+		if(!FileExists(path))
+		{
+			LogMessage("Delete %s from mapdata", map);
+			KvDeleteThis(g_hKvMapData);
+			KvRewind(g_hKvMapData);
+			KeyValuesToFile(g_hKvMapData, "addons/sourcemod/configs/mapdata.txt");
+			if(!KvGotoFirstSubKey(g_hKvMapData, true))
+				continue;
+		}
+	}
+	while(KvGotoNextKey(g_hKvMapData, true))
+
 	KvRewind(g_hKvMapData);
 }
 
@@ -1365,6 +1402,7 @@ void CheckMapCycle()
 						WriteFileLine(hFile, filename);
 						Format(mapbuffer, 128, "\"%s\" \"\"", filename);
 						WriteFileLine(gamemode, mapbuffer);
+						AddMapData(filename);
 					}
 				}
 			}
