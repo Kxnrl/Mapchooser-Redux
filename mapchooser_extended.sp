@@ -775,7 +775,7 @@ void CreateNextVote()
 	ClearArray(g_aNextMapList);
 	
 	bool neednicemap = false;
-	if(FindPluginByFile("zombiereloaded.smx"))
+	/*if(FindPluginByFile("zombiereloaded.smx"))
 	{
 		char time[32];
 		FormatTime(time, 64, "%H:%M:%S", GetTime());
@@ -785,7 +785,7 @@ void CreateNextVote()
 			LogMessage("[%s] neednicemap = true", time);
 		}
 	}
-
+*/
 	Handle tempMaps = CloneArray(g_aMapList);
 	
 	char map[256];

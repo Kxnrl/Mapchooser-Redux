@@ -260,7 +260,7 @@ bool IsAllowClient(int client)
 	if(!g_bKzTimer)
 		return true;
 	
-	if(KZTimer_GetSkillGroup(client) >= 2 || CG_IsClientVIP(client) || CG_GetClientGId(client) > 9900)
+	if(KZTimer_GetSkillGroup(client) >= 2 || CG_ClientIsVIP(client) || CG_ClientGetGId(client) > 9900)
 		return true;
 	
 	PrintToChat(client, "[\x04MCE\x01]  \x07你的KZ等级不够,禁止RTV");
