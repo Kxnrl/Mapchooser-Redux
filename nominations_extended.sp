@@ -15,13 +15,15 @@ int g_iMapFileSerial = -1;
 #define MAPSTATUS_EXCLUDE_NOMINATED (1<<4)
 
 Handle g_aMapTrie;
+Handle g_aNominated_Auth;
+Handle g_aNominated_Name;
 
 public Plugin myinfo =
 {
 	name		= "Nominations Redux",
 	author		= "Kyle",
 	description = "Provides Map Nominations",
-	version		= "1.0",
+	version		= "1.1",
 	url			= "http://steamcommunity.com/id/_xQy_/"
 };
 
@@ -36,6 +38,8 @@ public void OnPluginStart()
 	g_aMapList = CreateArray(arraySize);
 
 	g_aMapTrie = CreateTrie();
+    g_aNominated_Auth = CreateTrie();
+    g_aNominated_Name = CreateTrie();
 }
 
 public void OnConfigsExecuted()
@@ -46,6 +50,16 @@ public void OnConfigsExecuted()
 
 	BuildMapMenu();
 	BuildKvMapData();
+    
+    CreateTimer(90.0, Timer_Broadcast, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public void OnMapEnd()
+{
+    char map[128];
+    GetCurrentMap(map, 128);
+    RemoveFromTrie(g_aNominated_Auth, map);
+    RemoveFromTrie(g_aNominated_Name, map);
 }
 
 public void OnNominationRemoved(const char[] map, int owner)
@@ -167,9 +181,19 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 			if(result == Nominate_Replaced)
 			{
 				PrintToChatAll("[\x04MCE\x01]  %t", "Map Nomination Changed", name, map);
+                char m_szAuth[32], m_szName[32];
+                GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
+                GetClientName(param1, m_szName, 32)
+                SetTrieString(g_aNominated_Auth, map, m_szAuth, true);
+                SetTrieString(g_aNominated_Name, map, m_szName, true);
 				return 0;	
 			}
 
+            char m_szAuth[32], m_szName[32];
+            GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
+            GetClientName(param1, m_szName, 32)
+            SetTrieString(g_aNominated_Auth, map, m_szAuth, true);
+            SetTrieString(g_aNominated_Name, map, m_szName, true);
 			PrintToChatAll("[\x04MCE\x01]  %t", "Map Nominated", name, map);
 			LogMessage("%s nominated %s", name, map);
 		}
@@ -303,4 +327,41 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeNam
 		Format(desc, maxLen, "%s\n%s", map, desc);
 
 	return true;
+}
+
+public Action Timer_Broadcast(Handle timer)
+{
+    char map[128];
+    GetCurrentMap(map, 128);
+    
+    char m_szAuth[32];
+    if(!GetTrieString(g_aNominated_Auth, map, m_szAuth, 32))
+        return Plugin_Stop;
+    
+    char m_szName[32];
+    if(!GetTrieString(g_aNominated_Name, map, m_szName, 32))
+        return Plugin_Stop;
+    
+    int client = FindClientByAuth(m_szAuth);
+    
+    ReplaceString(m_szAuth, 32, "STEAM_1:", "");
+    
+    if(!client)
+        PrintToChatAll("[\x04MCE\x01]   当前地图是\x0C%s\x01(\x04%s\x01)预定的", m_szName, m_szAuth);
+    else
+        PrintToChatAll("[\x04MCE\x01]   当前地图是\x0C%N\x01(\x04%s\x01)预定的", client, m_szAuth);
+
+    return Plugin_Continue;
+}
+
+int FindClientByAuth(const char[] steamid)
+{
+    char m_szAuth[32];
+    for(int client = 1; client <= MaxClients; ++client)
+        if(IsClientAuthorized(client))
+            if(GetClientAuthId(client, AuthId_Steam2, m_szAuth, 32, true))
+                if(StrEqual(m_szAuth, steamid))
+                    return client;
+
+    return 0;
 }
