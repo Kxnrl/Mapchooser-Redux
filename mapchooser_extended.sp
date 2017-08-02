@@ -37,6 +37,8 @@ bool g_bChangeMapAtRoundEnd;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
 
+bool g_bZombieEscape;
+
 MapChange g_eChangeTime;
 
 enum TimerLocation
@@ -117,6 +119,8 @@ public void OnConfigsExecuted()
 	BuildKvMapData();
 	CheckMapCycle();
 	CheckMapData();
+    
+    g_bZombieEscape = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
 
 	if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != INVALID_HANDLE)
 		if(g_iMapFileSerial == -1)
@@ -179,8 +183,11 @@ public void OnMapEnd()
 	char map[128];
 	GetCurrentMap(map, 128);
 	PushArrayString(g_aOldMapList, map);
+    
+    int maxOld = 15;
+    if(g_bZombieEscape) maxOld = 60;
 
-	if(GetArraySize(g_aOldMapList) > 30)
+	if(GetArraySize(g_aOldMapList) > maxOld)
 		RemoveFromArray(g_aOldMapList, 0);
 	
 	char filepath[128];
@@ -791,8 +798,11 @@ void CreateNextVote()
 	char map[256];
 	GetCurrentMap(map, 256);
 	RemoveStringFromArray(tempMaps, map);
+    
+    int maxOld = 15;
+    if(g_bZombieEscape) maxOld = 60;
 	
-	if(GetArraySize(tempMaps) > 30)
+	if(GetArraySize(tempMaps) > maxOld)
 	{
 		int asize = GetArraySize(g_aOldMapList);
 		for(int i = 0; i < asize; i++)
