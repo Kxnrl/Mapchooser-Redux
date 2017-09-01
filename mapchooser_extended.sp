@@ -116,9 +116,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnConfigsExecuted()
 {
-	BuildKvMapData();
-	CheckMapCycle();
+    CheckMapCycle();
 	CheckMapData();
+	BuildKvMapData();
     
     g_bZombieEscape = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
 
