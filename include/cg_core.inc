@@ -1,3 +1,7 @@
+#if !defined _csgogamers_
+    #define _csgogamers_
+#endif
+
 typedef OnClientVIPChecked = function void (int client);
 
 
