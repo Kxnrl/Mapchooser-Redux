@@ -4,6 +4,7 @@
 #include <sdktools>
 #undef REQUIRE_PLUGIN
 #include <kztimer>
+#include <cg_core>
 
 #pragma newdecls required
 
@@ -24,6 +25,7 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     MarkNativeAsOptional("KZTimer_GetSkillGroup");
+    MarkNativeAsOptional("CG_ClientIsVIP");
     return APLRes_Success;
 }
 
@@ -149,7 +151,7 @@ public Action Timer_ChangeMap(Handle hTimer)
 
     CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
 
-    if(FindPluginByFile("KZTimerGlobal.smx"))
+    if(g_bKzTimer)
     {
         CreateTimer(10.0, Timer_ChangeMapKZ, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
         return Plugin_Stop;
@@ -248,4 +250,9 @@ void GetPlayers(int &need, int &done)
         }
 
     need = RoundFloat(need*0.6);    
+}
+
+stock bool IsClientVIP(int client)
+{
+    return LibraryExists("csgogamers") ? CG_ClientIsVIP(client) : CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
 }

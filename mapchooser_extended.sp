@@ -4,6 +4,10 @@
 #include <cstrike>
 #include <sdktools>
 
+// options
+#undef REQUIRE_PLUGIN
+#tryinclude <cg_core>
+
 #pragma newdecls required
 
 Handle g_NominationsResetForward;
@@ -44,8 +48,11 @@ enum TimerLocation
 {
     TimerLocation_Hint = 0,
     TimerLocation_Center = 1,
-    TimerLocation_Chat = 2
+    TimerLocation_Chat = 2,
+    TimerLocation_HUD = 3
 }
+// Edit this to config Warning HUD.
+TimerLocation g_TimerLocation = TimerLocation_HUD;
 
 enum WarningType
 {
@@ -104,6 +111,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("EndOfMapVoteEnabled", Native_EndOfMapVoteEnabled);
     CreateNative("CanNominate", Native_CanNominate);
     
+    MarkNativeAsOptional("CG_ShowGameTextToClient");
+    MarkNativeAsOptional("CG_ClientIsVIP");
+
     return APLRes_Success;
 }
 
@@ -310,17 +320,12 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
 
     if(timePassed == 0)
     {
-        TimerLocation timerLocation;
-        if(FindPluginByFile("KZTimerGlobal.smx"))
-            timerLocation = TimerLocation_Chat;
-        else
-            timerLocation = TimerLocation_Hint;
-        
-        switch(timerLocation)
+        switch(g_TimerLocation)
         {
             case TimerLocation_Center: PrintCenterTextAll("%t", warningPhrase, warningTimeRemaining);
             case TimerLocation_Chat: PrintToChatAll("[\x04MCE\x01]  %t", warningPhrase, warningTimeRemaining);
-            default: PrintHintTextToAll("%t", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Hint: PrintHintTextToAll("%t", warningPhrase, warningTimeRemaining);
+            case TimerLocation_HUD: DisplayHUDToAll(warningPhrase, warningTimeRemaining);
         }
     }
 
@@ -1421,4 +1426,33 @@ stock void AddExtendToMenu(Handle menu, MapChange when)
         AddMenuItem(menu, VOTE_DONTCHANGE, "Don't Change");
     else if(g_iExtends < 3)
         AddMenuItem(menu, VOTE_EXTEND, "Extend Map");
+}
+
+stock bool IsClientVIP(int client)
+{
+    return LibraryExists("csgogamers") ? CG_ClientIsVIP(client) : CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
+}
+
+stock void DisplayHUDToAll(const char[] warningPhrase, int time)
+{
+    char fmt[256];
+    if(LibraryExists("csgogamers"))
+    {
+        for(int client = 1; client <= MaxClients; ++client)
+            if(IsClientInGame(client) && !IsFakeClient(client))
+            {
+                FormatEx(fmt, 256, "%T", client, warningPhrase, time);
+                CG_ShowGameTextToClient(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
+            }
+    }
+    else
+    {
+        SetHudTextParams(-1.0, 0.32, 1.2, 233, 0, 0, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
+        for(int client = 1; client <= MaxClients; ++client)
+            if(IsClientInGame(client) && !IsFakeClient(client))
+            {
+                FormatEx(fmt, 256, "%T", client, warningPhrase, time);
+                ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
+            }
+    }
 }

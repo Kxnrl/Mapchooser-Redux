@@ -4,7 +4,7 @@
 //#include <cg_core>
 
 
-#define MCE_VERSION "1.1.35"
+#define MCE_VERSION "1.2.36"
 
 #define VOTE_EXTEND "##extend##"
 #define VOTE_DONTCHANGE "##dontchange##"
@@ -238,13 +238,4 @@ stock int UTIL_GetRandomInt(int min, int max)
         random++;
 
     return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
-}
-
-stock bool IsClientVIP(int client)
-{
-#if defined _csgogamers_
-    return CG_ClientIsVIP(client);
-#else
-    return CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
-#endif
 }
