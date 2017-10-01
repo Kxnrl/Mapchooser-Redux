@@ -1455,7 +1455,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))
             {
-                FormatEx(fmt, 256, "%T", client, warningPhrase, time);
+                FormatEx(fmt, 256, "%T", warningPhrase, client, time);
                 ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
             }
     }

@@ -4,7 +4,7 @@
 //#include <cg_core>
 
 
-#define MCE_VERSION "1.2.37"
+#define MCE_VERSION "1.2.38"
 
 #define VOTE_EXTEND "##extend##"
 #define VOTE_DONTCHANGE "##dontchange##"
