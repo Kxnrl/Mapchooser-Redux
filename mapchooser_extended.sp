@@ -842,7 +842,9 @@ void CreateNextVote()
     {
         GetArrayString(tempMaps, x, map, 256);
         // we remove map if player amount not match with configs
-        if(players < GetMinPlayers(map) || players > GetMaxPlayers(map))
+        int max = GetMaxPlayers(map);
+        int min = GetMinPlayers(map);
+        if((min != 0 && players < min) || (max != 0 && players > max))
         {
             RemoveStringFromArray(tempMaps, map);
             if(x > 0) x--;
@@ -905,11 +907,13 @@ NominateResult2 InternalNominateMap(char[] map, bool force, int owner)
 
     if(Store_GetClientCredits(owner) < GetMapPrice(map))
         return NominateResult_NoCredits;
-        
-    if(GetClientCount(true) > GetMaxPlayers(map))
+    
+    int max = GetMaxPlayers(map);
+    if(max != 0 && GetClientCount(true) > max)
         return NominateResult_MaxPlayers;
     
-    if(GetClientCount(true) < GetMinPlayers(map))
+    int min = GetMinPlayers(map);
+    if(min != 0 && GetClientCount(true) < min)
         return NominateResult_MinPlayers;
 
     PushArrayString(g_aNominateList, map);
@@ -1441,7 +1445,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))
             {
-                FormatEx(fmt, 256, "%T", client, warningPhrase, time);
+                FormatEx(fmt, 256, "%T", warningPhrase, client, time);
                 CG_ShowGameTextToClient(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
             }
     }
