@@ -897,7 +897,8 @@ NominateResult2 InternalNominateMap(char[] map, bool force, int owner)
         if(Store_GetClientCredits(owner) < GetMapPrice(map))
             return NominateResult_NoCredits;
 
-        SetArrayString(g_aNominateList, index, map);
+        PushArrayString(g_aNominateList, map);
+        PushArrayCell(g_aNominateOwners, owner);
 
         return NominateResult_Replaced;
     }
