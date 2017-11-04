@@ -4,8 +4,6 @@
 #include <cstrike>
 #include <sdktools>
 
-Make build failed.
-
 // options
 #undef REQUIRE_PLUGIN
 #include <cg_core>
