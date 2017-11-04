@@ -10,6 +10,7 @@ sudo: false
 
 env:
   - SOURCEMOD=1.8
+  - SOURCEMOD=1.9
 
 script:
   - bash build.sh $SOURCEMOD $FTP_HOST $FTP_USER $FTP_PSWD

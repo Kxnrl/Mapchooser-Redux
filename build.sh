@@ -11,6 +11,9 @@ FILE=MCER_$COUNT.zip
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
+wget "https://raw.githubusercontent.com/Kxnrl/Core/master/include/cg_core.inc" -o cg_core.inc
+wget "https://raw.githubusercontent.com/Kxnrl/Store/master/include/store.inc" -o store.inc
+
 chmod +x addons/sourcemod/scripting/spcomp
 
 for file in include/mapchooser_extended.inc
