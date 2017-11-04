@@ -6,13 +6,13 @@ COMMITS=$COUNT
 FTP_HOST=$2
 FTP_USER=$3
 FTP_PSWD=$4
-FILE=MCER_$COUNT.zip
+FILE=MCERedux-$COUNT-$1.zip
 
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
-wget "https://raw.githubusercontent.com/Kxnrl/Core/master/include/cg_core.inc" -o cg_core.inc
-wget "https://raw.githubusercontent.com/Kxnrl/Store/master/include/store.inc" -o store.inc
+wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -o cg_core.inc
+wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -o store.inc
 
 chmod +x addons/sourcemod/scripting/spcomp
 
