@@ -6,7 +6,7 @@
 
 // options
 #undef REQUIRE_PLUGIN
-#tryinclude <cg_core>
+#include <cg_core>
 
 #pragma newdecls required
 
@@ -41,6 +41,8 @@ bool g_bWarningInProgress;
 bool g_bBlockedSlots;
 
 bool g_bZombieEscape;
+bool g_srvCSGOGAMERS;
+bool g_bHookEventEnd;
 
 MapChange g_eChangeTime;
 
@@ -117,8 +119,30 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     return APLRes_Success;
 }
 
+public void OnLibraryAdded(const char[] name)
+{
+    if(strcmp(name, "csgogamers") == 0)
+        g_srvCSGOGAMERS = true;
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if(strcmp(name, "csgogamers") == 0)
+        g_srvCSGOGAMERS = false;
+}
+
+public void CG_OnServerLoaded()
+{
+    g_srvCSGOGAMERS = true;
+}
+
 public void OnConfigsExecuted()
 {
+    g_srvCSGOGAMERS = LibraryExists("csgogamers");
+    
+    if(g_srvCSGOGAMERS)
+        g_bHookEventEnd = HookEventEx("round_end", Event_RoundEnd, EventHookMode_Post);
+    
     CheckMapCycle();
     BuildKvMapData();
     CheckMapData();
@@ -174,6 +198,9 @@ public void OnConfigsExecuted()
 
 public void OnMapEnd()
 {
+    if(g_bHookEventEnd)
+        UnhookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+
     g_bHasVoteStarted = false;
     g_bWaitingForVote = false;
     g_bChangeMapInProgress = false;
@@ -580,6 +607,11 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 }
 
 public void CG_OnRoundEnd(int winner)
+{
+    Event_RoundEnd(INVALID_HANDLE, "round_end", false);
+}
+
+public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
     if(!g_bChangeMapAtRoundEnd)
         return;
@@ -1435,13 +1467,13 @@ stock void AddExtendToMenu(Handle menu, MapChange when)
 
 stock bool IsClientVIP(int client)
 {
-    return LibraryExists("csgogamers") ? CG_ClientIsVIP(client) : CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
+    return g_srvCSGOGAMERS ? CG_ClientIsVIP(client) : CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
 }
 
 stock void DisplayHUDToAll(const char[] warningPhrase, int time)
 {
     char fmt[256];
-    if(LibraryExists("csgogamers"))
+    if(g_srvCSGOGAMERS)
     {
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))

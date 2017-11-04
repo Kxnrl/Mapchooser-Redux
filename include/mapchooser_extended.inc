@@ -1,9 +1,5 @@
 #include <mapchooser>
 
-// use on csgogamers server. if u are not run with core.smx plz comment this.
-//#include <cg_core>
-
-
 #define MCE_VERSION "1.2.40"
 
 #define VOTE_EXTEND "##extend##"
