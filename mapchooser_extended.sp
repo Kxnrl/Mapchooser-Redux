@@ -611,7 +611,7 @@ public void CG_OnRoundEnd(int winner)
     Event_RoundEnd(INVALID_HANDLE, "round_end", false);
 }
 
-public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
     if(!g_bChangeMapAtRoundEnd)
         return;
