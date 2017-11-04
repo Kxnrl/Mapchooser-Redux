@@ -8,11 +8,11 @@ FTP_USER=$3
 FTP_PSWD=$4
 FILE=MCERedux-$COUNT-$1.zip
 
-wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
+wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -q -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
-wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -O include/cg_core.inc
-wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -O include/store.inc
+wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -q -O include/cg_core.inc
+wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -q -O include/store.inc
 
 chmod +x addons/sourcemod/scripting/spcomp
 
@@ -34,6 +34,34 @@ do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
+if [ ! -f "mapchooser_extended.smx" ]; then
+    echo "mapchooser_extended has been complied."
+else
+    echo "Compile mapchooser_extended failed!"
+    exit 1;
+fi
+
+if [ ! -f "maptimelimit_extended.smx" ]; then
+    echo "maptimelimit_extended has been complied."
+else
+    echo "Compile maptimelimit_extended failed!"
+    exit 1;
+fi
+
+if [ ! -f "nominations_extended.smx" ]; then
+    echo "nominations_extended has been complied."
+else
+    echo "Compile nominations_extended failed!"
+    exit 1;
+fi
+
+if [ ! -f "rockthevote_extended.smx" ]; then
+    echo "rockthevote_extended has been complied."
+else
+    echo "Compile rockthevote_extended failed!"
+    exit 1;
+fi
+
 mkdir plugins
 mkdir scripts
 
@@ -41,6 +69,6 @@ mv *.sp scripts
 mv include scripts
 mv *.smx plugins
 
-zip -9rq $FILE scripts plugins
+zip -9rq $FILE scripts plugins LICENSE README.md
 
 lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCER/ $FILE"
