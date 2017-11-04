@@ -3,7 +3,7 @@
 #include <cstrike>
 #include <sdktools>
 #undef REQUIRE_PLUGIN
-#include <kztimer>
+#include <KZTimer>
 #include <cg_core>
 
 #pragma newdecls required

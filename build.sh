@@ -19,18 +19,25 @@ do
   rm output.txt
 done
 
-mv mapchooser_extended.sp addons/sourcemod/scripting/
-mv maptimelimit_extended.sp addons/sourcemod/scripting/
-mv nominations_extended.sp addons/sourcemod/scripting/
-mv rockthevote_extended.sp addons/sourcemod/scripting/
+cp mapchooser_extended.sp addons/sourcemod/scripting/
+cp maptimelimit_extended.sp addons/sourcemod/scripting/
+cp nominations_extended.sp addons/sourcemod/scripting/
+cp rockthevote_extended.sp addons/sourcemod/scripting/
 
-mv include/* addons/sourcemod/scripting/include
+cp include/* addons/sourcemod/scripting/include
 
 for file in addons/sourcemod/scripting/*_extended.sp
 do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
-zip -9rq $FILE mapchooser_extended.smx maptimelimit_extended.smx nominations_extended.smx rockthevote_extended.smx 
+mkdir plugins
+mkdir scripts
+
+mv *.sp scripts
+mv include scripts
+mv *.smx plugins
+
+zip -9rq $FILE scripts plugins
 
 lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCER/ $FILE"
