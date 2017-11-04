@@ -1,0 +1,15 @@
+addons:
+  apt_packages:
+    - lftp
+    - lib32z1
+    - lib32stdc++6
+
+language: c
+
+sudo: false
+
+env:
+  - SOURCEMOD=1.8
+
+script:
+  - bash build.sh $SOURCEMOD $FTP_HOST $FTP_USER $FTP_PSWD
