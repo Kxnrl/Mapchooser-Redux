@@ -83,10 +83,10 @@ native NominateResult2 NominateMap2(const char[] map, bool force, int owner);
 
 
 // stocks
-stock void AddMapItem(Handle menu, const char[] map)
+stock void AddMapItem(Handle menu, const char[] map, bool includeTag)
 {
     char szTrans[256];
-    if(GetMapDesc(map, szTrans, 256, true))
+    if(GetMapDesc(map, szTrans, 256, true, includeTag))
         AddMenuItem(menu, map, szTrans);
     else
         AddMenuItem(menu, map, map);
@@ -107,7 +107,7 @@ stock int GetMapPrice(const char[] map)
     return (credits < 100) ? 100 : credits;
 }
 
-stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName)
+stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag)
 {
     if(!g_hKvMapData)
         return false;
@@ -120,7 +120,10 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeNam
     KvGetString(g_hKvMapData, "Desc", desc, maxLen, map);
 
     if(includeName)
-        Format(desc, maxLen, "[%s]%s\n%s", IsNiceMap(map) ? "神图" : "普通", map, desc);
+        Format(desc, maxLen, "%s\n%s", map, desc);
+
+    if(includeTag)
+        Format(desc, maxLen, "[%s]%s", IsNiceMap(map) ? "神图" : "普通", desc);
 
     return true;
 }

@@ -134,7 +134,7 @@ void BuildMapMenu()
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
 
         char szTrans[256];
-        if(GetMapDesc(map, szTrans, 256, g_bIncludeName))
+        if(GetMapDesc(map, szTrans, 256, true, g_bIncludeName))
             AddMenuItem(g_hMapMenu, map, szTrans);
         else
             AddMenuItem(g_hMapMenu, map, map);
@@ -265,7 +265,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             char display[150];
             char trans[128];
             strcopy(buffer, 100, map);
-            GetMapDesc(map, trans, 128, false);
+            GetMapDesc(map, trans, 128, false, false);
 
             if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
             {

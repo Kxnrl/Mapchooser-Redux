@@ -139,7 +139,7 @@ public void CG_OnServerLoaded()
 public void OnConfigsExecuted()
 {
     g_srvCSGOGAMERS = LibraryExists("csgogamers");
-    
+
     if(g_srvCSGOGAMERS)
         g_bHookEventEnd = HookEventEx("round_end", Event_RoundEnd, EventHookMode_Post);
     
@@ -460,7 +460,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
         {
             GetArrayString(g_aNominateList, i, map, 256);
 
-            AddMapItem(g_hVoteMenu, map);
+            AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
             RemoveStringFromArray(g_aNextMapList, map);
 
             Call_StartForward(g_NominationsResetForward);
@@ -502,7 +502,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
             GetArrayString(g_aNextMapList, count, map, 256);        
             count++;
 
-            AddMapItem(g_hVoteMenu, map);
+            AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
             i++;
 
             if(count >= availableMaps)
@@ -524,7 +524,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
             GetArrayString(inputlist, i, map, 256);
             
             if(IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map);
+                AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
             else if(StrEqual(map, VOTE_DONTCHANGE))
                 AddMenuItem(g_hVoteMenu, VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
