@@ -31,7 +31,7 @@ enum NominateResult2
     NominateResult_OnlyVIP
 };
 
-Handle g_hKvMapData;
+KeyValues g_hKvMapData;
 
 forward void OnNominationRemoved(const char[] map, int client);
 forward void OnMapVoteStarted();
@@ -40,7 +40,14 @@ forward void OnMapDataLoaded();
 
 native CanNominateResult CanNominate();
 native NominateResult2 NominateMap2(const char[] map, bool force, int owner);
-
+native bool RemoveNominationByMap(const char[] map);
+native bool RemoveNominationByOwner(int client);
+native void InitiateMapChooserVote(MapChange when, ArrayList inputarray);
+native bool CanMapChooserStartVote();
+native bool HasEndOfMapVoteFinished();
+native void GetExcludeMapList(ArrayList array);
+native void GetNominatedMapList(ArrayList maparray, ArrayList ownerarray);
+native bool EndOfMapVoteEnabled();
 
 // stocks
 stock void AddMapItem(Handle menu, const char[] map, bool includeTag)

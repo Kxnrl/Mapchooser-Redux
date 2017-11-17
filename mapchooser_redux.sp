@@ -1015,14 +1015,14 @@ public int Native_RemoveNominationByMap(Handle plugin, int numParams)
 {
     int len;
     GetNativeStringLength(1, len);
-    
+
     if(len <= 0)
       return false;
     
     char[] map = new char[len+1];
     GetNativeString(1, map, len+1);
     
-    return view_as<int>(InternalRemoveNominationByMap(map));
+    return InternalRemoveNominationByMap(map);
 }
 
 bool InternalRemoveNominationByOwner(int owner)

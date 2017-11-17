@@ -69,6 +69,7 @@ lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/build/ $FILE"
 
 if [ "$1" = "1.8" ]; then
     echo "Upload RAW..."
+    cd plugins
     lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ mapchooser_redux.smx"
     lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ maptimelimit_redux.smx"
     lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ nominations_redux.smx"
