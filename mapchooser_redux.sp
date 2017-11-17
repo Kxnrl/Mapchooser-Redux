@@ -108,7 +108,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     
     RegPluginLibrary("mapchooser");    
 
-    CreateNative("NominateMap2", Native_NominateMap);
+    CreateNative("NominateMap", Native_NominateMap);
     CreateNative("RemoveNominationByMap", Native_RemoveNominationByMap);
     CreateNative("RemoveNominationByOwner", Native_RemoveNominationByOwner);
     CreateNative("InitiateMapChooserVote", Native_InitiateVote);
@@ -907,7 +907,7 @@ bool CanVoteStart()
     return true;
 }
 
-NominateResult2 InternalNominateMap(char[] map, bool force, int owner)
+NominateResult InternalNominateMap(char[] map, bool force, int owner)
 {
     if(!IsMapValid(map))
         return NominateResult_InvalidMap;

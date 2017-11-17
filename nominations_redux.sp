@@ -159,7 +159,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             GetClientName(param1, name, 64);
 
-            NominateResult2 result = NominateMap2(map, false, param1);
+            NominateResult result = NominateMap(map, false, param1);
 
             if(result == NominateResult_NoCredits)
             {

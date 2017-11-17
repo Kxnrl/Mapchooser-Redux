@@ -1,5 +1,3 @@
-#include <mapchooser>
-
 #define MCE_VERSION "1.2.<commits>"
 
 #define VOTE_EXTEND "##extend##"
@@ -9,6 +7,13 @@
 #define LINE_SPACER "##linespacer##"
 #define FAILURE_TIMER_LENGTH 5
 
+enum MapChange
+{
+	MapChange_Instant,		/** Change map as soon as the voting results have come in */
+	MapChange_RoundEnd,		/** Change map at the end of the round */
+	MapChange_MapEnd,		/** Change the sm_nextmap cvar */
+};
+
 enum CanNominateResult
 {
     CanNominate_No_VoteFull,        /** No, nominations list is full */
@@ -17,7 +22,7 @@ enum CanNominateResult
     CanNominate_Yes,                /** Yes, you can nominate */
 };
 
-enum NominateResult2
+enum NominateResult
 {
     NominateResult_Added,         /** The map was added to the nominate list */
     NominateResult_Replaced,      /** A clients existing nomination was replaced */
@@ -39,7 +44,7 @@ forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
 
 native CanNominateResult CanNominate();
-native NominateResult2 NominateMap2(const char[] map, bool force, int owner);
+native NominateResult NominateMap(const char[] map, bool force, int owner);
 native bool RemoveNominationByMap(const char[] map);
 native bool RemoveNominationByOwner(int client);
 native void InitiateMapChooserVote(MapChange when, ArrayList inputarray);
