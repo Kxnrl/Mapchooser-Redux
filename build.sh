@@ -67,7 +67,10 @@ zip -9rq $FILE scripts plugins LICENSE README.md
 
 lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/build/ $FILE"
 
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ mapchooser_redux.smx"
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ maptimelimit_redux.smx"
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ nominations_redux.smx"
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ rockthevote_redux.smx"
+if [ "$1" = "1.8" ]; then
+    echo "Upload RAW..."
+    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ mapchooser_redux.smx"
+    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ maptimelimit_redux.smx"
+    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ nominations_redux.smx"
+    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ rockthevote_redux.smx"
+fi
