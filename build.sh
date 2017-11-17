@@ -34,8 +34,6 @@ do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
-echo " \n "
-
 if [ ! -f "mapchooser_redux.smx" ]; then
     echo "Compile mapchooser_redux failed!"
     exit 1;

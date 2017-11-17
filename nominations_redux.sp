@@ -60,9 +60,9 @@ public void OnMapEnd()
     RemoveFromTrie(g_aNominated_Auth, map);
     RemoveFromTrie(g_aNominated_Name, map);
     
-    if(g_hKvMapData != INVALID_HANDLE)
+    if(g_hKvMapData != null)
         CloseHandle(g_hKvMapData);
-    g_hKvMapData = INVALID_HANDLE;
+    g_hKvMapData = null;
 }
 
 public void OnNominationRemoved(const char[] map, int owner)
@@ -327,7 +327,7 @@ stock bool IsNominateAllowed(int client)
 
 public void OnMapDataLoaded()
 {
-    if(g_hKvMapData != INVALID_HANDLE)
+    if(g_hKvMapData != null)
         CloseHandle(g_hKvMapData);
 
     g_hKvMapData = CreateKeyValues("MapData", "", "");

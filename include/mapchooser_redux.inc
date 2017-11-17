@@ -9,9 +9,9 @@
 
 enum MapChange
 {
-	MapChange_Instant,		/** Change map as soon as the voting results have come in */
-	MapChange_RoundEnd,		/** Change map at the end of the round */
-	MapChange_MapEnd,		/** Change the sm_nextmap cvar */
+    MapChange_Instant,		/** Change map as soon as the voting results have come in */
+    MapChange_RoundEnd,		/** Change map at the end of the round */
+    MapChange_MapEnd,		/** Change the sm_nextmap cvar */
 };
 
 enum CanNominateResult

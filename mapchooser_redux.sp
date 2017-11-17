@@ -1189,7 +1189,7 @@ public int Native_CanNominate(Handle plugin, int numParams)
 
 void BuildKvMapData()
 {
-    if(g_hKvMapData != INVALID_HANDLE)
+    if(g_hKvMapData != null)
         CloseHandle(g_hKvMapData);
     
     g_hKvMapData = CreateKeyValues("MapData", "", "");
@@ -1208,7 +1208,7 @@ void BuildKvMapData()
 
 void AddMapData(char[] map)
 {
-    if(g_hKvMapData == INVALID_HANDLE)
+    if(g_hKvMapData == null)
         return;
 
     if(!KvJumpToKey(g_hKvMapData, map))
@@ -1233,7 +1233,7 @@ void AddMapData(char[] map)
 
 void CheckMapData()
 {
-    if(g_hKvMapData == INVALID_HANDLE)
+    if(g_hKvMapData == null)
         return;
 
     if(!KvGotoFirstSubKey(g_hKvMapData, true))

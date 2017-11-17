@@ -128,7 +128,7 @@ void StartRTV()
 
     if(CanMapChooserStartVote())
     {
-        InitiateMapChooserVote(MapChange_Instant);
+        InitiateMapChooserVote(MapChange_Instant, null);
         ResetRTV();
 
         g_bAllowRTV = false;
