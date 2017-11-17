@@ -1,4 +1,4 @@
-#include <mapchooser_extended>
+#include <mapchooser_redux>
 
 #pragma newdecls required
 

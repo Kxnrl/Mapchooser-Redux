@@ -33,52 +33,12 @@ enum NominateResult2
 
 Handle g_hKvMapData;
 
-/**
- * Called whenever warning timer starts
- * 
- */
-forward void OnMapVoteWarningStart();
-
-/**
- * Called whenever runoff warning timer starts
- */
-forward void OnMapVoteRunnoffWarningStart();
-
-/**
- * Called whenever the timer ticks
- */
-forward void OnMapVoteWarningTick(int time);
-
-/**
- * Called whenever vote starts
- * 
- * @deprecated Will be removed in MapChooser 1.8.  Use OnMapVoteStarted instead.
- */
-forward void OnMapVoteStart();
-
-/**
- * Called whenever vote ends
- */
+forward void OnNominationRemoved(const char[] map, int client);
+forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map);
-
-/**
- * Is a map on the current game's official list?
- * This should be treated as informative only.
- * 
- * @param map     Name of map to check
- * @return         true if it's on the list of official maps for this game
- */
-native bool IsMapOfficial(const char[] map);
-
-/**
- * Is nominate allowed?
- * 
- * @return        A CanNominateResult corresponding to whether a vote is allowed or not
- */
-native CanNominateResult CanNominate();
-
-
 forward void OnMapDataLoaded();
+
+native CanNominateResult CanNominate();
 native NominateResult2 NominateMap2(const char[] map, bool force, int owner);
 
 

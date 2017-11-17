@@ -16,43 +16,43 @@ wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -q -O include
 
 chmod +x addons/sourcemod/scripting/spcomp
 
-for file in include/mapchooser_extended.inc
+for file in include/mapchooser_redux.inc
 do
   sed -i "s/<commits>/$COMMITS/g" $file > output.txt
   rm output.txt
 done
 
-cp mapchooser_extended.sp addons/sourcemod/scripting/
-cp maptimelimit_extended.sp addons/sourcemod/scripting/
-cp nominations_extended.sp addons/sourcemod/scripting/
-cp rockthevote_extended.sp addons/sourcemod/scripting/
+cp mapchooser_redux.sp addons/sourcemod/scripting/
+cp maptimelimit_redux.sp addons/sourcemod/scripting/
+cp nominations_redux.sp addons/sourcemod/scripting/
+cp rockthevote_redux.sp addons/sourcemod/scripting/
 
 cp include/* addons/sourcemod/scripting/include
 
-for file in addons/sourcemod/scripting/*_extended.sp
+for file in addons/sourcemod/scripting/*_redux.sp
 do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
 echo " \n "
 
-if [ ! -f "mapchooser_extended.smx" ]; then
-    echo "Compile mapchooser_extended failed!"
+if [ ! -f "mapchooser_redux.smx" ]; then
+    echo "Compile mapchooser_redux failed!"
     exit 1;
 fi
 
-if [ ! -f "maptimelimit_extended.smx" ]; then
-    echo "Compile maptimelimit_extended failed!"
+if [ ! -f "maptimelimit_redux.smx" ]; then
+    echo "Compile maptimelimit_redux failed!"
     exit 1;
 fi
 
-if [ ! -f "nominations_extended.smx" ]; then
-    echo "Compile nominations_extended failed!"
+if [ ! -f "nominations_redux.smx" ]; then
+    echo "Compile nominations_redux failed!"
     exit 1;
 fi
 
-if [ ! -f "rockthevote_extended.smx" ]; then
-    echo "Compile rockthevote_extended failed!"
+if [ ! -f "rockthevote_redux.smx" ]; then
+    echo "Compile rockthevote_redux failed!"
     exit 1;
 fi
 
@@ -65,4 +65,9 @@ mv *.smx plugins
 
 zip -9rq $FILE scripts plugins LICENSE README.md
 
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCER/ $FILE"
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/build/ $FILE"
+
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ mapchooser_redux.smx"
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ maptimelimit_redux.smx"
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ nominations_redux.smx"
+lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ rockthevote_redux.smx"

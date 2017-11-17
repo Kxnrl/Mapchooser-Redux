@@ -1,4 +1,4 @@
-#include <mapchooser_extended>
+#include <mapchooser_redux>
 #include <store>
 
 #pragma newdecls required
@@ -32,7 +32,7 @@ public void OnPluginStart()
     LoadTranslations("common.phrases");
     LoadTranslations("nominations.phrases");
     LoadTranslations("basetriggers.phrases"); // for Next Map phrase
-    LoadTranslations("mapchooser_extended.phrases");
+    LoadTranslations("mapchooser_redux.phrases");
 
     int arraySize = ByteCountToCells(256);    
     g_aMapList = CreateArray(arraySize);

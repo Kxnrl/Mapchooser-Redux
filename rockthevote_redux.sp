@@ -1,4 +1,4 @@
-#include <mapchooser_extended>
+#include <mapchooser_redux>
 #include <nextmap>
 #include <cstrike>
 #include <sdktools>

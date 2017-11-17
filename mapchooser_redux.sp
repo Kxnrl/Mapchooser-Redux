@@ -1,4 +1,4 @@
-#include <mapchooser_extended>
+#include <mapchooser_redux>
 #include <nextmap>
 #include <store>
 #include <cstrike>
@@ -12,7 +12,6 @@
 
 Handle g_NominationsResetForward;
 Handle g_MapVoteStartedForward;
-Handle g_MapVoteStartForward;
 Handle g_MapVoteEndForward;
 Handle g_MapDataLoadedForward;
 
@@ -62,7 +61,9 @@ enum WarningType
     WarningType_Revote
 }
 
-//https://github.com/powerlord/sourcemod-mapchooser-extended
+
+//credits: https://github.com/powerlord/sourcemod-mapchooser-extended
+//credits: https://github.com/alliedmodders/sourcemod/blob/master/plugins/
 
 public Plugin myinfo =
 {
@@ -75,7 +76,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    LoadTranslations("mapchooser_extended.phrases");
+    LoadTranslations("mapchooser_redux.phrases");
     LoadTranslations("basevotes.phrases");
     LoadTranslations("common.phrases");
 
@@ -91,7 +92,6 @@ public void OnPluginStart()
 
     g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
-    g_MapVoteStartForward = CreateGlobalForward("OnMapVoteStart", ET_Ignore);
     g_MapVoteEndForward = CreateGlobalForward("OnMapVoteEnd", ET_Ignore, Param_String);
     g_MapDataLoadedForward = CreateGlobalForward("OnMapDataLoaded", ET_Ignore);
 
@@ -100,6 +100,12 @@ public void OnPluginStart()
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+    if(!CleanPlugin())
+    {
+        strcopy(error, err_max, "can not clean files.");
+        return APLRes_Failure;
+    }
+    
     RegPluginLibrary("mapchooser");    
 
     CreateNative("NominateMap2", Native_NominateMap);
@@ -537,9 +543,6 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
         SetMenuPagination(g_hVoteMenu, MENU_NO_PAGINATION);
     
     VoteMenuToAll(g_hVoteMenu, 15);
-
-    Call_StartForward(g_MapVoteStartForward);
-    Call_Finish();
 
     Call_StartForward(g_MapVoteStartedForward);
     Call_Finish();
@@ -1492,4 +1495,39 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
                 ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
             }
     }
+}
+
+stock bool CleanPlugin()
+{
+    // delete mapchooser
+    if(FileExists("addons/sourcemod/plugins/mapchooser.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/mapchooser.smx"))
+            return false;
+    
+    // delete rockthevote
+    if(FileExists("addons/sourcemod/plugins/rockthevote.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/rockthevote.smx"))
+            return false;
+        
+    // delete nominations
+    if(FileExists("addons/sourcemod/plugins/nominations.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/nominations.smx"))
+            return false;
+        
+    // delete mapchooser_extended
+    if(FileExists("addons/sourcemod/plugins/mapchooser_extended.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/mapchooser_extended.smx"))
+            return false;
+    
+    // delete rockthevote_extended
+    if(FileExists("addons/sourcemod/plugins/rockthevote_extended.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/rockthevote_extended.smx"))
+            return false;
+        
+    // delete nominations_extended
+    if(FileExists("addons/sourcemod/plugins/nominations_extended.smx"))
+        if(!DeleteFile("addons/sourcemod/plugins/nominations_extended.smx"))
+            return false;
+    
+    return true;
 }
