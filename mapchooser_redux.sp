@@ -70,7 +70,7 @@ public Plugin myinfo =
     name        = "MapChooser Redux",
     author      = "Kyle",
     description = "Automated Map Voting with Extensions",
-    version     = MCE_VERSION,
+    version     = MCR_VERSION,
     url         = "http://steamcommunity.com/id/_xQy_/"
 };
 
@@ -270,7 +270,7 @@ public Action Command_SetNextmap(int client, int args)
 {
     if(args < 1)
     {
-        ReplyToCommand(client, "[\x04MCE\x01]  Usage: sm_setnextmap <map>");
+        ReplyToCommand(client, "[\x04MCR\x01]  Usage: sm_setnextmap <map>");
         return Plugin_Handled;
     }
 
@@ -279,7 +279,7 @@ public Action Command_SetNextmap(int client, int args)
 
     if(!IsMapValid(map))
     {
-        ReplyToCommand(client, "[\x04MCE\x01]  地图无效[%s]", map);
+        ReplyToCommand(client, "[\x04MCR\x01]  地图无效[%s]", map);
         return Plugin_Handled;
     }
 
@@ -352,7 +352,7 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
         switch(g_TimerLocation)
         {
             case TimerLocation_Center: PrintCenterTextAll(warningPhrase, warningTimeRemaining);
-            case TimerLocation_Chat: PrintToChatAll("[\x04MCE\x01]  %s", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  %s", warningPhrase, warningTimeRemaining);
             case TimerLocation_Hint: PrintHintTextToAll(warningPhrase, warningTimeRemaining);
             case TimerLocation_HUD: DisplayHUDToAll(warningPhrase, warningTimeRemaining);
         }
@@ -383,7 +383,7 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
 
 public Action Command_Mapvote(int client, int args)
 {
-    PrintToChatAll("[\x04MCE\x01]  已启动地图投票");
+    PrintToChatAll("[\x04MCR\x01]  已启动地图投票");
 
     SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, INVALID_HANDLE, true);
 
@@ -397,7 +397,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
  
     if(IsVoteInProgress())
     {
-        PrintToChatAll("[\x04MCE\x01]  投票进行中,将在%d秒后重试.", FAILURE_TIMER_LENGTH);
+        PrintToChatAll("[\x04MCR\x01]  投票进行中,将在%d秒后重试.", FAILURE_TIMER_LENGTH);
         Handle data;
         g_tRetry = CreateDataTimer(1.0, Timer_StartMapVote, data, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 
@@ -544,7 +544,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
     Call_Finish();
 
     LogAction(-1, -1, "Voting for next map has started.");
-    PrintToChatAll("[\x04MCE\x01]  下幅地图投票已开始.");
+    PrintToChatAll("[\x04MCR\x01]  下幅地图投票已开始.");
 }
 
 public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
@@ -565,7 +565,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             if(timeLimit > 0)
                 ExtendMapTimeLimit(1200);                        
 
-        PrintToChatAll("[\x04MCE\x01]  当前地图已被延长 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        PrintToChatAll("[\x04MCR\x01]  当前地图已被延长 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. The current map has been extended.");
 
         g_bHasVoteStarted = false;
@@ -574,7 +574,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     }
     else if(!strcmp(map, VOTE_DONTCHANGE, false))
     {
-        PrintToChatAll("[\x04MCE\x01]  当前地图暂不更换 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        PrintToChatAll("[\x04MCR\x01]  当前地图暂不更换 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. 'No Change' was the winner");
         
         g_bHasVoteStarted = false;
@@ -600,7 +600,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bHasVoteStarted = false;
         g_bMapVoteCompleted = true;
         
-        PrintToChatAll("[\x04MCE\x01]  地图投票已结束,下一幅地图将为 %s. (%d/%d 票)", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        PrintToChatAll("[\x04MCR\x01]  地图投票已结束,下一幅地图将为 %s. (%d/%d 票)", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }    
 }
@@ -668,7 +668,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                     break;
             }
             
-            PrintToChatAll("[\x04MCE\x01]  有%d幅地图票数相等,投票即将重启.", GetArraySize(mapList));
+            PrintToChatAll("[\x04MCR\x01]  有%d幅地图票数相等,投票即将重启.", GetArraySize(mapList));
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
             return;
         }
@@ -695,7 +695,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                 else
                     break;
             }
-            PrintToChatAll("[\x04MCE\x01]  没有地图比例过半(%d%%票). 即将开始第二轮投票!", required_percent);
+            PrintToChatAll("[\x04MCR\x01]  没有地图比例过半(%d%%票). 即将开始第二轮投票!", required_percent);
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
             return;
         }
@@ -1038,7 +1038,7 @@ bool InternalRemoveNominationByOwner(int owner)
         
         int credits = GetMapPrice(oldmap);
         Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
-        PrintToChat(owner, "[\x04MCE\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
+        PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
 
         return true;
     }

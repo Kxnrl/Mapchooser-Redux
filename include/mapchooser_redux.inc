@@ -1,4 +1,4 @@
-#define MCE_VERSION "1.2.<commits>"
+#define MCR_VERSION "1.2.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"

@@ -18,7 +18,7 @@ public Plugin myinfo =
     name        = "Rock The Vote Redux",
     author      = "Kyle",
     description = "Provides RTV Map Voting",
-    version     = MCE_VERSION,
+    version     = MCR_VERSION,
     url         = "http://steamcommunity.com/id/_xQy_/"
 };
 
@@ -32,7 +32,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
-    RegAdminCmd("mce_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
+    RegAdminCmd("mcr_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 }
 
 public void OnMapStart()
@@ -72,13 +72,13 @@ void AttemptRTV(int client)
 {
     if(!g_bAllowRTV)
     {
-        PrintToChat(client, "[\x04MCE\x01]  当前不允许RTV!");
+        PrintToChat(client, "[\x04MCR\x01]  当前不允许RTV!");
         return;
     }
 
     if(!CanMapChooserStartVote())
     {
-        PrintToChat(client, "[\x04MCE\x01]  RTV投票已启动!");
+        PrintToChat(client, "[\x04MCR\x01]  RTV投票已启动!");
         return;
     }
 
@@ -111,7 +111,7 @@ void StartRTV()
         char map[128];
         if(GetNextMap(map, 128))
         {
-            PrintToChatAll("[\x04MCE\x01]  正在更换地图到[\x05%s\x01]", map);
+            PrintToChatAll("[\x04MCR\x01]  正在更换地图到[\x05%s\x01]", map);
             CreateTimer(10.0, Timer_ChangeMap, _, TIMER_FLAG_NO_MAPCHANGE);
             g_bInChange = true;
 
@@ -199,7 +199,7 @@ public Action Command_ForceRTV(int client, int args)
     if(!client)
         return Plugin_Handled;
 
-    PrintToChatAll("[\x04MCE\x01]  已强制启动RTV投票");
+    PrintToChatAll("[\x04MCR\x01]  已强制启动RTV投票");
 
     StartRTV();
 
@@ -214,7 +214,7 @@ bool IsAllowClient(int client)
     if(KZTimer_GetSkillGroup(client) >= 2 || IsClientVIP(client))
         return true;
 
-    PrintToChat(client, "[\x04MCE\x01]  \x07你的KZ等级不够,禁止RTV");
+    PrintToChat(client, "[\x04MCR\x01]  \x07你的KZ等级不够,禁止RTV");
     return false;
 }
 
@@ -227,7 +227,7 @@ bool RTV_CheckStatus(int client, bool notice)
     {
         char name[64];
         GetClientName(client, name, 64);
-        PrintToChatAll("[\x04MCE\x01]  \x05%s\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", name, done, need);
+        PrintToChatAll("[\x04MCR\x01]  \x05%s\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", name, done, need);
     }
     
     return (done >= need);

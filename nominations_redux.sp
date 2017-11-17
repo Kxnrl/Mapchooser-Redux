@@ -23,7 +23,7 @@ public Plugin myinfo =
     name        = "Nominations Redux",
     author      = "Kyle",
     description = "Provides Map Nominations",
-    version     = MCE_VERSION,
+    version     = MCR_VERSION,
     url         = "http://steamcommunity.com/id/_xQy_/"
 };
 
@@ -158,49 +158,49 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             if(result == NominateResult_NoCredits)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
+                PrintToChat(param1, "[\x04MCR\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
                 return 0;
             }
 
             if(result == NominateResult_InvalidMap)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  预定[\x04%s\x01]失败", map);
+                PrintToChat(param1, "[\x04MCR\x01]  预定[\x04%s\x01]失败", map);
                 return 0;
             }
 
             if(result == NominateResult_AlreadyInVote)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  该地图已被预定");
+                PrintToChat(param1, "[\x04MCR\x01]  该地图已被预定");
                 return 0;
             }
             
             if(result == NominateResult_VoteFull)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  投票池已满");
+                PrintToChat(param1, "[\x04MCR\x01]  投票池已满");
                 return 0;
             }
             
             if(result == NominateResult_OnlyAdmin)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  \x07该地图只有管理员才能直接更换");
+                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图只有管理员才能直接更换");
                 return 0;
             }
             
             if(result == NominateResult_OnlyVIP)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  \x07该地图只有VIP才能预定");
+                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图只有VIP才能预定");
                 return 0;
             }
 
             if(result == NominateResult_MinPlayers)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  \x07该地图需要当前服务器人数大于\x04%d人\x07才能预定", GetMinPlayers(map));
+                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图需要当前服务器人数大于\x04%d人\x07才能预定", GetMinPlayers(map));
                 return 0;
             }
             
             if(result == NominateResult_MaxPlayers)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  \x07该地图需要当前服务器人数小于\x04%d人\x07才能预定", GetMaxPlayers(map));
+                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图需要当前服务器人数小于\x04%d人\x07才能预定", GetMaxPlayers(map));
                 return 0;
             }
 
@@ -208,7 +208,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             
             int credits = GetMapPrice(map);
             Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-预定");
-            PrintToChat(param1, "[\x04MCE\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+            PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
 
             char m_szAuth[32], m_szName[32];
             GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
@@ -219,9 +219,9 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             LogMessage("%s nominated %s", name, map);
 
             if(result == NominateResult_Replaced)
-                PrintToChatAll("[\x04MCE\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", name, map);
+                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", name, map);
             else
-                PrintToChatAll("[\x04MCE\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", name, map);
+                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", name, map);
         }
 
         case MenuAction_DrawItem:
@@ -298,7 +298,7 @@ stock bool IsNominateAllowed(int client)
     {
         case CanNominate_No_VoteInProgress:
         {
-            PrintToChat(client, "[\x04MCE\x01]  下幅地图投票已开始.");
+            PrintToChat(client, "[\x04MCR\x01]  下幅地图投票已开始.");
             return false;
         }
 
@@ -306,13 +306,13 @@ stock bool IsNominateAllowed(int client)
         {
             char map[128];
             GetNextMap(map, 128);
-            PrintToChat(client, "[\x04MCE\x01]  已投票出下一幅地图[\x05%s\x01]", map);
+            PrintToChat(client, "[\x04MCR\x01]  已投票出下一幅地图[\x05%s\x01]", map);
             return false;
         }
         
         case CanNominate_No_VoteFull:
         {
-            PrintToChat(client, "[\x04MCE\x01]  投票池已满");
+            PrintToChat(client, "[\x04MCR\x01]  投票池已满");
             return false;
         }
     }
@@ -350,9 +350,9 @@ public Action Timer_Broadcast(Handle timer)
     ReplaceString(m_szAuth, 32, "STEAM_1:", "");
     
     if(!client)
-        PrintToChatAll("[\x04MCE\x01]   当前地图是\x0C%s\x01(\x04%s\x01)预定的", m_szName, m_szAuth);
+        PrintToChatAll("[\x04MCR\x01]   当前地图是\x0C%s\x01(\x04%s\x01)预定的", m_szName, m_szAuth);
     else
-        PrintToChatAll("[\x04MCE\x01]   当前地图是\x0C%N\x01(\x04%s\x01)预定的", client, m_szAuth);
+        PrintToChatAll("[\x04MCR\x01]   当前地图是\x0C%N\x01(\x04%s\x01)预定的", client, m_szAuth);
 
     return Plugin_Continue;
 }
