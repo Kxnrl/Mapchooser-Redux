@@ -29,11 +29,6 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    LoadTranslations("common.phrases");
-    LoadTranslations("nominations.phrases");
-    LoadTranslations("basetriggers.phrases"); // for Next Map phrase
-    LoadTranslations("mapchooser_redux.phrases");
-
     int arraySize = ByteCountToCells(256);    
     g_aMapList = CreateArray(arraySize);
 
@@ -94,7 +89,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
 void AttemptNominate(int client)
 {
-    SetMenuTitle(g_hMapMenu, "%T\n ", "Nominate Title", client);
+    SetMenuTitle(g_hMapMenu, "预定地图\n ", client);
     DisplayMenu(g_hMapMenu, client, MENU_TIME_FOREVER);
 
     return;
@@ -175,13 +170,13 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             if(result == NominateResult_AlreadyInVote)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  %t", "Map Already Nominated");
+                PrintToChat(param1, "[\x04MCE\x01]  该地图已被预定");
                 return 0;
             }
             
             if(result == NominateResult_VoteFull)
             {
-                PrintToChat(param1, "[\x04MCE\x01]  %t", "Max Nominations");
+                PrintToChat(param1, "[\x04MCE\x01]  投票池已满");
                 return 0;
             }
             
@@ -224,9 +219,9 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             LogMessage("%s nominated %s", name, map);
 
             if(result == NominateResult_Replaced)
-                PrintToChatAll("[\x04MCE\x01]  %t", "Map Nomination Changed", name, map);
+                PrintToChatAll("[\x04MCE\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", name, map);
             else
-                PrintToChatAll("[\x04MCE\x01]  %t", "Map Nominated", name, map);
+                PrintToChatAll("[\x04MCE\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", name, map);
         }
 
         case MenuAction_DrawItem:
@@ -271,19 +266,19 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             {
                 if((status & MAPSTATUS_EXCLUDE_CURRENT) == MAPSTATUS_EXCLUDE_CURRENT)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Current Map", param1, trans);
+                    Format(display, sizeof(display), "%s (当前地图)\n%s", buffer, trans);
                     return RedrawMenuItem(display);
                 }
                 
                 if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Recently Played", param1, trans);
+                    Format(display, sizeof(display), "%s (最近玩过)\n%s", buffer, trans);
                     return RedrawMenuItem(display);
                 }
                 
                 if((status & MAPSTATUS_EXCLUDE_NOMINATED) == MAPSTATUS_EXCLUDE_NOMINATED)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "Nominated", param1, trans);
+                    Format(display, sizeof(display), "%s (已被预定)\n%s", buffer, trans);
                     return RedrawMenuItem(display);
                 }
             }
@@ -303,21 +298,21 @@ stock bool IsNominateAllowed(int client)
     {
         case CanNominate_No_VoteInProgress:
         {
-            PrintToChat(client, "[\x04MCE\x01]  %t", "Nextmap Voting Started");
+            PrintToChat(client, "[\x04MCE\x01]  下幅地图投票已开始.");
             return false;
         }
-        
+
         case CanNominate_No_VoteComplete:
         {
             char map[128];
             GetNextMap(map, 128);
-            PrintToChat(client, "[\x04MCE\x01]  %t", "Next Map", map);
+            PrintToChat(client, "[\x04MCE\x01]  已投票出下一幅地图[\x05%s\x01]", map);
             return false;
         }
         
         case CanNominate_No_VoteFull:
         {
-            PrintToChat(client, "[\x04MCE\x01]  %t", "Max Nominations");
+            PrintToChat(client, "[\x04MCE\x01]  投票池已满");
             return false;
         }
     }

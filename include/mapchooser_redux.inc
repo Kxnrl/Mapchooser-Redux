@@ -1,34 +1,34 @@
 #define MCE_VERSION "1.2.<commits>"
 
-#define VOTE_EXTEND "##extend##"
-#define VOTE_DONTCHANGE "##dontchange##"
-#define LINE_ONE "##lineone##"
-#define LINE_TWO "##linetwo##"
-#define LINE_SPACER "##linespacer##"
-#define FAILURE_TIMER_LENGTH 5
+#define VOTE_EXTEND             "##extend##"
+#define VOTE_DONTCHANGE         "##dontchange##"
+#define LINE_ONE                "##lineone##"
+#define LINE_TWO                "##linetwo##"
+#define LINE_SPACER             "##linespacer##"
+#define FAILURE_TIMER_LENGTH    5
 
 enum MapChange
 {
-    MapChange_Instant,		/** Change map as soon as the voting results have come in */
-    MapChange_RoundEnd,		/** Change map at the end of the round */
-    MapChange_MapEnd,		/** Change the sm_nextmap cvar */
+    MapChange_Instant,
+    MapChange_RoundEnd,
+    MapChange_MapEnd,
 };
 
 enum CanNominateResult
 {
-    CanNominate_No_VoteFull,        /** No, nominations list is full */
-    CanNominate_No_VoteInProgress,    /** No, map vote is in progress */
-    CanNominate_No_VoteComplete,    /** No, map vote is completed */
-    CanNominate_Yes,                /** Yes, you can nominate */
+    CanNominate_No_VoteFull,
+    CanNominate_No_VoteInProgress,
+    CanNominate_No_VoteComplete,
+    CanNominate_Yes
 };
 
 enum NominateResult
 {
-    NominateResult_Added,         /** The map was added to the nominate list */
-    NominateResult_Replaced,      /** A clients existing nomination was replaced */
-    NominateResult_AlreadyInVote, /** Specified map was already in the vote */
-    NominateResult_InvalidMap,    /** Mapname specified wasn't a valid map */
-    NominateResult_VoteFull,      /** This will only occur if force was set to false */
+    NominateResult_Added,
+    NominateResult_Replaced,
+    NominateResult_AlreadyInVote,
+    NominateResult_InvalidMap,
+    NominateResult_VoteFull,
     NominateResult_MinPlayers,
     NominateResult_MaxPlayers,
     NominateResult_NoCredits,

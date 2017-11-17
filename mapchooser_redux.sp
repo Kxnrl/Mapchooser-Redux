@@ -76,10 +76,6 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    LoadTranslations("mapchooser_redux.phrases");
-    LoadTranslations("basevotes.phrases");
-    LoadTranslations("common.phrases");
-
     int iArraySize = ByteCountToCells(256);
     g_aMapList = CreateArray(iArraySize);
     g_aNominateList = CreateArray(iArraySize);
@@ -283,7 +279,7 @@ public Action Command_SetNextmap(int client, int args)
 
     if(!IsMapValid(map))
     {
-        ReplyToCommand(client, "[\x04MCE\x01]  %t", "Map was not found", map);
+        ReplyToCommand(client, "[\x04MCE\x01]  地图无效[%s]", map);
         return Plugin_Handled;
     }
 
@@ -355,9 +351,9 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
     {
         switch(g_TimerLocation)
         {
-            case TimerLocation_Center: PrintCenterTextAll("%t", warningPhrase, warningTimeRemaining);
-            case TimerLocation_Chat: PrintToChatAll("[\x04MCE\x01]  %t", warningPhrase, warningTimeRemaining);
-            case TimerLocation_Hint: PrintHintTextToAll("%t", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Center: PrintCenterTextAll(warningPhrase, warningTimeRemaining);
+            case TimerLocation_Chat: PrintToChatAll("[\x04MCE\x01]  %s", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Hint: PrintHintTextToAll(warningPhrase, warningTimeRemaining);
             case TimerLocation_HUD: DisplayHUDToAll(warningPhrase, warningTimeRemaining);
         }
     }
@@ -387,7 +383,7 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
 
 public Action Command_Mapvote(int client, int args)
 {
-    PrintToChatAll("[\x04MCE\x01]  %t", "Initiated Vote Map");
+    PrintToChatAll("[\x04MCE\x01]  已启动地图投票");
 
     SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, INVALID_HANDLE, true);
 
@@ -401,7 +397,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
  
     if(IsVoteInProgress())
     {
-        PrintToChatAll("[\x04MCE\x01]  %t", "Cannot Start Vote", FAILURE_TIMER_LENGTH);
+        PrintToChatAll("[\x04MCE\x01]  投票进行中,将在%d秒后重试.", FAILURE_TIMER_LENGTH);
         Handle data;
         g_tRetry = CreateDataTimer(1.0, Timer_StartMapVote, data, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 
@@ -548,7 +544,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
     Call_Finish();
 
     LogAction(-1, -1, "Voting for next map has started.");
-    PrintToChatAll("[\x04MCE\x01]  %t", "Nextmap Voting Started");
+    PrintToChatAll("[\x04MCE\x01]  下幅地图投票已开始.");
 }
 
 public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
@@ -569,7 +565,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             if(timeLimit > 0)
                 ExtendMapTimeLimit(1200);                        
 
-        PrintToChatAll("[\x04MCE\x01]  %t", "Current Map Extended", RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
+        PrintToChatAll("[\x04MCE\x01]  当前地图已被延长 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. The current map has been extended.");
 
         g_bHasVoteStarted = false;
@@ -578,7 +574,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     }
     else if(!strcmp(map, VOTE_DONTCHANGE, false))
     {
-        PrintToChatAll("[\x04MCE\x01]  %t", "Current Map Stays", RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
+        PrintToChatAll("[\x04MCE\x01]  当前地图暂不更换 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. 'No Change' was the winner");
         
         g_bHasVoteStarted = false;
@@ -604,7 +600,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bHasVoteStarted = false;
         g_bMapVoteCompleted = true;
         
-        PrintToChatAll("[\x04MCE\x01]  %t", "Nextmap Voting Finished", map, RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
+        PrintToChatAll("[\x04MCE\x01]  地图投票已结束,下一幅地图将为 %s. (%d/%d 票)", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }    
 }
@@ -672,7 +668,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                     break;
             }
             
-            PrintToChatAll("[\x04MCE\x01]  %t", "Tie Vote", GetArraySize(mapList));
+            PrintToChatAll("[\x04MCE\x01]  有%d幅地图票数相等,投票即将重启.", GetArraySize(mapList));
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
             return;
         }
@@ -699,7 +695,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                 else
                     break;
             }
-            PrintToChatAll("[\x04MCE\x01]  %t", "Revote Is Needed", required_percent);
+            PrintToChatAll("[\x04MCE\x01]  没有地图比例过半(%d%%票). 即将开始第二轮投票!", required_percent);
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
             return;
         }
@@ -719,10 +715,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
         }
         case MenuAction_Display:
         {
-            char buffer[256];
-            Format(buffer, 256, "%T\n ", "Vote Nextmap", param1);
-            Handle panel = view_as<Handle>(param2);
-            SetPanelTitle(panel, buffer);
+            SetPanelTitle(view_as<Handle>(param2), "投票选择下幅地图 \n ");
         }
         case MenuAction_DisplayItem:
         {
@@ -732,13 +725,13 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
             GetMenuItem(menu, param2, map, 256);
             
             if(StrEqual(map, VOTE_EXTEND, false))
-                Format(buffer, 256, "%T", "Extend Map", param1);
+                strcopy(buffer, 256, "延长当前地图");
             else if(StrEqual(map, VOTE_DONTCHANGE, false))
-                Format(buffer, 256, "%T", "Dont Change", param1);
+                strcopy(buffer, 256, "不要更换地图");
             else if(StrEqual(map, LINE_ONE, false))
-                Format(buffer, 256,"%T", "Line One", param1);
+                strcopy(buffer, 256, "选择你想玩的地铁图...");
             else if(StrEqual(map, LINE_TWO, false))
-                Format(buffer, 256,"%T", "Line Two", param1);
+                strcopy(buffer, 256, "如果你选错可以输入 !revote 重新投票 ;-)");
             
             if(buffer[0] != '\0')
                 return RedrawMenuItem(buffer);
@@ -1141,13 +1134,13 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
         case WarningType_Vote:
         {
             cvarTime = 15;
-            strcopy(translationKey, 64, "Vote Warning");
+            strcopy(translationKey, 64, "离下张地图投票将开始还有: \x07%d秒");
         }
         
         case WarningType_Revote:
         {
             cvarTime = 5;
-            strcopy(translationKey, 64, "Revote Warning");
+            strcopy(translationKey, 64, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
         }
     }
 
@@ -1481,7 +1474,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))
             {
-                FormatEx(fmt, 256, "%T", warningPhrase, client, time);
+                FormatEx(fmt, 256, warningPhrase, client, time);
                 CG_ShowGameTextToClient(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
             }
     }
@@ -1491,7 +1484,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))
             {
-                FormatEx(fmt, 256, "%T", warningPhrase, client, time);
+                FormatEx(fmt, 256, warningPhrase, client, time);
                 ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
             }
     }

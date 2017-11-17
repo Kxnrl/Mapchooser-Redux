@@ -31,10 +31,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-    LoadTranslations("common.phrases");
-    LoadTranslations("rockthevote.phrases");
-    LoadTranslations("basevotes.phrases");
-
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
     RegAdminCmd("mce_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 }
@@ -76,13 +72,13 @@ void AttemptRTV(int client)
 {
     if(!g_bAllowRTV)
     {
-        PrintToChat(client, "[\x04MCE\x01]  %t", "RTV Not Allowed");
+        PrintToChat(client, "[\x04MCE\x01]  当前不允许RTV!");
         return;
     }
 
     if(!CanMapChooserStartVote())
     {
-        PrintToChat(client, "[\x04MCE\x01]  %t", "RTV Started");
+        PrintToChat(client, "[\x04MCE\x01]  RTV投票已启动!");
         return;
     }
 
@@ -115,7 +111,7 @@ void StartRTV()
         char map[128];
         if(GetNextMap(map, 128))
         {
-            PrintToChatAll("[\x04MCE\x01]  %t", "Changing Maps", map);
+            PrintToChatAll("[\x04MCE\x01]  正在更换地图到[\x05%s\x01]", map);
             CreateTimer(10.0, Timer_ChangeMap, _, TIMER_FLAG_NO_MAPCHANGE);
             g_bInChange = true;
 
@@ -203,7 +199,7 @@ public Action Command_ForceRTV(int client, int args)
     if(!client)
         return Plugin_Handled;
 
-    PrintToChatAll("[\x04MCE\x01]  %t", "Initiated Vote Map");
+    PrintToChatAll("[\x04MCE\x01]  已强制启动RTV投票");
 
     StartRTV();
 
@@ -231,7 +227,7 @@ bool RTV_CheckStatus(int client, bool notice)
     {
         char name[64];
         GetClientName(client, name, 64);
-        PrintToChatAll("[\x04MCE\x01]  %t", "RTV Requested", name, done, need);
+        PrintToChatAll("[\x04MCE\x01]  \x05%s\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", name, done, need);
     }
     
     return (done >= need);
