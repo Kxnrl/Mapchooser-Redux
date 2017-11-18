@@ -1313,6 +1313,22 @@ void CheckMapCycle()
                 if(DeleteFile(path2))
                     LogMessage("Delete Offical map: %s", path2);
                 
+                ReplaceString(filename, 128, ".bsp", ".nav", false);
+                if(DeleteFile(path2))
+                    LogMessage("Delete Offical map: %s", path2);
+                
+                ReplaceString(filename, 128, ".nav", ".jpg", false);
+                if(DeleteFile(path2))
+                    LogMessage("Delete Offical map: %s", path2);
+                
+                ReplaceString(filename, 128, ".jpg", "_cameras.txt", false);
+                if(DeleteFile(path2))
+                    LogMessage("Delete Offical map: %s", path2);
+                
+                ReplaceString(filename, 128, "cameras", "story", false);
+                if(DeleteFile(path2))
+                    LogMessage("Delete Offical map: %s", path2);
+
                 continue;
             }
 
