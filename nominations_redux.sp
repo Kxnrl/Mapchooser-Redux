@@ -149,10 +149,8 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
     {
         case MenuAction_Select:
         {
-            char map[128], name[64];
+            char map[128];
             GetMenuItem(menu, param2, map, 128);        
-
-            GetClientName(param1, name, 64);
 
             NominateResult result = NominateMap(map, false, param1);
 
@@ -216,12 +214,12 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             SetTrieString(g_aNominated_Auth, map, m_szAuth, true);
             SetTrieString(g_aNominated_Name, map, m_szName, true);
 
-            LogMessage("%s nominated %s", name, map);
+            LogMessage("%N nominated %s", param1, map);
 
             if(result == NominateResult_Replaced)
-                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", name, map);
+                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", param1, map);
             else
-                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", name, map);
+                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", param1, map);
         }
 
         case MenuAction_DrawItem:
