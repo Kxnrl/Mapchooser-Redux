@@ -1472,7 +1472,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
     if(g_srvCSGOGAMERS)
     {
         FormatEx(fmt, 256, warningPhrase, time);
-        CG_ShowGameTextAll(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
+        CG_ShowGameTextAll(fmt, "1.2", "233 0 0", "-1.0", "0.32");
     }
     else
     {
