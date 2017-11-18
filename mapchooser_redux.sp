@@ -102,7 +102,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
         return APLRes_Failure;
     }
     
-    RegPluginLibrary("mapchooser");    
+    RegPluginLibrary("mapchooser");
 
     CreateNative("NominateMap", Native_NominateMap);
     CreateNative("RemoveNominationByMap", Native_RemoveNominationByMap);
@@ -115,7 +115,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("EndOfMapVoteEnabled", Native_EndOfMapVoteEnabled);
     CreateNative("CanNominate", Native_CanNominate);
     
-    MarkNativeAsOptional("CG_ShowGameTextToClient");
+    MarkNativeAsOptional("CG_ShowGameTextAll");
     MarkNativeAsOptional("CG_ClientIsVIP");
 
     return APLRes_Success;
@@ -404,9 +404,9 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
         WritePackCell(data, FAILURE_TIMER_LENGTH);
 
         if(g_iRunoffCount > 0)
-            WritePackString(data, "Revote Warning");
+            WritePackString(data, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
         else
-            WritePackString(data, "Vote Warning");
+            WritePackString(data, "离下张地图投票将开始还有: \x07%d秒");
 
         WritePackCell(data, view_as<int>(when));
         WritePackCell(data, view_as<int>(inputlist));
@@ -556,7 +556,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     Call_PushString(map);
     Call_Finish();
 
-    if(!strcmp(map, VOTE_EXTEND, false))
+    if(strcmp(map, VOTE_EXTEND, false)==0)
     {
         g_iExtends++;
         
@@ -572,7 +572,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         CreateNextVote();
         SetupTimeleftTimer();
     }
-    else if(!strcmp(map, VOTE_DONTCHANGE, false))
+    else if(strcmp(map, VOTE_DONTCHANGE, false)==0)
     {
         PrintToChatAll("[\x04MCR\x01]  当前地图暂不更换 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. 'No Change' was the winner");
@@ -753,7 +753,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
                     item = UTIL_GetRandomInt(startInt, count - 1);
                     GetMenuItem(menu, item, map, 256);
                 }
-                while(!strcmp(map, VOTE_EXTEND, false));
+                while(strcmp(map, VOTE_EXTEND, false)==0);
                 
                 SetNextMap(map);
                 g_bMapVoteCompleted = true;
@@ -1471,12 +1471,8 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
     char fmt[256];
     if(g_srvCSGOGAMERS)
     {
-        for(int client = 1; client <= MaxClients; ++client)
-            if(IsClientInGame(client) && !IsFakeClient(client))
-            {
-                FormatEx(fmt, 256, warningPhrase, client, time);
-                CG_ShowGameTextToClient(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
-            }
+        FormatEx(fmt, 256, warningPhrase, time);
+        CG_ShowGameTextAll(fmt, "1.2", "233 0 0", "-1.0", "0.32", client);
     }
     else
     {
@@ -1484,7 +1480,7 @@ stock void DisplayHUDToAll(const char[] warningPhrase, int time)
         for(int client = 1; client <= MaxClients; ++client)
             if(IsClientInGame(client) && !IsFakeClient(client))
             {
-                FormatEx(fmt, 256, warningPhrase, client, time);
+                FormatEx(fmt, 256, warningPhrase, time);
                 ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
             }
     }
