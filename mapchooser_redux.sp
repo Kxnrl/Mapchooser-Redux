@@ -344,8 +344,8 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
     int warningMaxTime = ReadPackCell(data);
     int warningTimeRemaining = warningMaxTime - timePassed;
 
-    char warningPhrase[32];
-    ReadPackString(data, warningPhrase, 32);
+    char warningPhrase[128];
+    ReadPackString(data, warningPhrase, 128);
 
     if(timePassed == 0)
     {
@@ -1127,20 +1127,20 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
     g_bWarningInProgress = true;
     
     int cvarTime;
-    char translationKey[64];
+    char translationKey[128];
     
     switch (type)
     {
         case WarningType_Vote:
         {
             cvarTime = 15;
-            strcopy(translationKey, 64, "离下张地图投票将开始还有: \x07%d秒");
+            strcopy(translationKey, 128, "离下张地图投票将开始还有: \x07%d秒");
         }
         
         case WarningType_Revote:
         {
             cvarTime = 5;
-            strcopy(translationKey, 64, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
+            strcopy(translationKey, 128, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
         }
     }
 
