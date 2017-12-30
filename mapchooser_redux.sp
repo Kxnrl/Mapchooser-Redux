@@ -4,7 +4,7 @@
 #include <cstrike>
 #include <sdktools>
 
-// options
+//options
 #undef REQUIRE_PLUGIN
 #include <cg_core>
 
