@@ -1,6 +1,6 @@
 # MCE-Redux
   
-Build Status: [![Build Status](https://travis-ci.org/Kxnrl/MCE-Redux.svg?branch=master)](https://travis-ci.org/Kxnrl/MCE-Redux)
+Build Status: [![Build Status](https://travis-ci.org/Kxnrl/Mapchooser-Redux.svg?branch=master)](https://travis-ci.org/Kxnrl/Mapchooser-Redux)
   
   
 ### Features  
@@ -12,7 +12,7 @@ Build Status: [![Build Status](https://travis-ci.org/Kxnrl/MCE-Redux.svg?branch=
   
 ### Configs
 * map pool in mapcycle.txt by default, you can edit it in 'addons/sourcemod/configs/maplist.cfg'
-* map date 'addons/sourcemod/configs/mapdata.txt' 
+* map data 'addons/sourcemod/configs/mapdata.txt' 
 * if mapdata.txt does not exists, data will be auto-generated  [example](https://github.com/CSGOGAMERS-Community/CG-Server/blob/master/ZombieEscape/mapdata.txt)  
   
   
