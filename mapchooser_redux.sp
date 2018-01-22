@@ -355,7 +355,7 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
         switch(g_TimerLocation)
         {
             case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
             case TimerLocation_Hint: PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
             case TimerLocation_HUD: DisplayHUDToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
         }
@@ -1126,8 +1126,7 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
     g_bWarningInProgress = true;
     
     int cvarTime;
-    char translationKey[128];
-    
+
     switch (type)
     {
         case WarningType_Vote:
