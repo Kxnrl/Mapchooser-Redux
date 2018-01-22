@@ -353,15 +353,12 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
     int warningMaxTime = ReadPackCell(data);
     int warningTimeRemaining = warningMaxTime - timePassed;
 
-    if(timePassed == 0)
+    switch(g_TimerLocation)
     {
-        switch(g_TimerLocation)
-        {
-            case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
-            case TimerLocation_Hint: PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-            case TimerLocation_HUD: DisplayHUDToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-        }
+        case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
+        case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
+        case TimerLocation_Hint: PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
+        case TimerLocation_HUD: DisplayHUDToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
     }
 
     if(timePassed++ >= warningMaxTime)
