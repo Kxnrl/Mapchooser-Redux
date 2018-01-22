@@ -30,6 +30,14 @@ public Plugin myinfo =
     url         = "http://steamcommunity.com/id/_xQy_/"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("Store_GetClientCredits");
+    MarkNativeAsOptional("Store_SetClientCredits");
+
+    return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
     int arraySize = ByteCountToCells(256);    

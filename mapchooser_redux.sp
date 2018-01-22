@@ -118,6 +118,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     
     MarkNativeAsOptional("CG_ShowGameTextAll");
     MarkNativeAsOptional("CG_ClientIsVIP");
+    
+    MarkNativeAsOptional("Store_GetClientCredits");
+    MarkNativeAsOptional("Store_SetClientCredits");
 
     return APLRes_Success;
 }
