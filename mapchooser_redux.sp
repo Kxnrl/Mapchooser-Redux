@@ -1,12 +1,12 @@
 #include <mapchooser_redux>
 #include <nextmap>
-#include <store>
 #include <cstrike>
 #include <sdktools>
 
 // options
 #undef REQUIRE_PLUGIN
 #include <cg_core>
+#include <store>
 
 #pragma newdecls required
 
@@ -41,6 +41,7 @@ bool g_bBlockedSlots;
 
 bool g_bZombieEscape;
 bool g_srvCSGOGAMERS;
+bool g_srvStore;
 bool g_bHookEventEnd;
 
 MapChange g_eChangeTime;
@@ -125,12 +126,16 @@ public void OnLibraryAdded(const char[] name)
 {
     if(strcmp(name, "csgogamers") == 0)
         g_srvCSGOGAMERS = true;
+    else if(strcmp(name, "store") == 0)
+        g_srvStore = true;
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
     if(strcmp(name, "csgogamers") == 0)
         g_srvCSGOGAMERS = false;
+    else if(strcmp(name, "store") == 0)
+        g_srvStore = false;
 }
 
 public void CG_OnServerLoaded()
@@ -141,6 +146,7 @@ public void CG_OnServerLoaded()
 public void OnConfigsExecuted()
 {
     g_srvCSGOGAMERS = LibraryExists("csgogamers");
+    g_srvStore = LibraryExists("store");
 
     if(g_srvCSGOGAMERS)
         g_bHookEventEnd = HookEventEx("round_end", Event_RoundEnd, EventHookMode_Post);
@@ -344,17 +350,14 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
     int warningMaxTime = ReadPackCell(data);
     int warningTimeRemaining = warningMaxTime - timePassed;
 
-    char warningPhrase[128];
-    ReadPackString(data, warningPhrase, 128);
-
     if(timePassed == 0)
     {
         switch(g_TimerLocation)
         {
-            case TimerLocation_Center: PrintCenterTextAll(warningPhrase, warningTimeRemaining);
-            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  %s", warningPhrase, warningTimeRemaining);
-            case TimerLocation_Hint: PrintHintTextToAll(warningPhrase, warningTimeRemaining);
-            case TimerLocation_HUD: DisplayHUDToAll(warningPhrase, warningTimeRemaining);
+            case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
+            case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningPhrase, warningTimeRemaining);
+            case TimerLocation_Hint: PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
+            case TimerLocation_HUD: DisplayHUDToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
         }
     }
 
@@ -402,12 +405,6 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
         g_tRetry = CreateDataTimer(1.0, Timer_StartMapVote, data, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 
         WritePackCell(data, FAILURE_TIMER_LENGTH);
-
-        if(g_iRunoffCount > 0)
-            WritePackString(data, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
-        else
-            WritePackString(data, "离下张地图投票将开始还有: \x07%d秒");
-
         WritePackCell(data, view_as<int>(when));
         WritePackCell(data, view_as<int>(inputlist));
         ResetPack(data);
@@ -417,7 +414,6 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
     
     if(g_bMapVoteCompleted && g_bChangeMapInProgress)
         return;
-
 
     g_eChangeTime = when;
     
@@ -922,7 +918,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
         GetArrayString(g_aNominateList, index, oldmap, 256);
         InternalRemoveNominationByOwner(owner);
 
-        if(Store_GetClientCredits(owner) < GetMapPrice(map))
+        if(g_srvStore && Store_GetClientCredits(owner) < GetMapPrice(map))
             return NominateResult_NoCredits;
 
         PushArrayString(g_aNominateList, map);
@@ -934,7 +930,7 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
     if(g_iNominateCount >= 5 && !force)
         return NominateResult_VoteFull;
 
-    if(Store_GetClientCredits(owner) < GetMapPrice(map))
+    if(g_srvStore && Store_GetClientCredits(owner) < GetMapPrice(map))
         return NominateResult_NoCredits;
     
     int max = GetMaxPlayers(map);
@@ -1036,9 +1032,12 @@ bool InternalRemoveNominationByOwner(int owner)
         RemoveFromArray(g_aNominateOwners, index);
         g_iNominateCount--;
         
-        int credits = GetMapPrice(oldmap);
-        Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
-        PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
+        if(g_srvStore)
+        {
+            int credits = GetMapPrice(oldmap);
+            Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
+            PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
+        }
 
         return true;
     }
@@ -1134,20 +1133,17 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
         case WarningType_Vote:
         {
             cvarTime = 15;
-            strcopy(translationKey, 128, "离下张地图投票将开始还有: \x07%d秒");
         }
         
         case WarningType_Revote:
         {
             cvarTime = 5;
-            strcopy(translationKey, 128, "有几张地图比例类似,投票重启剩余时间: \x07%d秒");
         }
     }
 
     Handle data;
     g_tWarning = CreateDataTimer(1.0, Timer_StartMapVote, data, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
     WritePackCell(data, cvarTime);
-    WritePackString(data, translationKey);
     WritePackCell(data, view_as<int>(when));
     WritePackCell(data, view_as<int>(mapList));
     ResetPack(data);

@@ -1,4 +1,6 @@
 #include <mapchooser_redux>
+
+#undef REQUIRE_PLUGIN
 #include <store>
 
 #pragma newdecls required
@@ -7,6 +9,7 @@ ArrayList g_aMapList;
 Handle g_hMapMenu;
 int g_iMapFileSerial = -1;
 bool g_bIncludeName = false;
+bool g_srvStore;
 
 #define MAPSTATUS_ENABLED (1<<0)
 #define MAPSTATUS_DISABLED (1<<1)
@@ -37,8 +40,22 @@ public void OnPluginStart()
     g_aNominated_Name = CreateTrie();
 }
 
+public void OnLibraryAdded(const char[] name)
+{
+    if(strcmp(name, "store") == 0)
+        g_srvStore = true;
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if(strcmp(name, "store") == 0)
+        g_srvStore = false;
+}
+
 public void OnConfigsExecuted()
 {
+    g_srvStore = LibraryExists("store");
+
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "nominations", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) == INVALID_HANDLE)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
@@ -204,9 +221,12 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             SetTrieValue(g_aMapTrie, map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED);
             
-            int credits = GetMapPrice(map);
-            Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-预定");
-            PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+            if(g_srvStore)
+            {
+                int credits = GetMapPrice(map);
+                Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-预定");
+                PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+            }
 
             char m_szAuth[32], m_szName[32];
             GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
