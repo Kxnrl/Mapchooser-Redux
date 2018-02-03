@@ -48,10 +48,10 @@ MapChange g_eChangeTime;
 
 enum TimerLocation
 {
-    TimerLocation_Hint = 0,
+    TimerLocation_Hint   = 0,
     TimerLocation_Center = 1,
-    TimerLocation_Chat = 2,
-    TimerLocation_HUD = 3
+    TimerLocation_Chat   = 2,
+    TimerLocation_HUD    = 3
 }
 // Edit this to config Warning HUD.
 TimerLocation g_TimerLocation = TimerLocation_HUD;
@@ -86,6 +86,8 @@ public void OnPluginStart()
 
     RegAdminCmd("sm_mapvote", Command_Mapvote, ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
+    
+    RegAdminCmd("sm_clearcd", Command_ClearCD, ADMFLAG_CHANGEMAP);
 
     g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
@@ -1459,6 +1461,13 @@ public Action Timer_Monitor(Handle timer, Handle pack)
     return Plugin_Stop;
 }
 
+public Action Command_ClearCD(int client, int args)
+{
+    g_aOldMapList.Clear();
+    PrintToChatAll("[\x04MCR\x01]  已清除所有地图冷却时间");
+    return Plugin_Handled;
+}
+
 stock void GetMapItem(Handle menu, int position, char[] map, int mapLen)
 {
     GetMenuItem(menu, position, map, mapLen);
@@ -1466,7 +1475,7 @@ stock void GetMapItem(Handle menu, int position, char[] map, int mapLen)
 
 stock void AddExtendToMenu(Handle menu, MapChange when)
 {
-    if((when == MapChange_Instant || when == MapChange_RoundEnd))
+    if(when == MapChange_Instant || when == MapChange_RoundEnd)
         AddMenuItem(menu, VOTE_DONTCHANGE, "Don't Change");
     else if(g_iExtends < 3)
         AddMenuItem(menu, VOTE_EXTEND, "Extend Map");
