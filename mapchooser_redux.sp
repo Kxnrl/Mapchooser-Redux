@@ -209,7 +209,7 @@ public void OnConfigsExecuted()
     }
     
     int size = GetArraySize(g_aMapList);
-    for(int i = 0, i < size; ++i)
+    for(int i = 0; i < size; ++i)
     {
         char map[128];
         g_aMapList.GetString(i, map, 128);
