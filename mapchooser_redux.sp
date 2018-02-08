@@ -227,8 +227,8 @@ public void OnMapEnd()
     GetCurrentMap(map, 128);
     PushArrayString(g_aOldMapList, map);
     
-    int maxOld = 15;
-    if(g_bZombieEscape) maxOld = 60;
+    int maxOld = 10;
+    if(g_bZombieEscape) maxOld = 15;
 
     if(GetArraySize(g_aOldMapList) > maxOld)
         RemoveFromArray(g_aOldMapList, 0);
