@@ -207,6 +207,14 @@ public void OnConfigsExecuted()
             CloseHandle(file);
         }
     }
+    
+    int size = GetArraySize(g_aMapList);
+    for(int i = 0, i < size; ++i)
+    {
+        char map[128];
+        g_aMapList.GetString(i, map, 128);
+        AddMapData(map);
+    }
 }
 
 public void OnMapEnd()
