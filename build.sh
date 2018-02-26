@@ -11,8 +11,8 @@ FILE=MCERedux-$COUNT-$1.zip
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -q -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
-wget "https://github.com/Kxnrl/Core/raw/master/include/cg_core.inc" -q -O include/cg_core.inc
 wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -q -O include/store.inc
+wget "https://github.com/Kxnrl/SourceMod-Shop/raw/master/SourcePawn/include/shop.inc" -q -O include/shop.inc
 
 chmod +x addons/sourcemod/scripting/spcomp
 

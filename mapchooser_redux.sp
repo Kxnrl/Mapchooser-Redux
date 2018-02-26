@@ -5,8 +5,8 @@
 
 // options
 #undef REQUIRE_PLUGIN
-#include <cg_core>
 #include <store>
+#include <shop>
 
 #pragma newdecls required
 
@@ -40,8 +40,7 @@ bool g_bWarningInProgress;
 bool g_bBlockedSlots;
 
 bool g_bZombieEscape;
-bool g_srvCSGOGAMERS;
-bool g_srvStore;
+bool g_pStore;
 bool g_bHookEventEnd;
 
 MapChange g_eChangeTime;
@@ -94,7 +93,8 @@ public void OnPluginStart()
     g_MapVoteEndForward = CreateGlobalForward("OnMapVoteEnd", ET_Ignore, Param_String);
     g_MapDataLoadedForward = CreateGlobalForward("OnMapDataLoaded", ET_Ignore);
 
-    HookEvent("cs_win_panel_match", Event_WinPanel, EventHookMode_Post);
+    HookEventEx("cs_win_panel_match", Event_WinPanel, EventHookMode_Post);
+    HookEventEx("round_end", Event_RoundEnd, EventHookMode_Post);
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -118,48 +118,41 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("EndOfMapVoteEnabled", Native_EndOfMapVoteEnabled);
     CreateNative("CanNominate", Native_CanNominate);
     
-    MarkNativeAsOptional("CG_ShowGameTextAll");
-    MarkNativeAsOptional("CG_ClientIsVIP");
-    
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
+    
+    MarkNativeAsOptional("MG_Shop_GetClientMoney");
+    MarkNativeAsOptional("MG_Shop_ClientEarnMoney");
+    MarkNativeAsOptional("MG_Shop_ClientCostMoney");
 
     return APLRes_Success;
 }
 
 public void OnLibraryAdded(const char[] name)
 {
-    if(strcmp(name, "csgogamers") == 0)
-        g_srvCSGOGAMERS = true;
-    else if(strcmp(name, "store") == 0)
-        g_srvStore = true;
+    if(strcmp(name, "store") == 0)
+        g_pStore = true;
+    else if(strcmp(name, "shop-core") == 0)
+        g_pShop = true;
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
-    if(strcmp(name, "csgogamers") == 0)
-        g_srvCSGOGAMERS = false;
-    else if(strcmp(name, "store") == 0)
-        g_srvStore = false;
-}
-
-public void CG_OnServerLoaded()
-{
-    g_srvCSGOGAMERS = true;
+    if(strcmp(name, "store") == 0)
+        g_pStore = false;
+    else if(strcmp(name, "shop-core") == 0)
+        g_pShop = false;
 }
 
 public void OnConfigsExecuted()
 {
-    g_srvCSGOGAMERS = LibraryExists("csgogamers");
-    g_srvStore = LibraryExists("store");
+    g_pStore = LibraryExists("store");
+    g_pShop = LibraryExists("shop-core");
 
-    if(g_srvCSGOGAMERS)
-        g_bHookEventEnd = HookEventEx("round_end", Event_RoundEnd, EventHookMode_Post);
-    
     CheckMapCycle();
     BuildKvMapData();
     CheckMapData();
-    
+
     g_bZombieEscape = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
 
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != INVALID_HANDLE)
@@ -600,8 +593,8 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             SetConVarInt(FindConVar("mp_timelimit"), 1);
         }
 
+        FindConVar("nextlevel").SetString(map);
         SetNextMap(map);
-        SetConVarString(FindConVar("nextlevel"), map);
 
         g_bHasVoteStarted = false;
         g_bMapVoteCompleted = true;
@@ -611,20 +604,15 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     }    
 }
 
-public void CG_OnRoundEnd(int winner)
-{
-    Event_RoundEnd(INVALID_HANDLE, "round_end", false);
-}
-
 public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
     if(!g_bChangeMapAtRoundEnd)
         return;
 
-    SetConVarInt(FindConVar("mp_halftime"), 0);
-    SetConVarInt(FindConVar("mp_timelimit"), 0);
-    SetConVarInt(FindConVar("mp_maxrounds"), 0);
-    SetConVarInt(FindConVar("mp_roundtime"), 1);
+    FindConVar("mp_halftime").SetInt(0);
+    FindConVar("mp_timelimit").SetInt(0);
+    FindConVar("mp_maxrounds").SetInt(0);
+    FindConVar("mp_roundtime").SetInt(1);
 
     CreateTimer(35.0, Timer_ChangeMap, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
 
@@ -634,10 +622,10 @@ public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 
 public Action Timer_ChangeMaprtv(Handle hTimer)
 {
-    SetConVarInt(FindConVar("mp_halftime"), 0);
-    SetConVarInt(FindConVar("mp_timelimit"), 0);
-    SetConVarInt(FindConVar("mp_maxrounds"), 0);
-    SetConVarInt(FindConVar("mp_roundtime"), 1);
+    FindConVar("mp_halftime").SetInt(0);
+    FindConVar("mp_timelimit").SetInt(0);
+    FindConVar("mp_maxrounds").SetInt(0);
+    FindConVar("mp_roundtime").SetInt(1);
 
     CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
 
@@ -771,28 +759,20 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
     return 0;
 }
 
-public Action Timer_ChangeMap(Handle hTimer, Handle dp)
+public Action Timer_ChangeMap(Handle timer)
 {
     g_bChangeMapInProgress = false;
 
     char map[256];
     
-    if(dp == INVALID_HANDLE)
+    if(!GetNextMap(map, 256))
     {
-        if(!GetNextMap(map, 256))
-        {
-            LogError("Timer_ChangeMap -> !GetNextMap");
-            return Plugin_Stop;    
-        }
-    }
-    else
-    {
-        ResetPack(dp);
-        ReadPackString(dp, map, 256);
+        LogError("Timer_ChangeMap -> !GetNextMap");
+        return Plugin_Stop;    
     }
 
     ForceChangeLevel(map, "Map Vote");
-    
+ 
     return Plugin_Stop;
 }
 
@@ -928,7 +908,10 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
         GetArrayString(g_aNominateList, index, oldmap, 256);
         InternalRemoveNominationByOwner(owner);
 
-        if(g_srvStore && Store_GetClientCredits(owner) < GetMapPrice(map))
+        if(g_pStore && Store_GetClientCredits(owner) < GetMapPrice(map))
+            return NominateResult_NoCredits;
+        
+        if(g_pShop && MG_Shop_GetClientMoney(owner) < GetMapPrice(map))
             return NominateResult_NoCredits;
 
         PushArrayString(g_aNominateList, map);
@@ -940,7 +923,10 @@ NominateResult InternalNominateMap(char[] map, bool force, int owner)
     if(g_iNominateCount >= 5 && !force)
         return NominateResult_VoteFull;
 
-    if(g_srvStore && Store_GetClientCredits(owner) < GetMapPrice(map))
+    if(g_pStore && Store_GetClientCredits(owner) < GetMapPrice(map))
+        return NominateResult_NoCredits;
+    
+    if(g_pShop && MG_Shop_GetClientMoney(owner) < GetMapPrice(map))
         return NominateResult_NoCredits;
     
     int max = GetMaxPlayers(map);
@@ -1042,11 +1028,17 @@ bool InternalRemoveNominationByOwner(int owner)
         RemoveFromArray(g_aNominateOwners, index);
         g_iNominateCount--;
         
-        if(g_srvStore)
+        if(g_pStore)
         {
             int credits = GetMapPrice(oldmap);
             Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
             PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
+        }
+        else if(g_pShop)
+        {
+            int credits = GetMapPrice(oldmap);
+            MG_Shop_ClientEarnMoney(param1, credits, "nomination-退还");
+            PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%dG", oldmap, credits);
         }
 
         return true;
@@ -1491,27 +1483,19 @@ stock void AddExtendToMenu(Handle menu, MapChange when)
 
 stock bool IsClientVIP(int client)
 {
-    return g_srvCSGOGAMERS ? CG_ClientIsVIP(client) : CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
+    return CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
 }
 
 stock void DisplayHUDToAll(const char[] warningPhrase, int time)
 {
     char fmt[256];
-    if(g_srvCSGOGAMERS)
-    {
-        FormatEx(fmt, 256, warningPhrase, time);
-        CG_ShowGameTextAll(fmt, "1.2", "233 0 0", "-1.0", "0.32");
-    }
-    else
-    {
-        SetHudTextParams(-1.0, 0.32, 1.2, 233, 0, 0, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
-        for(int client = 1; client <= MaxClients; ++client)
-            if(IsClientInGame(client) && !IsFakeClient(client))
-            {
-                FormatEx(fmt, 256, warningPhrase, time);
-                ShowHudText(client, 20, fmt); // SaSuSi`s birthday is Apr 20, so i use channel 20, u can edit this.
-            }
-    }
+    SetHudTextParams(-1.0, 0.32, 1.2, 233, 0, 0, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
+    for(int client = 1; client <= MaxClients; ++client)
+        if(IsClientInGame(client) && !IsFakeClient(client))
+        {
+            FormatEx(fmt, 256, warningPhrase, time);
+            ShowHudText(client, 20, fmt); // 叁生鉐 is dead...
+        }
 }
 
 stock bool CleanPlugin()

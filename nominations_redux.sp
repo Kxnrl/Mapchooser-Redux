@@ -2,6 +2,7 @@
 
 #undef REQUIRE_PLUGIN
 #include <store>
+#include <shop>
 
 #pragma newdecls required
 
@@ -9,7 +10,8 @@ ArrayList g_aMapList;
 Handle g_hMapMenu;
 int g_iMapFileSerial = -1;
 bool g_bIncludeName = false;
-bool g_srvStore;
+bool g_pStore;
+bool g_pShop;
 
 #define MAPSTATUS_ENABLED (1<<0)
 #define MAPSTATUS_DISABLED (1<<1)
@@ -34,6 +36,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
+    
+    MarkNativeAsOptional("MG_Shop_ClientEarnMoney");
+    MarkNativeAsOptional("MG_Shop_ClientCostMoney");
 
     return APLRes_Success;
 }
@@ -51,25 +56,29 @@ public void OnPluginStart()
 public void OnLibraryAdded(const char[] name)
 {
     if(strcmp(name, "store") == 0)
-        g_srvStore = true;
+        g_pStore = true;
+    else if(strcmp(name, "shop-core") == 0)
+        g_pShop = true;
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
     if(strcmp(name, "store") == 0)
-        g_srvStore = false;
+        g_pStore = false;
+    else if(strcmp(name, "shop-core") == 0)
+        g_pShop = false;
 }
 
 public void OnConfigsExecuted()
 {
-    g_srvStore = LibraryExists("store");
+    g_pStore = LibraryExists("store");
+    g_pShop = LibraryExists("shop-core");
 
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "nominations", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) == INVALID_HANDLE)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
 
     CreateTimer(90.0, Timer_Broadcast, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-    
     g_bIncludeName = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
 }
 
@@ -79,7 +88,7 @@ public void OnMapEnd()
     GetCurrentMap(map, 128);
     RemoveFromTrie(g_aNominated_Auth, map);
     RemoveFromTrie(g_aNominated_Name, map);
-    
+
     if(g_hKvMapData != null)
         CloseHandle(g_hKvMapData);
     g_hKvMapData = null;
@@ -103,7 +112,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
     if(!client)
         return;
 
-    if(StrContains(sArgs, "nominat", false) == -1)
+    if(StrContains(sArgs, "nominat", false) == -1 && strcmp(sArgs, "nextmap", false) != 0)
         return;
 
     if(!IsNominateAllowed(client))
@@ -116,8 +125,6 @@ void AttemptNominate(int client)
 {
     SetMenuTitle(g_hMapMenu, "预定地图\n ", client);
     DisplayMenu(g_hMapMenu, client, MENU_TIME_FOREVER);
-
-    return;
 }
 
 void BuildMapMenu()
@@ -181,7 +188,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             if(result == NominateResult_NoCredits)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x04你的信用点余额不足,预定[\x0C%s\x04]失败", map);
+                PrintToChat(param1, "[\x04MCR\x01]  \x04你的余额不足,预定[\x0C%s\x04]失败", map);
                 return 0;
             }
 
@@ -229,11 +236,17 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             SetTrieValue(g_aMapTrie, map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED);
             
-            if(g_srvStore)
+            if(g_pStore)
             {
                 int credits = GetMapPrice(map);
                 Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-预定");
                 PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+            }
+            else if(g_pShop)
+            {
+                int credits = GetMapPrice(map);
+                MG_Shop_ClientCostMoney(param1, credits, "nomination-预定");
+                PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%dG", map, credits);
             }
 
             char m_szAuth[32], m_szName[32];
