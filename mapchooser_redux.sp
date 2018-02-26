@@ -41,6 +41,7 @@ bool g_bBlockedSlots;
 
 bool g_bZombieEscape;
 bool g_pStore;
+bool g_pShop;
 bool g_bHookEventEnd;
 
 MapChange g_eChangeTime;
