@@ -7,7 +7,6 @@
 
 bool g_bAllowRTV;
 bool g_bInChange;
-bool g_bKzTimer;
 bool g_bVoted[MAXPLAYERS+1];
 
 public Plugin myinfo =
@@ -156,7 +155,7 @@ bool RTV_CheckStatus(int client, bool notice, bool self)
         if(self)
             PrintToChatAll("[\x04MCR\x01]  您已发起RTV投票. (\x07%d\x01/\x04%d\x01票)", done, need);
         else
-            PrintToChatAll("[\x04MCR\x01]  \x05%s\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", name, done, need);
+            PrintToChatAll("[\x04MCR\x01]  \x05%N\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", client, done, need);
     }
 
     return (done >= need);
