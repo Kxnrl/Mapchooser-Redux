@@ -1038,7 +1038,7 @@ bool InternalRemoveNominationByOwner(int owner)
         else if(g_pShop)
         {
             int credits = GetMapPrice(oldmap);
-            MG_Shop_ClientEarnMoney(param1, credits, "nomination-退还");
+            MG_Shop_ClientEarnMoney(owner, credits, "nomination-退还");
             PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%dG", oldmap, credits);
         }
 
