@@ -165,14 +165,19 @@ void GetPlayers(int &need, int &done)
 {
     need = 0;
     done = 0;
+    
+    int players = 0;
 
     for(int client = 1; client <= MaxClients; client++)
         if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientSourceTV(client))
         {
-            need++;
+            players++;
             if(g_bVoted[client])
                 done++;
         }
 
-    need = RoundFloat(need*0.6);    
+    need = RoundToCeil(players*0.6); 
+    
+    if(need == 1 && players >= 2)
+        need = 2;
 }
