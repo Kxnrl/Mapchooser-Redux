@@ -4,6 +4,7 @@
 
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
+ConVar mp_timelimit;
 
 public Plugin myinfo =
 {
@@ -17,8 +18,6 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     mp_timelimit = FindConVar("mp_timelimit");
-
-    RegConsoleCmd("sm_ext", Command_Ext);
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
 }
@@ -56,9 +55,9 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
     if(!client)
         return;
 
-    if(strcmp(sArgs, "!ext", false) != 0)
+    if(strcmp(sArgs, ".ext", false) != 0 && strcmp(sArgs, "!ext", false) != 0)
         return;
-    
+
     AttemptEXT(client);
 }
 
