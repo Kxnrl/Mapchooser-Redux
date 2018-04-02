@@ -362,7 +362,7 @@ public Action Timer_StartMapVote(Handle timer, Handle data)
         case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
         case TimerLocation_Chat: PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
         case TimerLocation_Hint: PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-        case TimerLocation_HUD: DisplayHUDToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
+        case TimerLocation_HUD: DisplayCountdownHUD(warningTimeRemaining);
     }
 
     if(timePassed++ >= warningMaxTime)
@@ -418,6 +418,18 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
     
     if(g_bMapVoteCompleted && g_bChangeMapInProgress)
         return;
+    
+    char fmt[128];
+    SetHudTextParams(-1.0, 0.32, 3.0, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0);
+    for(int client = 1; client <= MaxClients; ++client)
+        if(IsClientInGame(client) && !IsFakeClient(client))
+        {
+            int lang = GetClientLanguage(client);
+            if(lang == 23 || lang == 27)
+                ShowHudText(client, 5, "投票已经开始");
+            else
+                ShowHudText(client, 5, "Voting for next map has started");
+        }
 
     g_eChangeTime = when;
     
@@ -1487,15 +1499,21 @@ stock bool IsClientVIP(int client)
     return CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
 }
 
-stock void DisplayHUDToAll(const char[] warningPhrase, int time)
+stock void DisplayCountdownHUD(int time)
 {
-    char fmt[256];
-    SetHudTextParams(-1.0, 0.32, 1.2, 233, 0, 0, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
+    char fmt[128];
+    SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
         {
-            FormatEx(fmt, 256, warningPhrase, time);
-            ShowHudText(client, 20, fmt); // 叁生鉐 is dead...
+            int lang = GetClientLanguage(client);
+            
+            if(lang == 23 || lang == 27)
+                FormatEx(fmt, 128, "离地图投票开始还有 %d 秒", time);
+            else
+                FormatEx(fmt, 128, "Voting for the next map will begin in %d second%s", time, time > 1 ? "s" : "");
+
+            ShowHudText(client, 5, fmt); // 叁生鉐 is dead...
         }
 }
 
