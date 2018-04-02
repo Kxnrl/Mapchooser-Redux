@@ -72,7 +72,7 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Automated Map Voting with Extensions",
     version     = MCR_VERSION,
-    url         = "http://steamcommunity.com/id/_xQy_/"
+    url         = "https://kxnrl.com"
 };
 
 public void OnPluginStart()
@@ -418,8 +418,7 @@ void InitiateVote(MapChange when, Handle inputlist = INVALID_HANDLE)
     
     if(g_bMapVoteCompleted && g_bChangeMapInProgress)
         return;
-    
-    char fmt[128];
+
     SetHudTextParams(-1.0, 0.32, 3.0, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0);
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))

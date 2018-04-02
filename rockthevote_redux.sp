@@ -15,7 +15,7 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Provides RTV Map Voting",
     version     = MCR_VERSION,
-    url         = "http://steamcommunity.com/id/_xQy_/"
+    url         = "https://kxnrl.com"
 };
 
 public void OnPluginStart()
@@ -153,7 +153,7 @@ bool RTV_CheckStatus(int client, bool notice, bool self)
     if(notice)
     {
         if(self)
-            PrintToChatAll("[\x04MCR\x01]  您已发起RTV投票. (\x07%d\x01/\x04%d\x01票)", done, need);
+            PrintToChat(client, "[\x04MCR\x01]  您已发起RTV投票. (\x07%d\x01/\x04%d\x01票)", done, need);
         else
             PrintToChatAll("[\x04MCR\x01]  \x05%N\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", client, done, need);
     }

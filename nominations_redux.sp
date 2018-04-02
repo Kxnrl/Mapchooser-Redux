@@ -29,7 +29,7 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Provides Map Nominations",
     version     = MCR_VERSION,
-    url         = "http://steamcommunity.com/id/_xQy_/"
+    url         = "https://kxnrl.com"
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)

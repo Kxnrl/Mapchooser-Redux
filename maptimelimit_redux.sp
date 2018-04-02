@@ -2,10 +2,8 @@
 
 #pragma newdecls required
 
+bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
-int g_iVoters;
-int g_iVotes;
-int g_iVotesNeeded;
 
 public Plugin myinfo =
 {
@@ -13,87 +11,127 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Extend map timelimit",
     version     = MCR_VERSION,
-    url         = "http://steamcommunity.com/id/_xQy_/"
+    url         = "https://kxnrl.com"
 };
 
 public void OnPluginStart()
 {
+    mp_timelimit = FindConVar("mp_timelimit");
+
     RegConsoleCmd("sm_ext", Command_Ext);
+
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
 }
 
 public Action Timer_BroadCast(Handle timer)
 {
-    PrintToChatAll("[\x04MCR\x01]  输入\x07!rtv\x01可以发起投票换图,输入\x07!ext\x01可以发起投票延长");
+    PrintToChatAll("[\x04MCR\x01]  \x07!rtv\x01可以发起投票换图, \x07!ext\x01可以发起投票延长");
+    return Plugin_Continue;
 }
 
 public void OnMapStart()
 {
-    g_iVoters = 0;
-    g_iVotes = 0;
-    g_iVotesNeeded = 0;
-
-    for(int i = 1; i <= MaxClients; i++)
-        if(IsClientInGame(i))
-            OnClientPostAdminCheck(i);    
+    g_bAllowEXT = false;
+    CreateTimer(300.0, Timer_DelayEXT, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-public void OnClientPostAdminCheck(int client)
+public Action Timer_DelayEXT(Handle timer)
 {
-    if(IsFakeClient(client))
-        return;
-    
+    g_bAllowEXT = true;
+    return Plugin_Stop;
+}
+
+public void OnClientConnected(int client)
+{
     g_bVoted[client] = false;
-    g_iVoters++;
-    g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.7);
 }
 
 public void OnClientDisconnect(int client)
 {
-    if(IsFakeClient(client))
-        return;
-
-    if(g_bVoted[client])
-        g_iVotes--;
-    
-    g_iVoters--;
-
-    g_iVotesNeeded = RoundToFloor(float(g_iVoters) * 0.7);
+    g_bVoted[client] = false;
 }
 
-public Action Command_Ext(int client, int args)
+public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
+    if(!client)
+        return;
+
+    if(strcmp(sArgs, "!ext", false) != 0)
+        return;
+    
     AttemptEXT(client);
 }
 
 void AttemptEXT(int client)
 {
-    if(g_bVoted[client])
+    if(!g_bAllowEXT)
     {
-        PrintToChat(client, "[\x04MCR\x01]  您已经发起了投票延长地图(现有%d票,仍需%d票)", g_iVotes, g_iVotesNeeded);
+        PrintToChat(client, "[\x04MCR\x01]  当前不允许延长地图!");
         return;
     }
 
-    g_iVotes++;
+    if(g_bVoted[client])
+    {
+        EXT_CheckStatus(client, true, true);
+        return;
+    }
+
     g_bVoted[client] = true;
 
-    PrintToChatAll("[\x04MCR\x01]  %N 要滚动投票延长地图. (%d 票同意, 至少需要 %d 票)", client, g_iVotes, g_iVotesNeeded);
-    
-    if(g_iVotes >= g_iVotesNeeded)
-        StartEXT();
+    if(EXT_CheckStatus(client, true, false)) 
+        ExtendMap();
 }
 
-void StartEXT()
+void ExtendMap()
 {
     ResetEXT();
-    SetConVarInt(FindConVar("mp_timelimit"), GetConVarInt(FindConVar("mp_timelimit"))+20);
+    g_bAllowEXT = false;
+
+    int val = mp_timelimit.IntValue;
+    mp_timelimit.SetInt(val+20);
+
     PrintToChatAll("[\x04MCR\x01]  \x0C投票成功,已将当前地图延长20分钟");
 }
 
 void ResetEXT()
 {
-    g_iVotes = 0;
+    for(int i = 1; i <= MaxClients+1; i++)
+        g_bVoted[i] = false;
+}
 
-    for(int client = 1; client <= MaxClients; ++client)
-        g_bVoted[client] = false;
+bool EXT_CheckStatus(int client, bool notice, bool self)
+{
+    int need, done;
+    GetPlayers(need, done);
+
+    if(notice)
+    {
+        if(self)
+            PrintToChat(client, "[\x04MCR\x01]  您已发起延长地图投票. (\x07%d\x01/\x04%d\x01票)", done, need);
+        else
+            PrintToChatAll("[\x04MCR\x01]  \x05%N\x01想要延长地图投票. (\x07%d\x01/\x04%d\x01票)", client, done, need);
+    }
+
+    return (done >= need);
+}
+
+void GetPlayers(int &need, int &done)
+{
+    need = 0;
+    done = 0;
+    
+    int players = 0;
+
+    for(int client = 1; client <= MaxClients; client++)
+        if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientSourceTV(client))
+        {
+            players++;
+            if(g_bVoted[client])
+                done++;
+        }
+
+    need = RoundToCeil(players*0.6); 
+
+    if(need == 1 && players >= 2)
+        need = 2;
 }
