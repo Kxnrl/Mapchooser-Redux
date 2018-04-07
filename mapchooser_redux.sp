@@ -1350,21 +1350,8 @@ void CheckMapCycle()
         return;
     
     LogMessage("Build New MapCycle[old: %d current: %d]", counts, number);
-    
-    DeleteFile("gamemodes_server.txt");
-    
-    char mgname[32];
 
-    if(FindPluginByFile("ct.smx"))                        //TTT
-        strcopy(mgname, 32, "\"cg_ttt_maps\"");
-    else if(FindPluginByFile("zombiereloaded.smx"))        // ZE
-        strcopy(mgname, 32, "\"cg_ze_maps\"");
-    else if(FindPluginByFile("KZTimerGlobal.smx"))        // KZ
-        strcopy(mgname, 32, "\"cg_kz_maps\"");
-    else if(FindPluginByFile("mg_stats.smx"))            // MG
-        strcopy(mgname, 32, "\"cg_mg_maps\"");
-    else if(FindPluginByFile("sm_hosties.smx"))            // JB
-        strcopy(mgname, 32, "\"cg_jb_maps\"");
+    DeleteFile("gamemodes_server.txt");
 
     Handle gamemode = OpenFile("gamemodes_server.txt", "w+");
     WriteFileLine(gamemode, "\"GameModes_Server.txt\"");
@@ -1385,11 +1372,7 @@ void CheckMapCycle()
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "\"mapgroupsMP\"");
     WriteFileLine(gamemode, "{");
-    
-    char fixs_1[32];
-    Format(fixs_1, 32, "%s \"0\"", mgname);
-    WriteFileLine(gamemode, fixs_1);
-
+    WriteFileLine(gamemode, "\"custom_maps\" \"0\"");
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "}");
@@ -1397,13 +1380,9 @@ void CheckMapCycle()
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "\"mapgroups\"");
     WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, mgname);
+    WriteFileLine(gamemode, "\"custom_maps\"");
     WriteFileLine(gamemode, "{");
-
-    char fixs_2[32];
-    Format(fixs_2, 32, "\"name\" %s", mgname)
-    WriteFileLine(gamemode, fixs_2);
-
+    WriteFileLine(gamemode, "\"name\" \"custom_maps\"");
     WriteFileLine(gamemode, "\"maps\"");
     WriteFileLine(gamemode, "{");
 
@@ -1436,7 +1415,7 @@ void CheckMapCycle()
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "}");
     WriteFileLine(gamemode, "}");
-    
+
     CloseHandle(gamemode);
 }
 
