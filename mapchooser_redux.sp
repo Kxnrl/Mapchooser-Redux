@@ -1434,7 +1434,7 @@ void CheckMapCycle()
         gamemode.WriteLine("                \"ctm_st6_variantC\" \"\"");
         gamemode.WriteLine("                \"ctm_st6_variantD\" \"\"");
         gamemode.WriteLine("            }");
-        
+        gamemode.WriteLine("        }");
     }
 
     gamemode.WriteLine("    }");
@@ -1450,11 +1450,14 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
     GetCurrentMap(cmap, 128);
     GetNextMap(nmap, 128);
     if(!IsMapValid(nmap))
-        GetArrayString(g_aMapList, UTIL_GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
-    
-    if(StrEqual(nmap, cmap))
-        GetArrayString(g_aMapList, UTIL_GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
-    
+    {
+        do
+        {
+            g_aMapList.GetString(UTIL_GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
+        }
+        while(StrEqual(nmap, cmap));
+    }
+
     Handle pack;
     CreateDataTimer(35.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE);
     WritePackString(pack, nmap);
