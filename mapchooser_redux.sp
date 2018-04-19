@@ -1403,15 +1403,15 @@ void CheckMapCycle()
     
     for(int index = 0; index < mapList.Length; ++index)
     {
-        char map[128], buffer[192];
+        char map[128];
         mapList.GetString(index, map, 128);
 
-        FormatEx(buffer, 192, "        \"%s\"", map);
+        FormatEx(buffer, 256, "        \"%s\"", map);
         gamemode.WriteLine(buffer);
         
         gamemode.WriteLine("        {");
         
-        FormatEx(buffer, 192, "            \"name\" \"%s\"", map);
+        FormatEx(buffer, 256, "            \"name\" \"%s\"", map);
         gamemode.WriteLine(buffer);
         
         gamemode.WriteLine("            \"default_game_type\" \"0\"");
