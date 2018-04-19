@@ -1281,47 +1281,41 @@ void CheckMapData()
 
 void CheckMapCycle()
 {
-    char path[128];
-    Format(path, 128, "mapcycle.txt");
-
     int counts, number;
 
-    Handle hFile;
-    if((hFile = OpenFile(path, "r")) != INVALID_HANDLE)
+    File hFile;
+    if((hFile = OpenFile("mapcycle.txt", "r")) != null)
     {
         char fileline[128];
-        while(ReadFileLine(hFile, fileline, 128))
+        while(hFile.ReadLine(fileline, 128))
         {
             if(fileline[0] == '\0')
                 continue;
 
             counts++;
         }
-        CloseHandle(hFile);
+        delete hFile;
     }
-    
-    Handle hDirectory;
-    if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
+
+    DirectoryListing hDirectory;
+    if((hDirectory = OpenDirectory("maps")) != null)
     {
         FileType type = FileType_Unknown;
         char filename[128];
-        while(ReadDirEntry(hDirectory, filename, 128, type))
+        while(hDirectory.GetNext(filename, 128, type))
         {
-            if(type != FileType_File)
+            if(type != FileType_File || StrContains(filename, ".bsp", false) == -1 || StrContains(filename, "..", false) != -1)
                 continue;
-            
+
             TrimString(filename);
 
-            if(StrContains(filename, ".bsp", false) == -1)
-                continue;
-            
             if(!StrContains(filename, "de_", false) || !StrContains(filename, "cs_", false) || !StrContains(filename, "gd_", false) || !StrContains(filename, "train", false) || !StrContains(filename, "ar_", false))
             {
                 char path2[128];
-                Format(path2, 128, "maps/%s", filename);
+                FormatEx(path2, 128, "maps/%s", filename);
                 if(DeleteFile(path2))
                     LogMessage("Delete Offical map: %s", path2);
-                
+
                 ReplaceString(filename, 128, ".bsp", ".nav", false);
                 if(DeleteFile(path2))
                     LogMessage("Delete Offical map: %s", path2);
@@ -1343,80 +1337,111 @@ void CheckMapCycle()
 
             number++;
         }
-        CloseHandle(hDirectory);
+        delete hDirectory;
     }
     
     if(counts == number)
         return;
-    
+
     LogMessage("Build New MapCycle[old: %d current: %d]", counts, number);
 
     DeleteFile("gamemodes_server.txt");
+    DeleteFile("mapcycle.txt");
 
-    Handle gamemode = OpenFile("gamemodes_server.txt", "w+");
-    WriteFileLine(gamemode, "\"GameModes_Server.txt\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"gameTypes\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"classic\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"gameModes\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"casual\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"maxplayers\" \"64\"");
-    WriteFileLine(gamemode, "\"exec\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"exec\" \"gamemode_casual.cfg\"");
-    WriteFileLine(gamemode, "\"exec\" \"gamemode_casual_server.cfg\"");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "\"mapgroupsMP\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"custom_maps\" \"0\"");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "\"mapgroups\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"custom_maps\"");
-    WriteFileLine(gamemode, "{");
-    WriteFileLine(gamemode, "\"name\" \"custom_maps\"");
-    WriteFileLine(gamemode, "\"maps\"");
-    WriteFileLine(gamemode, "{");
-
-    if((hFile = OpenFile(path, "w+")) != INVALID_HANDLE)
+    File gamemode = OpenFile("gamemodes_server.txt", "w+");
+    File mapcycle = OpenFile("mapcycle.txt", "w+");
+    char buffer[256];
+    if(gamemode == null || mapcycle == null)
     {
-        if((hDirectory = OpenDirectory("maps")) != INVALID_HANDLE)
+        LogError("Build new Mapcycle failed: file handle is null");
+        return;
+    }
+    
+    ArrayList mapList = new ArrayList(ByteCountToCells(256));
+
+    gamemode.WriteLine("\"GameModes_Server.txt\"");
+    gamemode.WriteLine("{");
+    gamemode.WriteLine("    \"mapgroups\"");
+    gamemode.WriteLine("    {");
+    gamemode.WriteLine("        \"custom_maps\"");
+    gamemode.WriteLine("        {");
+    gamemode.WriteLine("            \"name\" \"custom_maps\"");
+    gamemode.WriteLine("            \"maps\"");
+    gamemode.WriteLine("            {");
+
+    if((hDirectory = OpenDirectory("maps")) != null)
+    {
+        FileType type = FileType_Unknown;
+        char map[256];
+        while(hDirectory.GetNext(map, 256, type))
         {
-            FileType type = FileType_Unknown;
-            char filename[128], mapbuffer[128];
-            while(ReadDirEntry(hDirectory, filename, 128, type))
+            if(type == FileType_File)
             {
-                if(type == FileType_File)
+                if(StrContains(map, ".bsp", false) != -1)
                 {
-                    if(StrContains(filename, ".bsp", false) != -1)
-                    {
-                        ReplaceString(filename, 128, ".bsp", "", false);
-                        WriteFileLine(hFile, filename);
-                        Format(mapbuffer, 128, "\"%s\" \"\"", filename);
-                        WriteFileLine(gamemode, mapbuffer);
-                        AddMapData(filename);
-                    }
+                    ReplaceString(map, 256, ".bsp", "", false);
+                    mapcycle.WriteLine(map);
+                    mapList.PushString(map);
+                    AddMapData(map);
+                    Format(map, 256, "                \"%s\" \"\"", map);
+                    gamemode.WriteLine(map);
                 }
             }
-            CloseHandle(hDirectory);
         }
-        CloseHandle(hFile);
+        delete hDirectory;
+    }
+    delete mapcycle;
+
+    gamemode.WriteLine("            }");
+    gamemode.WriteLine("        }");
+    gamemode.WriteLine("    }");
+    
+    gamemode.WriteLine("    ");
+
+    gamemode.WriteLine("    \"maps\"");
+    gamemode.WriteLine("    {");
+    
+    for(int index = 0; index < mapList.Length; ++index)
+    {
+        char map[128], buffer[192];
+        mapList.GetString(index, map, 128);
+
+        FormatEx(buffer, 192, "        \"%s\"", map);
+        gamemode.WriteLine(buffer);
+        
+        gamemode.WriteLine("        {");
+        
+        FormatEx(buffer, 192, "            \"name\" \"%s\"", map);
+        gamemode.WriteLine(buffer);
+        
+        gamemode.WriteLine("            \"default_game_type\" \"0\"");
+        gamemode.WriteLine("            \"default_game_mode\" \"0\"");
+        gamemode.WriteLine("            \"t_arms\" \"models/weapons/t_arms_phoenix.mdl\"");
+        gamemode.WriteLine("            \"t_models\"");
+        gamemode.WriteLine("            {");
+        gamemode.WriteLine("                \"tm_phoenix\" \"\"");
+        gamemode.WriteLine("                \"tm_phoenix_variantA\" \"\"");
+        gamemode.WriteLine("                \"tm_phoenix_variantB\" \"\"");
+        gamemode.WriteLine("                \"tm_phoenix_variantC\" \"\"");
+        gamemode.WriteLine("                \"tm_phoenix_variantD\" \"\"");
+        gamemode.WriteLine("            }");
+        gamemode.WriteLine("            \"ct_arms\" \"models/weapons/ct_arms_st6.mdl\"");
+        gamemode.WriteLine("            \"ct_models\"");
+        gamemode.WriteLine("            {");
+        gamemode.WriteLine("                \"ctm_st6\" \"\"");
+        gamemode.WriteLine("                \"ctm_st6_variantA\" \"\"");
+        gamemode.WriteLine("                \"ctm_st6_variantB\" \"\"");
+        gamemode.WriteLine("                \"ctm_st6_variantC\" \"\"");
+        gamemode.WriteLine("                \"ctm_st6_variantD\" \"\"");
+        gamemode.WriteLine("            }");
+        
     }
 
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
-    WriteFileLine(gamemode, "}");
+    gamemode.WriteLine("    }");
+    gamemode.WriteLine("}");
 
-    CloseHandle(gamemode);
+    delete gamemode;
+    delete mapList;
 }
 
 public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
