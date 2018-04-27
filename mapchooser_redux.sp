@@ -478,7 +478,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             g_aNominateList.GetString(i, map, 256);
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
             RemoveStringFromArray(g_aNextMapList, map);
 
             Call_StartForward(g_NominationsResetForward);
@@ -519,7 +519,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             GetArrayString(g_aNextMapList, count, map, 256);        
             count++;
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
             i++;
 
             if(count >= g_aNextMapList.Length)
@@ -539,7 +539,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 256);
             
             if(IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
+                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
             else if(StrEqual(map, VOTE_DONTCHANGE))
                 AddMenuItem(g_hVoteMenu, VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
