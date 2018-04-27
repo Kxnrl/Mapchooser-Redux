@@ -214,13 +214,6 @@ public void OnConfigsExecuted()
             delete file;
         }
     }
-
-    for(int i = 0; i < g_aMapList.Length; ++i)
-    {
-        char map[128];
-        g_aMapList.GetString(i, map, 128);
-        AddMapData(map);
-    }
 }
 
 public void OnMapEnd()
@@ -413,7 +406,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     {
         PrintToChatAll("[\x04MCR\x01]  投票进行中,将在%d秒后重试.", FAILURE_TIMER_LENGTH);
         
-        DataPack data;
+        DataPack data = new DataPack();
         data.WriteCell(FAILURE_TIMER_LENGTH);
         data.WriteCell(when);
         data.WriteCell(inputlist);
@@ -685,16 +678,15 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
 
             ArrayList mapList = new ArrayList(ByteCountToCells(256));
 
-            char map1[256];
-            GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map1, 256);
+            char map[256];
+            GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 256);
 
-            mapList.PushString(map1);
+            mapList.PushString(map);
 
             for(int i = 1; i < num_items; i++)
             {
                 if(mapList.Length < 2 || item_info[i][VOTEINFO_ITEM_VOTES] == item_info[i - 1][VOTEINFO_ITEM_VOTES])
                 {
-                    char map[256];
                     GetMapItem(menu, item_info[i][VOTEINFO_ITEM_INDEX], map, 256);
                     mapList.PushString(map);
                 }
@@ -788,7 +780,7 @@ public Action Timer_ChangeMap(Handle timer)
     return Plugin_Stop;
 }
 
-bool RemoveStringFromArray(ArrayList array, char[] str)
+bool RemoveStringFromArray(ArrayList array, const char[] str)
 {
     int index = array.FindString(str);
     if(index != -1)
@@ -867,7 +859,7 @@ bool CanVoteStart()
     return true;
 }
 
-NominateResult InternalNominateMap(char[] map, bool force, int owner)
+NominateResult InternalNominateMap(const char[] map, bool force, int owner)
 {
     if(!IsMapValid(map))
         return NominateResult_InvalidMap;
@@ -952,8 +944,8 @@ public int Native_NominateMap(Handle plugin, int numParams)
     return view_as<int>(InternalNominateMap(map, GetNativeCell(2), GetNativeCell(3)));
 }
 
-bool InternalRemoveNominationByMap(char[] map)
-{    
+bool InternalRemoveNominationByMap(const char[] map)
+{
     for(int i = 0; i < g_aNominateList.Length; i++)
     {
         char oldmap[256];
@@ -1122,7 +1114,7 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
         }
     }
 
-    DataPack data;
+    DataPack data = new DataPack();
     data.WriteCell(cvarTime);
     data.WriteCell(when);
     data.WriteCell(mapList);
@@ -1173,20 +1165,21 @@ void BuildKvMapData()
 
     char map[128];
     GetCurrentMap(map, 128);
-    AddMapData(map);
+    ManuallyAddMapData(map);
 }
 
-void AddMapData(char[] map)
+void ManuallyAddMapData(const char[] map)
 {
     if(g_hKvMapData == null)
     {
-        LogError("AddMapData -> Data Handle is null");
+        LogError("ManuallyAddMapData -> Data Handle is null");
         return;
     }
 
     if(!g_hKvMapData.JumpToKey(map))
     {
-        Format(map, 128, "maps/%s.bsp", map);
+        char path[128];
+        FormatEx(path, 128, "maps/%s.bsp", map);
 
         g_hKvMapData.JumpToKey(map, true);
         g_hKvMapData.SetString("desc", "null: unknown");
@@ -1278,28 +1271,26 @@ void CheckMapCycle()
             {
                 if(StrContains(filename, "de_", false) == 0 || StrContains(filename, "cs_", false) == 0 || StrContains(filename, "gd_", false) == 0 || StrContains(filename, "train", false) == 0 || StrContains(filename, "ar_", false) == 0)
                 {
-                    char path2[128];
-                    FormatEx(path2, 128, "maps/%s.bsp", filename);
-                    if(DeleteFile(path2))
-                        LogMessage("Delete Offical map: %s", path2);
+                    char path[128];
+                    FormatEx(path, 128, "maps/%s.bsp", filename);
+                    if(DeleteFile(path))
+                        LogMessage("Delete Offical map: %s", path);
 
-                    FormatEx(path2, 128, "maps/%s.nav", filename);
-                    if(DeleteFile(path2))
-                        LogMessage("Delete Offical map: %s", path2);
+                    FormatEx(path, 128, "maps/%s.nav", filename);
+                    if(DeleteFile(path))
+                        LogMessage("Delete Offical map: %s", path);
                     
-                    FormatEx(path2, 128, "maps/%s.jpg", filename);
-                    if(DeleteFile(path2))
-                        LogMessage("Delete Offical map: %s", path2);
+                    FormatEx(path, 128, "maps/%s.jpg", filename);
+                    if(DeleteFile(path))
+                        LogMessage("Delete Offical map: %s", path);
                     
-                    FormatEx(path2, 128, "maps/%s_cameras.txt", filename);
-                    if(DeleteFile(path2))
-                        LogMessage("Delete Offical map: %s", path2);
+                    FormatEx(path, 128, "maps/%s_cameras.txt", filename);
+                    if(DeleteFile(path))
+                        LogMessage("Delete Offical map: %s", path);
 
-                    FormatEx(path2, 128, "maps/%s_story.txt", filename);
-                    if(DeleteFile(path2))
-                        LogMessage("Delete Offical map: %s", path2);
-
-                    
+                    FormatEx(path, 128, "maps/%s_story.txt", filename);
+                    if(DeleteFile(path))
+                        LogMessage("Delete Offical map: %s", path);
                 }
 
                 continue;
@@ -1352,7 +1343,7 @@ void CheckMapCycle()
                     ReplaceString(map, 256, ".bsp", "", false);
                     mapcycle.WriteLine(map);
                     mapList.PushString(map);
-                    AddMapData(map);
+                    ManuallyAddMapData(map);
                     Format(map, 256, "                \"%s\" \"\"", map);
                     gamemode.WriteLine(map);
                 }
@@ -1432,7 +1423,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
         while(StrEqual(nmap, cmap));
     }
 
-    DataPack pack;
+    DataPack pack = new DataPack();
     pack.WriteString(nmap);
     pack.Reset();
     CreateDataTimer(35.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
