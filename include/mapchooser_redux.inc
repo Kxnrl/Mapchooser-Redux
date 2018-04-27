@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.3beta.<commits>"
+#define MCR_VERSION "1.3beta2.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -55,13 +55,14 @@ native void GetNominatedMapList(ArrayList maparray, ArrayList ownerarray);
 native bool EndOfMapVoteEnabled();
 
 // stocks
-stock void AddMapItem(Handle menu, const char[] map, bool includeTag)
+stock bool AddMapItem(Handle menu, const char[] map, bool includeTag)
 {
     char szTrans[256];
+    
     if(GetMapDesc(map, szTrans, 256, true, includeTag))
-        AddMenuItem(menu, map, szTrans);
-    else
-        AddMenuItem(menu, map, map);
+        return AddMenuItem(menu, map, szTrans);
+
+    return AddMenuItem(menu, map, map);
 }
 
 stock int GetMapPrice(const char[] map)
@@ -188,7 +189,7 @@ stock bool IsOnlyVIP(const char[] map)
     if(!g_hKvMapData.JumpToKey(map, false))
         return false;
 
-    return (g_hKvMapData.GetNum("viponly", 0) == );
+    return (g_hKvMapData.GetNum("viponly", 0) == 1);
 }
 
 stock int UTIL_GetRandomInt(int min, int max)
