@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.2.<commits>"
+#define MCR_VERSION "1.3beta.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -66,139 +66,129 @@ stock void AddMapItem(Handle menu, const char[] map, bool includeTag)
 
 stock int GetMapPrice(const char[] map)
 {
-    if(!g_hKvMapData)
-        return 100;
-    
-    KvRewind(g_hKvMapData);
-
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(g_hKvMapData == null)
         return 100;
 
-    int credits = KvGetNum(g_hKvMapData, "Price", 0);
+    g_hKvMapData.Rewind();
+
+    if(!g_hKvMapData.JumpToKey(map, false))
+        return 100;
+
+    int credits = g_hKvMapData.GetNum("price", 0);
 
     return (credits < 100) ? 100 : credits;
 }
 
 stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag)
 {
-    if(!g_hKvMapData)
-        return false;
-    
-    KvRewind(g_hKvMapData);
-
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(g_hKvMapData == null)
         return false;
 
-    KvGetString(g_hKvMapData, "Desc", desc, maxLen, map);
+    g_hKvMapData.Rewind();
+
+    if(!g_hKvMapData.JumpToKey(map, false))
+        return false;
+
+    g_hKvMapData.GetString("desc", desc, maxLen, map);
 
     if(includeName)
         Format(desc, maxLen, "%s\n%s", map, desc);
 
     if(includeTag)
-        Format(desc, maxLen, "[%s]%s", IsNiceMap(map) ? "神图" : "普通", desc);
+        Format(desc, maxLen, "%s%s", IsNiceMap(map) ? "★" : "", desc);
 
     return true;
 }
 
 stock bool IsNiceMap(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return false;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
 
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return false;
-    
-    bool result = KvGetNum(g_hKvMapData, "Nice", 0) == 1 ? true : false;
 
-    return result;
+    return (g_hKvMapData.GetNum("nice", 0) == 1);
 }
 
 stock bool IsBigMap(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return false;
 
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
 
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return false;
-    
-    bool result = KvGetNum(g_hKvMapData, "Size", 0) > 149 ? true : false;
 
-    return result;
+    return (g_hKvMapData.GetNum("size", 0) > 149);
 }
 
 stock int GetMinPlayers(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return 0;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
     
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return 0;
-    
-    return KvGetNum(g_hKvMapData, "MinPlayers", 0);
+
+    return g_hKvMapData.GetNum("minplayers", 0);
 }
 
 stock int GetMaxPlayers(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return 0;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
     
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return 0;
     
-    return KvGetNum(g_hKvMapData, "MaxPlayers", 0);
+    return g_hKvMapData.GetNum("maxplayers", 0);
 }
 
 stock bool IsOnlyNomination(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return false;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
 
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return false;
-    
-    bool result = KvGetNum(g_hKvMapData, "OnlyNomination", 0) == 1 ? true : false;
 
-    return result;
+    return (g_hKvMapData.GetNum("nominationonly", 0) == 1);
 }
 
 stock bool IsOnlyAdmin(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return false;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
 
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return false;
-    
-    bool result = KvGetNum(g_hKvMapData, "OnlyAdmin", 0) == 1 ? true : false;
 
-    return result;
+    return (g_hKvMapData.GetNum("adminonly", 0) == 1);
 }
 
 stock bool IsOnlyVIP(const char[] map)
 {
-    if(!g_hKvMapData)
+    if(g_hKvMapData == null)
         return false;
     
-    KvRewind(g_hKvMapData);
+    g_hKvMapData.Rewind();
 
-    if(!KvJumpToKey(g_hKvMapData, map, false))
+    if(!g_hKvMapData.JumpToKey(map, false))
         return false;
-    
-    bool result = KvGetNum(g_hKvMapData, "OnlyVIP", 0) == 1 ? true : false;
 
-    return result;
+    return (g_hKvMapData.GetNum("viponly", 0) == );
 }
 
 stock int UTIL_GetRandomInt(int min, int max)
