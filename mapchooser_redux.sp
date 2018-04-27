@@ -39,21 +39,16 @@ bool g_bChangeMapAtRoundEnd;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
 
-bool g_bZombieEscape;
 bool g_pStore;
 bool g_pShop;
 
-MapChange g_eChangeTime;
-
 enum TimerLocation
 {
-    TimerLocation_Hint   = 0,
+    TimerLocation_Hint = 0,
     TimerLocation_Center,
     TimerLocation_Chat,
     TimerLocation_HUD
 }
-// Edit this to config Warning HUD.
-TimerLocation g_TimerLocation;
 
 enum WarningType
 {
@@ -61,6 +56,18 @@ enum WarningType
     WarningType_Revote
 }
 
+enum Convars
+{
+    Handle:TimeLoc,
+    Handle:ArmsFix,
+    Handle:OldMaps,
+    Handle:DeleMap,
+    Handle:NameTag,
+}
+// cvars
+any g_Convars[Convars];
+
+MapChange g_MapChange;
 
 //credits: https://github.com/powerlord/sourcemod-mapchooser-extended
 //credits: https://github.com/alliedmodders/sourcemod/blob/master/plugins/
@@ -83,6 +90,12 @@ public void OnPluginStart()
     g_aNominateOwners   = new ArrayList(1);
     g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
+    
+    g_Convars[TimeLoc] = CreateConVar("mcr_timer_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
+    g_Convars[ArmsFix] = CreateConVar("mcr_csgo_arms_fix",   "1", "enable arms fix",                                               _, true, 0.0, true, 1.0);
+    g_Convars[OldMaps] = CreateConVar("mcr_old_maps_count",  "9", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
+    g_Convars[DeleMap] = CreateConVar("mcr_delete_offical",  "1", "auto-delete offical maps",                                      _, true, 0.0, true, 1.0);
+    g_Convars[NameTag] = CreateConVar("mcr_include_nametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
 
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
@@ -153,8 +166,6 @@ public void OnConfigsExecuted()
     BuildKvMapData();
     CheckMapData();
 
-    g_bZombieEscape = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
-
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != null)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
@@ -191,10 +202,13 @@ public void OnConfigsExecuted()
             {
                 TrimString(fileline);
 
-                if(StrContains(fileline, "de_", false) == 0 || StrContains(fileline, "cs_", false) == 0 || StrContains(fileline, "gd_", false) == 0 || StrContains(fileline, "train", false) == 0 || StrContains(fileline, "ar_", false) == 0)
+                if(g_Convars[DeleMap].BoolValue && (StrContains(fileline, "de_", false) == 0 || StrContains(fileline, "cs_", false) == 0 || StrContains(fileline, "gd_", false) == 0 || StrContains(fileline, "train", false) == 0 || StrContains(fileline, "ar_", false) == 0))
                     continue;
 
                 g_aOldMapList.PushString(fileline);
+                
+                if(g_aOldMapList.Length >= g_Convars[OldMaps].IntValue)
+                    break;
             }
 
             delete file;
@@ -224,7 +238,7 @@ public void OnMapEnd()
     GetCurrentMap(map, 128);
     g_aOldMapList.PushString(map);
 
-    if(g_aOldMapList.Length > 10)
+    if(g_aOldMapList.Length > g_Convars[OldMaps].IntValue)
         g_aOldMapList.Erase(0);
 
     char filepath[128];
@@ -349,7 +363,7 @@ public Action Timer_StartMapVote(Handle timer, DataPack data)
     int warningMaxTime = data.ReadCell();
     int warningTimeRemaining = warningMaxTime - timePassed;
 
-    switch(g_TimerLocation)
+    switch(view_as<TimerLocation>(g_Convars[TimeLoc].IntValue))
     {
         case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
         case TimerLocation_Chat:   PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
@@ -424,7 +438,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 ShowHudText(client, 5, "Voting for next map has started");
         }
 
-    g_eChangeTime = when;
+    g_MapChange = when;
     
     g_bWaitingForVote = false;
     g_bHasVoteStarted = true;
@@ -464,7 +478,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             g_aNominateList.GetString(i, map, 256);
 
-            AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
             RemoveStringFromArray(g_aNextMapList, map);
 
             Call_StartForward(g_NominationsResetForward);
@@ -505,7 +519,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             GetArrayString(g_aNextMapList, count, map, 256);        
             count++;
 
-            AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
             i++;
 
             if(count >= g_aNextMapList.Length)
@@ -525,7 +539,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 256);
             
             if(IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_bZombieEscape);
+                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].Bool);
             else if(StrEqual(map, VOTE_DONTCHANGE))
                 AddMenuItem(g_hVoteMenu, VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
@@ -582,12 +596,12 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     }
     else
     {
-        if(g_eChangeTime == MapChange_Instant)
+        if(g_MapChange == MapChange_Instant)
         {
             g_bChangeMapInProgress = true;
             CreateTimer(10.0 , Timer_ChangeMaprtv);
         }
-        else if(g_eChangeTime == MapChange_RoundEnd)
+        else if(g_MapChange == MapChange_RoundEnd)
         {
             g_bChangeMapAtRoundEnd = true;
             SetConVarInt(FindConVar("mp_timelimit"), 1);
@@ -662,7 +676,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
             }
             
             PrintToChatAll("[\x04MCR\x01]  有%d幅地图票数相等,投票即将重启.", mapList.Length);
-            SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
+            SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_MapChange), mapList);
             return;
         }
         else if(highest_votes < required_votes)
@@ -688,7 +702,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                     break;
             }
             PrintToChatAll("[\x04MCR\x01]  没有地图比例过半(%d%%票). 即将开始第二轮投票!", required_percent);
-            SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_eChangeTime), mapList);
+            SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_MapChange), mapList);
             return;
         }
     }
@@ -797,10 +811,7 @@ void CreateNextVote()
     GetCurrentMap(map, 256);
     RemoveStringFromArray(tempMaps, map);
 
-    int maxOld = 15;
-    if(g_bZombieEscape) maxOld = 60;
-    
-    if(tempMaps.Length > maxOld)
+    if(tempMaps.Length > g_Convars[OldMaps].IntValue)
     {
         for(int i = 0; i < g_aOldMapList.Length; i++)
         {
@@ -1262,29 +1273,34 @@ void CheckMapCycle()
 
             TrimString(filename);
             ReplaceString(filename, 128, ".bsp", "", false);
-
-            if(StrContains(filename, "de_", false) == 0 || StrContains(filename, "cs_", false) == 0 || StrContains(filename, "gd_", false) == 0 || StrContains(filename, "train", false) == 0 || StrContains(filename, "ar_", false) == 0)
+            
+            if(g_Convars[DeleMap].BoolValue)
             {
-                char path2[128];
-                FormatEx(path2, 128, "maps/%s.bsp", filename);
-                if(DeleteFile(path2))
-                    LogMessage("Delete Offical map: %s", path2);
+                if(StrContains(filename, "de_", false) == 0 || StrContains(filename, "cs_", false) == 0 || StrContains(filename, "gd_", false) == 0 || StrContains(filename, "train", false) == 0 || StrContains(filename, "ar_", false) == 0)
+                {
+                    char path2[128];
+                    FormatEx(path2, 128, "maps/%s.bsp", filename);
+                    if(DeleteFile(path2))
+                        LogMessage("Delete Offical map: %s", path2);
 
-                FormatEx(path2, 128, "maps/%s.nav", filename);
-                if(DeleteFile(path2))
-                    LogMessage("Delete Offical map: %s", path2);
-                
-                FormatEx(path2, 128, "maps/%s.jpg", filename);
-                if(DeleteFile(path2))
-                    LogMessage("Delete Offical map: %s", path2);
-                
-                FormatEx(path2, 128, "maps/%s_cameras.txt", filename);
-                if(DeleteFile(path2))
-                    LogMessage("Delete Offical map: %s", path2);
+                    FormatEx(path2, 128, "maps/%s.nav", filename);
+                    if(DeleteFile(path2))
+                        LogMessage("Delete Offical map: %s", path2);
+                    
+                    FormatEx(path2, 128, "maps/%s.jpg", filename);
+                    if(DeleteFile(path2))
+                        LogMessage("Delete Offical map: %s", path2);
+                    
+                    FormatEx(path2, 128, "maps/%s_cameras.txt", filename);
+                    if(DeleteFile(path2))
+                        LogMessage("Delete Offical map: %s", path2);
 
-                FormatEx(path2, 128, "maps/%s_story.txt", filename);
-                if(DeleteFile(path2))
-                    LogMessage("Delete Offical map: %s", path2);
+                    FormatEx(path2, 128, "maps/%s_story.txt", filename);
+                    if(DeleteFile(path2))
+                        LogMessage("Delete Offical map: %s", path2);
+
+                    
+                }
 
                 continue;
             }
@@ -1351,47 +1367,51 @@ void CheckMapCycle()
     gamemode.WriteLine("    }");
     
     gamemode.WriteLine("    ");
-
-    gamemode.WriteLine("    \"maps\"");
-    gamemode.WriteLine("    {");
-
-    for(int index = 0; index < mapList.Length; ++index)
+    
+    if(g_Convars[ArmsFix].BoolValue)
     {
-        char map[128];
-        mapList.GetString(index, map, 128);
+        gamemode.WriteLine("    \"maps\"");
+        gamemode.WriteLine("    {");
 
-        FormatEx(buffer, 256, "        \"%s\"", map);
-        gamemode.WriteLine(buffer);
-        
-        gamemode.WriteLine("        {");
-        
-        FormatEx(buffer, 256, "            \"name\" \"%s\"", map);
-        gamemode.WriteLine(buffer);
-        
-        gamemode.WriteLine("            \"default_game_type\" \"0\"");
-        gamemode.WriteLine("            \"default_game_mode\" \"0\"");
-        gamemode.WriteLine("            \"t_arms\" \"models/weapons/t_arms_phoenix.mdl\"");
-        gamemode.WriteLine("            \"t_models\"");
-        gamemode.WriteLine("            {");
-        gamemode.WriteLine("                \"tm_phoenix\" \"\"");
-        gamemode.WriteLine("                \"tm_phoenix_variantA\" \"\"");
-        gamemode.WriteLine("                \"tm_phoenix_variantB\" \"\"");
-        gamemode.WriteLine("                \"tm_phoenix_variantC\" \"\"");
-        gamemode.WriteLine("                \"tm_phoenix_variantD\" \"\"");
-        gamemode.WriteLine("            }");
-        gamemode.WriteLine("            \"ct_arms\" \"models/weapons/ct_arms_st6.mdl\"");
-        gamemode.WriteLine("            \"ct_models\"");
-        gamemode.WriteLine("            {");
-        gamemode.WriteLine("                \"ctm_st6\" \"\"");
-        gamemode.WriteLine("                \"ctm_st6_variantA\" \"\"");
-        gamemode.WriteLine("                \"ctm_st6_variantB\" \"\"");
-        gamemode.WriteLine("                \"ctm_st6_variantC\" \"\"");
-        gamemode.WriteLine("                \"ctm_st6_variantD\" \"\"");
-        gamemode.WriteLine("            }");
-        gamemode.WriteLine("        }");
+        for(int index = 0; index < mapList.Length; ++index)
+        {
+            char map[128];
+            mapList.GetString(index, map, 128);
+
+            FormatEx(buffer, 256, "        \"%s\"", map);
+            gamemode.WriteLine(buffer);
+            
+            gamemode.WriteLine("        {");
+            
+            FormatEx(buffer, 256, "            \"name\" \"%s\"", map);
+            gamemode.WriteLine(buffer);
+            
+            gamemode.WriteLine("            \"default_game_type\" \"0\"");
+            gamemode.WriteLine("            \"default_game_mode\" \"0\"");
+            gamemode.WriteLine("            \"t_arms\" \"models/weapons/t_arms_phoenix.mdl\"");
+            gamemode.WriteLine("            \"t_models\"");
+            gamemode.WriteLine("            {");
+            gamemode.WriteLine("                \"tm_phoenix\" \"\"");
+            gamemode.WriteLine("                \"tm_phoenix_variantA\" \"\"");
+            gamemode.WriteLine("                \"tm_phoenix_variantB\" \"\"");
+            gamemode.WriteLine("                \"tm_phoenix_variantC\" \"\"");
+            gamemode.WriteLine("                \"tm_phoenix_variantD\" \"\"");
+            gamemode.WriteLine("            }");
+            gamemode.WriteLine("            \"ct_arms\" \"models/weapons/ct_arms_st6.mdl\"");
+            gamemode.WriteLine("            \"ct_models\"");
+            gamemode.WriteLine("            {");
+            gamemode.WriteLine("                \"ctm_st6\" \"\"");
+            gamemode.WriteLine("                \"ctm_st6_variantA\" \"\"");
+            gamemode.WriteLine("                \"ctm_st6_variantB\" \"\"");
+            gamemode.WriteLine("                \"ctm_st6_variantC\" \"\"");
+            gamemode.WriteLine("                \"ctm_st6_variantD\" \"\"");
+            gamemode.WriteLine("            }");
+            gamemode.WriteLine("        }");
+        }
+
+        gamemode.WriteLine("    }");
     }
 
-    gamemode.WriteLine("    }");
     gamemode.WriteLine("}");
 
     delete gamemode;
