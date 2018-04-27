@@ -385,7 +385,7 @@ public Action Command_Mapvote(int client, int args)
 {
     PrintToChatAll("[\x04MCR\x01]  已启动地图投票");
 
-    SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, 0, true);
+    SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, null, true);
 
     return Plugin_Handled;    
 }
@@ -779,7 +779,7 @@ bool RemoveStringFromArray(ArrayList array, char[] str)
     int index = array.FindString(str);
     if(index != -1)
     {
-        array.RemoveFromArray(index);
+        array.Erase(index);
         return true;
     }
 
@@ -791,7 +791,7 @@ void CreateNextVote()
     assert(g_aNextMapList)
     g_aNextMapList.Clear();
 
-    ArrayList tempMaps = CloneArray(g_aMapList);
+    ArrayList tempMaps = view_as<ArrayList>(CloneArray(g_aMapList));
 
     char map[256];
     GetCurrentMap(map, 256);
@@ -1115,7 +1115,7 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
     data.WriteCell(cvarTime);
     data.WriteCell(when);
     data.WriteCell(mapList);
-    data.Reset(data);
+    data.Reset();
     g_tWarning = CreateTimer(1.0, Timer_StartMapVote, data, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT|TIMER_DATA_HNDL_CLOSE);
 }
 
