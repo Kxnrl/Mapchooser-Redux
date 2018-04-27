@@ -58,11 +58,11 @@ enum WarningType
 
 enum Convars
 {
-    Handle:TimeLoc,
-    Handle:ArmsFix,
-    Handle:OldMaps,
-    Handle:DeleMap,
-    Handle:NameTag,
+    ConVar:TimeLoc,
+    ConVar:ArmsFix,
+    ConVar:OldMaps,
+    ConVar:DeleMap,
+    ConVar:NameTag,
 }
 // cvars
 any g_Convars[Convars];
