@@ -87,7 +87,7 @@ public void OnPluginStart()
     
     g_aMapList          = new ArrayList(iArraySize);
     g_aNominateList     = new ArrayList(iArraySize);
-    g_aNominateOwners   = new ArrayList(1);
+    g_aNominateOwners   = new ArrayList();
     g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
     
@@ -97,6 +97,8 @@ public void OnPluginStart()
     g_Convars[DeleMap] = CreateConVar("mcr_delete_offical",  "1", "auto-delete offical maps",                                      _, true, 0.0, true, 1.0);
     g_Convars[NameTag] = CreateConVar("mcr_include_nametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
 
+    AutoExecConfig(true, "mapchooser.beta");
+    
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
     RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP);
@@ -108,6 +110,10 @@ public void OnPluginStart()
 
     HookEventEx("cs_win_panel_match",   Event_WinPanel, EventHookMode_Post);
     HookEventEx("round_end",            Event_RoundEnd, EventHookMode_Post);
+    
+    CheckMapCycle();
+    BuildKvMapData();
+    CheckMapData();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -165,6 +171,10 @@ public void OnConfigsExecuted()
     CheckMapCycle();
     BuildKvMapData();
     CheckMapData();
+
+    char map[128];
+    GetCurrentMap(map, 128);
+    ManuallyAddMapData(map);
 
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != null)
         if(g_iMapFileSerial == -1)
@@ -1162,10 +1172,6 @@ void BuildKvMapData()
         g_hKvMapData.ImportFromFile("addons/sourcemod/configs/mapdata.txt");
 
     g_hKvMapData.Rewind();
-
-    char map[128];
-    GetCurrentMap(map, 128);
-    ManuallyAddMapData(map);
 }
 
 void ManuallyAddMapData(const char[] map)
