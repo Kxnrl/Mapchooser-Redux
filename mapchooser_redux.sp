@@ -101,7 +101,7 @@ public void OnPluginStart()
     
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
-    RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP);
+    RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP, "sm_clearcd - Forces Mapchooser to clear map history and cooldown.");
 
     g_NominationsResetForward   = CreateGlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward     = CreateGlobalForward("OnMapVoteStarted",       ET_Ignore);
@@ -126,16 +126,16 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
     RegPluginLibrary("mapchooser");
 
-    CreateNative("NominateMap", Native_NominateMap);
-    CreateNative("RemoveNominationByMap", Native_RemoveNominationByMap);
+    CreateNative("NominateMap",             Native_NominateMap);
+    CreateNative("RemoveNominationByMap",   Native_RemoveNominationByMap);
     CreateNative("RemoveNominationByOwner", Native_RemoveNominationByOwner);
-    CreateNative("InitiateMapChooserVote", Native_InitiateVote);
-    CreateNative("CanMapChooserStartVote", Native_CanVoteStart);
+    CreateNative("InitiateMapChooserVote",  Native_InitiateVote);
+    CreateNative("CanMapChooserStartVote",  Native_CanVoteStart);
     CreateNative("HasEndOfMapVoteFinished", Native_CheckVoteDone);
-    CreateNative("GetExcludeMapList", Native_GetExcludeMapList);
-    CreateNative("GetNominatedMapList", Native_GetNominatedMapList);
-    CreateNative("EndOfMapVoteEnabled", Native_EndOfMapVoteEnabled);
-    CreateNative("CanNominate", Native_CanNominate);
+    CreateNative("GetExcludeMapList",       Native_GetExcludeMapList);
+    CreateNative("GetNominatedMapList",     Native_GetNominatedMapList);
+    CreateNative("EndOfMapVoteEnabled",     Native_EndOfMapVoteEnabled);
+    CreateNative("CanNominate",             Native_CanNominate);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
@@ -211,9 +211,6 @@ public void OnConfigsExecuted()
             while(file.ReadLine(fileline, 128))
             {
                 TrimString(fileline);
-
-                if(g_Convars[DeleMap].BoolValue && (StrContains(fileline, "de_", false) == 0 || StrContains(fileline, "cs_", false) == 0 || StrContains(fileline, "gd_", false) == 0 || StrContains(fileline, "train", false) == 0 || StrContains(fileline, "ar_", false) == 0))
-                    continue;
 
                 g_aOldMapList.PushString(fileline);
                 
@@ -1273,31 +1270,28 @@ void CheckMapCycle()
             TrimString(filename);
             ReplaceString(filename, 128, ".bsp", "", false);
             
-            if(g_Convars[DeleMap].BoolValue)
+            if(g_Convars[DeleMap].BoolValue && IsOfficalMap(filename))
             {
-                if(StrContains(filename, "de_", false) == 0 || StrContains(filename, "cs_", false) == 0 || StrContains(filename, "gd_", false) == 0 || StrContains(filename, "train", false) == 0 || StrContains(filename, "ar_", false) == 0)
-                {
-                    char path[128];
-                    FormatEx(path, 128, "maps/%s.bsp", filename);
-                    if(DeleteFile(path))
-                        LogMessage("Delete Offical map: %s", path);
+                char path[128];
+                FormatEx(path, 128, "maps/%s.bsp", filename);
+                if(DeleteFile(path))
+                    LogMessage("Delete Offical map: %s", path);
 
-                    FormatEx(path, 128, "maps/%s.nav", filename);
-                    if(DeleteFile(path))
-                        LogMessage("Delete Offical map: %s", path);
-                    
-                    FormatEx(path, 128, "maps/%s.jpg", filename);
-                    if(DeleteFile(path))
-                        LogMessage("Delete Offical map: %s", path);
-                    
-                    FormatEx(path, 128, "maps/%s_cameras.txt", filename);
-                    if(DeleteFile(path))
-                        LogMessage("Delete Offical map: %s", path);
+                FormatEx(path, 128, "maps/%s.nav", filename);
+                if(DeleteFile(path))
+                    LogMessage("Delete Offical map: %s", path);
+                
+                FormatEx(path, 128, "maps/%s.jpg", filename);
+                if(DeleteFile(path))
+                    LogMessage("Delete Offical map: %s", path);
+                
+                FormatEx(path, 128, "maps/%s_cameras.txt", filename);
+                if(DeleteFile(path))
+                    LogMessage("Delete Offical map: %s", path);
 
-                    FormatEx(path, 128, "maps/%s_story.txt", filename);
-                    if(DeleteFile(path))
-                        LogMessage("Delete Offical map: %s", path);
-                }
+                FormatEx(path, 128, "maps/%s_story.txt", filename);
+                if(DeleteFile(path))
+                    LogMessage("Delete Offical map: %s", path);
 
                 continue;
             }
@@ -1456,6 +1450,49 @@ public Action Command_ClearCD(int client, int args)
     g_aOldMapList.Clear();
     PrintToChatAll("[\x04MCR\x01]  已清除所有地图冷却时间");
     return Plugin_Handled;
+}
+
+bool IsOfficalMap(const char[] map)
+{
+    static ArrayList officalmaps;
+    if(officalmaps == null)
+    {
+        // create
+        officalmaps = new ArrayList(ByteCountToCells(128));
+        
+        // input
+        officalmaps.PushString("ar_baggage");
+        officalmaps.PushString("ar_dizzy");
+        officalmaps.PushString("ar_monastery");
+        officalmaps.PushString("ar_shoots");
+        officalmaps.PushString("cs_agency");
+        officalmaps.PushString("cs_assault");
+        officalmaps.PushString("cs_insertion");
+        officalmaps.PushString("cs_italy");
+        officalmaps.PushString("cs_office");
+        officalmaps.PushString("de_austria");
+        officalmaps.PushString("de_bank");
+        officalmaps.PushString("de_cache");
+        officalmaps.PushString("de_canals");
+        officalmaps.PushString("de_cbble");
+        officalmaps.PushString("de_dust2");
+        officalmaps.PushString("de_inferno");
+        officalmaps.PushString("de_lake");
+        officalmaps.PushString("de_mirage");
+        officalmaps.PushString("de_nuke");
+        officalmaps.PushString("de_overpass");
+        officalmaps.PushString("de_safehouse");
+        officalmaps.PushString("de_shipped");
+        officalmaps.PushString("de_shortdust");
+        officalmaps.PushString("de_shortnuke");
+        officalmaps.PushString("de_stmarc");
+        officalmaps.PushString("de_sugarcane");
+        officalmaps.PushString("de_train");
+        officalmaps.PushString("gd_rialto");
+        officalmaps.PushString("training1");
+    }
+    
+    return (officalmaps.FindString(map) > -1);
 }
 
 stock void GetMapItem(Handle menu, int position, char[] map, int mapLen)
