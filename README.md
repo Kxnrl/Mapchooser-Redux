@@ -1,4 +1,4 @@
-# MCE-Redux
+# Mapchooser-Redux
   
 Build Status: [![Build Status](https://travis-ci.org/Kxnrl/Mapchooser-Redux.svg?branch=master)](https://travis-ci.org/Kxnrl/Mapchooser-Redux)
   
@@ -9,6 +9,14 @@ Build Status: [![Build Status](https://travis-ci.org/Kxnrl/Mapchooser-Redux.svg?
 * Nominate map to vote pool
 * Map attributes  
 * Arms Fix (for custom models)
+  
+  
+### ConVars  
+- **mcr_timer_location**  - Timer Location of HUD.  
+- **mcr_csgo_arms_fix**   - Enable arms fix.  
+- **mcr_old_maps_count**  - How many maps in cooldown list.  
+- **mcr_delete_offical**  - Auto-delete offical maps. 
+- **mcr_include_nametag** - Include name tag in map desc.  
   
   
 ### Configs
