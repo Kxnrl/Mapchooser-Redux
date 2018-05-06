@@ -111,8 +111,8 @@ public void OnPluginStart()
     HookEventEx("cs_win_panel_match",   Event_WinPanel, EventHookMode_Post);
     HookEventEx("round_end",            Event_RoundEnd, EventHookMode_Post);
     
-    CheckMapCycle();
     BuildKvMapData();
+    CheckMapCycle();
     CheckMapData();
 }
 
@@ -168,8 +168,8 @@ public void OnConfigsExecuted()
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
 
-    CheckMapCycle();
     BuildKvMapData();
+    CheckMapCycle();
     CheckMapData();
 
     char map[128];
