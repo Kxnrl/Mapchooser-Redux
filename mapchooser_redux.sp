@@ -507,7 +507,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             if(i == 0)
             {
-                LogError("No maps available for vote.");
+                ThrowError("No maps available for vote.");
                 return;
             }
             else
@@ -781,7 +781,7 @@ public Action Timer_ChangeMap(Handle timer)
     
     if(!GetNextMap(map, 256))
     {
-        LogError("Timer_ChangeMap -> !GetNextMap");
+        ThrowError("Timer_ChangeMap -> !GetNextMap");
         return Plugin_Stop;    
     }
 
@@ -1178,7 +1178,7 @@ void ManuallyAddMapData(const char[] map)
 {
     if(g_hKvMapData == null)
     {
-        LogError("ManuallyAddMapData -> Data Handle is null");
+        ThrowError("ManuallyAddMapData -> Data Handle is null");
         return;
     }
 
@@ -1208,13 +1208,13 @@ void CheckMapData()
 {
     if(g_hKvMapData == null)
     {
-        LogError("CheckMapData -> Data Handle is null");
+        ThrowError("CheckMapData -> Data Handle is null");
         return;
     }
 
     if(!g_hKvMapData.GotoFirstSubKey(true))
     {
-        LogError("CheckMapData -> Kv tree is invalid");
+        ThrowError("CheckMapData -> Kv tree is invalid");
         return;
     }
 
@@ -1320,7 +1320,7 @@ void CheckMapCycle()
     char buffer[256];
     if(gamemode == null || mapcycle == null)
     {
-        LogError("Build new Mapcycle failed: file handle is null");
+        ThrowError("Build new Mapcycle failed: file handle is null");
         return;
     }
 
@@ -1444,7 +1444,7 @@ public Action Timer_Monitor(Handle timer, DataPack pack)
     if(StrEqual(nmap, cmap))
         return Plugin_Stop;
 
-    LogError("Map has not been changed ? %s -> %s", cmap, nmap);
+    ThrowError("Map has not been changed ? %s -> %s", cmap, nmap);
     //ForceChangeLevel(nmap, "BUG: Map not change");
     ServerCommand("map %s", nmap);
 
