@@ -12,6 +12,7 @@ sudo: false
 env:
   - SOURCEMOD=1.8
   - SOURCEMOD=1.9
+  - SOURCEMOD=1.10
 
 script:
-  - 'if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then bash build.sh $SOURCEMOD ${TRAVIS_COMMIT::7}; 
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then bash travis.sh $SOURCEMOD ${TRAVIS_COMMIT::7}; fi'
