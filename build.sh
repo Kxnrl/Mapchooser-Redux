@@ -3,10 +3,7 @@
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
 COMMITS=$COUNT
-FTP_HOST=$2
-FTP_USER=$3
-FTP_PSWD=$4
-FILE=MCERedux-$COUNT-$1.zip
+FILE=MapChooser-Redux-git$COUNT-$2.zip
 
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -q -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
@@ -61,15 +58,12 @@ mv *.sp scripts
 mv include scripts
 mv *.smx plugins
 
-zip -9rq $FILE scripts plugins LICENSE README.md
+7z a $FILE -t7z -mx9 scripts plugins LICENSE README.md >nul
 
-lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/build/ $FILE"
+echo "Upload file RSYNC ..."
+RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./$FILE $RSYNC_USER@$RSYNC_HOST::TravisCI/MapChooser-Redux/$1/
 
 if [ "$1" = "1.8" ]; then
-    echo "Upload RAW..."
-    cd plugins
-    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ mapchooser_redux.smx"
-    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ maptimelimit_redux.smx"
-    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ nominations_redux.smx"
-    lftp -c "open -u $FTP_USER,$FTP_PSWD $FTP_HOST; put -O MCR/Raw/ rockthevote_redux.smx"
+    echo "Upload RAW RSYNC ..."
+    RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./plugins/*.smx $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/
 fi

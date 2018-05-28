@@ -1,8 +1,9 @@
 addons:
   apt_packages:
-    - lftp
     - lib32z1
     - lib32stdc++6
+    - p7zip-full
+    - rsync
 
 language: c
 
@@ -13,4 +14,4 @@ env:
   - SOURCEMOD=1.9
 
 script:
-  - bash build.sh $SOURCEMOD $FTP_HOST $FTP_USER $FTP_PSWD
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then bash build.sh $SOURCEMOD ${TRAVIS_COMMIT::7}; 
