@@ -112,8 +112,6 @@ public void OnPluginStart()
     HookEventEx("round_end",            Event_RoundEnd, EventHookMode_Post);
     
     BuildKvMapData();
-    CheckMapCycle();
-    CheckMapData();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -168,7 +166,6 @@ public void OnConfigsExecuted()
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
 
-    BuildKvMapData();
     CheckMapCycle();
     CheckMapData();
 
