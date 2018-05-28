@@ -1207,10 +1207,7 @@ void CheckMapData()
     }
 
     if(!g_hKvMapData.GotoFirstSubKey(true))
-    {
-        ThrowError("CheckMapData -> Kv tree is invalid");
         return;
-    }
 
     bool changed = false;
     char map[128], path[128];
