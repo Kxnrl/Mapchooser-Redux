@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.3beta5.<commits>"
+#define MCR_VERSION "1.3beta6.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"

@@ -1175,6 +1175,8 @@ void ManuallyAddMapData(const char[] map)
         ThrowError("ManuallyAddMapData -> Data Handle is null");
         return;
     }
+    
+    g_hKvMapData.Rewind();
 
     if(!g_hKvMapData.JumpToKey(map))
     {
@@ -1205,6 +1207,8 @@ void CheckMapData()
         ThrowError("CheckMapData -> Data Handle is null");
         return;
     }
+    
+    g_hKvMapData.Rewind();
 
     if(!g_hKvMapData.GotoFirstSubKey(true))
         return;
