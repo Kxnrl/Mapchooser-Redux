@@ -59,7 +59,6 @@ enum WarningType
 enum Convars
 {
     ConVar:TimeLoc,
-    ConVar:ArmsFix,
     ConVar:OldMaps,
     ConVar:DeleMap,
     ConVar:NameTag,
@@ -92,7 +91,6 @@ public void OnPluginStart()
     g_aNextMapList      = new ArrayList(iArraySize);
     
     g_Convars[TimeLoc] = CreateConVar("mcr_timer_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
-    g_Convars[ArmsFix] = CreateConVar("mcr_csgo_arms_fix",   "1", "enable arms fix",                                               _, true, 0.0, true, 1.0);
     g_Convars[OldMaps] = CreateConVar("mcr_old_maps_count",  "9", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
     g_Convars[DeleMap] = CreateConVar("mcr_delete_offical",  "1", "auto-delete offical maps",                                      _, true, 0.0, true, 1.0);
     g_Convars[NameTag] = CreateConVar("mcr_include_nametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
@@ -1356,50 +1354,6 @@ void CheckMapCycle()
     gamemode.WriteLine("    }");
     
     gamemode.WriteLine("    ");
-    
-    if(g_Convars[ArmsFix].BoolValue)
-    {
-        gamemode.WriteLine("    \"maps\"");
-        gamemode.WriteLine("    {");
-
-        for(int index = 0; index < mapList.Length; ++index)
-        {
-            char map[128];
-            mapList.GetString(index, map, 128);
-
-            FormatEx(buffer, 256, "        \"%s\"", map);
-            gamemode.WriteLine(buffer);
-            
-            gamemode.WriteLine("        {");
-            
-            FormatEx(buffer, 256, "            \"name\" \"%s\"", map);
-            gamemode.WriteLine(buffer);
-            
-            gamemode.WriteLine("            \"default_game_type\" \"0\"");
-            gamemode.WriteLine("            \"default_game_mode\" \"0\"");
-            gamemode.WriteLine("            \"t_arms\" \"models/weapons/t_arms_phoenix.mdl\"");
-            gamemode.WriteLine("            \"t_models\"");
-            gamemode.WriteLine("            {");
-            gamemode.WriteLine("                \"tm_phoenix\" \"\"");
-            gamemode.WriteLine("                \"tm_phoenix_variantA\" \"\"");
-            gamemode.WriteLine("                \"tm_phoenix_variantB\" \"\"");
-            gamemode.WriteLine("                \"tm_phoenix_variantC\" \"\"");
-            gamemode.WriteLine("                \"tm_phoenix_variantD\" \"\"");
-            gamemode.WriteLine("            }");
-            gamemode.WriteLine("            \"ct_arms\" \"models/weapons/ct_arms_st6.mdl\"");
-            gamemode.WriteLine("            \"ct_models\"");
-            gamemode.WriteLine("            {");
-            gamemode.WriteLine("                \"ctm_st6\" \"\"");
-            gamemode.WriteLine("                \"ctm_st6_variantA\" \"\"");
-            gamemode.WriteLine("                \"ctm_st6_variantB\" \"\"");
-            gamemode.WriteLine("                \"ctm_st6_variantC\" \"\"");
-            gamemode.WriteLine("                \"ctm_st6_variantD\" \"\"");
-            gamemode.WriteLine("            }");
-            gamemode.WriteLine("        }");
-        }
-
-        gamemode.WriteLine("    }");
-    }
 
     gamemode.WriteLine("}");
 
