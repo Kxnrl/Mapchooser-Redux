@@ -61,7 +61,6 @@ enum Convars
 {
     ConVar:TimeLoc,
     ConVar:OldMaps,
-    ConVar:DeleMap,
     ConVar:NameTag,
 }
 // cvars
@@ -91,13 +90,12 @@ public void OnPluginStart()
     g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
     
-    g_Convars[TimeLoc] = CreateConVar("mcr_timer_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
-    g_Convars[OldMaps] = CreateConVar("mcr_old_maps_count",  "9", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
-    g_Convars[DeleMap] = CreateConVar("mcr_delete_offical",  "1", "auto-delete offical maps",                                      _, true, 0.0, true, 1.0);
-    g_Convars[NameTag] = CreateConVar("mcr_include_nametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars[TimeLoc] = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
+    g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
+    g_Convars[NameTag] = CreateConVar("mcr_include_descnametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
 
     AutoExecConfig(true, "mapchooser.beta");
-    
+
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
     RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP, "sm_clearcd - Forces Mapchooser to clear map history and cooldown.");
@@ -165,16 +163,11 @@ public void OnConfigsExecuted()
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
 
-    CheckMapCycle();
-    CheckMapData();
-
-    char map[128];
-    GetCurrentMap(map, 128);
-    ManuallyAddMapData(map);
-
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != null)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
+        
+    CheckMapData();
 
     FindConVar("mp_endmatch_votenextmap").SetBool(false);
 
@@ -209,7 +202,7 @@ public void OnConfigsExecuted()
                 TrimString(fileline);
 
                 g_aOldMapList.PushString(fileline);
-                
+
                 if(g_aOldMapList.Length >= g_Convars[OldMaps].IntValue)
                     break;
             }
@@ -1167,14 +1160,14 @@ void BuildKvMapData()
     g_hKvMapData.Rewind();
 }
 
-void ManuallyAddMapData(const char[] map)
+bool ManuallyAddMapData(const char[] map)
 {
     if(g_hKvMapData == null)
     {
         ThrowError("ManuallyAddMapData -> Data Handle is null");
-        return;
+        return false;
     }
-    
+
     g_hKvMapData.Rewind();
 
     if(!g_hKvMapData.JumpToKey(map))
@@ -1183,20 +1176,22 @@ void ManuallyAddMapData(const char[] map)
         FormatEx(path, 128, "maps/%s.bsp", map);
 
         g_hKvMapData.JumpToKey(map, true);
+
         g_hKvMapData.SetString("desc", "null: unknown");
-        g_hKvMapData.SetNum("price", 100);
-        g_hKvMapData.SetNum("size",             FileSize(map)/1048576+1);
+
+        g_hKvMapData.SetNum("price",            100);
+        g_hKvMapData.SetNum("size",             FileSize(path)/1048576+1);
         g_hKvMapData.SetNum("nice",             0);
         g_hKvMapData.SetNum("minplayers",       0);
         g_hKvMapData.SetNum("maxplayers",       0);
         g_hKvMapData.SetNum("nominationonly",   0);
         g_hKvMapData.SetNum("adminonly",        0);
         g_hKvMapData.SetNum("viponly",          0);
-        g_hKvMapData.Rewind();
-        g_hKvMapData.ExportToFile("addons/sourcemod/configs/mapdata.txt");
+
+        return true;
     }
 
-    g_hKvMapData.Rewind();
+    return false;
 }
 
 void CheckMapData()
@@ -1206,26 +1201,34 @@ void CheckMapData()
         ThrowError("CheckMapData -> Data Handle is null");
         return;
     }
-    
     g_hKvMapData.Rewind();
+    
+    char map[128];
 
-    if(!g_hKvMapData.GotoFirstSubKey(true))
-        return;
-
-    bool changed = false;
-    char map[128], path[128];
-    do
+    if(g_hKvMapData.GotoFirstSubKey(true))
     {
-        g_hKvMapData.GetSectionName(map, 128);
-        FormatEx(path, 128, "maps/%s.bsp", map);
-        if(!FileExists(path))
+        bool changed = false;
+        char path[128];
+        do
         {
-            LogMessage("Delete %s from mapdata", map);
-            g_hKvMapData.DeleteThis();
-            changed = true;
+            g_hKvMapData.GetSectionName(map, 128);
+            FormatEx(path, 128, "maps/%s.bsp", map);
+            if(!FileExists(path))
+            {
+                LogMessage("Delete %s from mapdata", map);
+                g_hKvMapData.DeleteThis();
+                changed = true;
+            }
         }
+        while(g_hKvMapData.GotoNextKey(true));
     }
-    while(g_hKvMapData.GotoNextKey(true));
+
+    for(int i = 0; i < g_aMapList.Length; ++i)
+    {
+        g_aMapList.GetString(i, map, 128);
+        if(ManuallyAddMapData(map))
+            changed = true;
+    }
 
     g_hKvMapData.Rewind();
 
@@ -1234,132 +1237,6 @@ void CheckMapData()
 
     Call_StartForward(g_MapDataLoadedForward);
     Call_Finish();
-}
-
-void CheckMapCycle()
-{
-    int counts, number;
-
-    File hFile;
-    if((hFile = OpenFile("mapcycle.txt", "r")) != null)
-    {
-        char fileline[128];
-        while(hFile.ReadLine(fileline, 128))
-        {
-            if(fileline[0] == '\0')
-                continue;
-
-            counts++;
-        }
-        delete hFile;
-    }
-
-    DirectoryListing hDirectory;
-    if((hDirectory = OpenDirectory("maps")) != null)
-    {
-        FileType type = FileType_Unknown;
-        char filename[128];
-        while(hDirectory.GetNext(filename, 128, type))
-        {
-            if(type != FileType_File || StrContains(filename, ".bsp", false) == -1)
-                continue;
-
-            TrimString(filename);
-            ReplaceString(filename, 128, ".bsp", "", false);
-            
-            if(g_Convars[DeleMap].BoolValue && IsOfficalMap(filename))
-            {
-                char path[128];
-                FormatEx(path, 128, "maps/%s.bsp", filename);
-                if(DeleteFile(path))
-                    LogMessage("Delete Offical map: %s", path);
-
-                FormatEx(path, 128, "maps/%s.nav", filename);
-                if(DeleteFile(path))
-                    LogMessage("Delete Offical map: %s", path);
-                
-                FormatEx(path, 128, "maps/%s.jpg", filename);
-                if(DeleteFile(path))
-                    LogMessage("Delete Offical map: %s", path);
-                
-                FormatEx(path, 128, "maps/%s_cameras.txt", filename);
-                if(DeleteFile(path))
-                    LogMessage("Delete Offical map: %s", path);
-
-                FormatEx(path, 128, "maps/%s_story.txt", filename);
-                if(DeleteFile(path))
-                    LogMessage("Delete Offical map: %s", path);
-
-                continue;
-            }
-
-            number++;
-        }
-        delete hDirectory;
-    }
-
-    if(counts == number)
-        return;
-
-    LogMessage("Build New MapCycle[old: %d current: %d]", counts, number);
-
-    DeleteFile("gamemodes_server.txt");
-    DeleteFile("mapcycle.txt");
-
-    File gamemode = OpenFile("gamemodes_server.txt", "w+");
-    File mapcycle = OpenFile("mapcycle.txt", "w+");
-
-    if(gamemode == null || mapcycle == null)
-    {
-        ThrowError("Build new Mapcycle failed: file handle is null");
-        return;
-    }
-
-    ArrayList mapList = new ArrayList(ByteCountToCells(128));
-
-    gamemode.WriteLine("\"GameModes_Server.txt\"");
-    gamemode.WriteLine("{");
-    gamemode.WriteLine("    \"mapgroups\"");
-    gamemode.WriteLine("    {");
-    gamemode.WriteLine("        \"custom_maps\"");
-    gamemode.WriteLine("        {");
-    gamemode.WriteLine("            \"name\" \"custom_maps\"");
-    gamemode.WriteLine("            \"maps\"");
-    gamemode.WriteLine("            {");
-
-    if((hDirectory = OpenDirectory("maps")) != null)
-    {
-        FileType type = FileType_Unknown;
-        char map[256];
-        while(hDirectory.GetNext(map, 256, type))
-        {
-            if(type == FileType_File)
-            {
-                if(StrContains(map, ".bsp", false) != -1)
-                {
-                    ReplaceString(map, 256, ".bsp", "", false);
-                    mapcycle.WriteLine(map);
-                    mapList.PushString(map);
-                    ManuallyAddMapData(map);
-                    Format(map, 256, "                \"%s\" \"\"", map);
-                    gamemode.WriteLine(map);
-                }
-            }
-        }
-        delete hDirectory;
-    }
-    delete mapcycle;
-
-    gamemode.WriteLine("            }");
-    gamemode.WriteLine("        }");
-    gamemode.WriteLine("    }");
-    
-    gamemode.WriteLine("    ");
-
-    gamemode.WriteLine("}");
-
-    delete gamemode;
-    delete mapList;
 }
 
 public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
@@ -1392,8 +1269,8 @@ public Action Timer_Monitor(Handle timer, DataPack pack)
         return Plugin_Stop;
 
     ThrowError("Map has not been changed ? %s -> %s", cmap, nmap);
-    //ForceChangeLevel(nmap, "BUG: Map not change");
-    ServerCommand("map %s", nmap);
+    ForceChangeLevel(nmap, "BUG: Map not change");
+    //ServerCommand("map %s", nmap);
 
     return Plugin_Stop;
 }
@@ -1403,49 +1280,6 @@ public Action Command_ClearCD(int client, int args)
     g_aOldMapList.Clear();
     PrintToChatAll("[\x04MCR\x01]  已清除所有地图冷却时间");
     return Plugin_Handled;
-}
-
-bool IsOfficalMap(const char[] map)
-{
-    static ArrayList officalmaps;
-    if(officalmaps == null)
-    {
-        // create
-        officalmaps = new ArrayList(ByteCountToCells(128));
-        
-        // input
-        officalmaps.PushString("ar_baggage");
-        officalmaps.PushString("ar_dizzy");
-        officalmaps.PushString("ar_monastery");
-        officalmaps.PushString("ar_shoots");
-        officalmaps.PushString("cs_agency");
-        officalmaps.PushString("cs_assault");
-        officalmaps.PushString("cs_insertion");
-        officalmaps.PushString("cs_italy");
-        officalmaps.PushString("cs_office");
-        officalmaps.PushString("de_austria");
-        officalmaps.PushString("de_bank");
-        officalmaps.PushString("de_cache");
-        officalmaps.PushString("de_canals");
-        officalmaps.PushString("de_cbble");
-        officalmaps.PushString("de_dust2");
-        officalmaps.PushString("de_inferno");
-        officalmaps.PushString("de_lake");
-        officalmaps.PushString("de_mirage");
-        officalmaps.PushString("de_nuke");
-        officalmaps.PushString("de_overpass");
-        officalmaps.PushString("de_safehouse");
-        officalmaps.PushString("de_shipped");
-        officalmaps.PushString("de_shortdust");
-        officalmaps.PushString("de_shortnuke");
-        officalmaps.PushString("de_stmarc");
-        officalmaps.PushString("de_sugarcane");
-        officalmaps.PushString("de_train");
-        officalmaps.PushString("gd_rialto");
-        officalmaps.PushString("training1");
-    }
-    
-    return (officalmaps.FindString(map) > -1);
 }
 
 stock void GetMapItem(Handle menu, int position, char[] map, int mapLen)
@@ -1515,6 +1349,6 @@ stock bool CleanPlugin()
     if(FileExists("addons/sourcemod/plugins/nominations_extended.smx"))
         if(!DeleteFile("addons/sourcemod/plugins/nominations_extended.smx"))
             return false;
-    
+
     return true;
 }
