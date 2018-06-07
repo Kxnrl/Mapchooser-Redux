@@ -1,9 +1,10 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <mapchooser_redux>
 #include <nextmap>
 #include <cstrike>
 #include <sdktools>
-
-#pragma newdecls required
 
 bool g_bAllowRTV;
 bool g_bInChange;
@@ -50,7 +51,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
     if(!client)
         return;
 
-    if(strcmp(sArgs, "!rtv", false) == 0 || strcmp(sArgs, "rtv", false) == 0)
+    if(strcmp(sArgs, "rtv", false) == 0 || strcmp(sArgs[1], "rtv", false) == 0)
         AttemptRTV(client);
 }
 

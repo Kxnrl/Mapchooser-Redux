@@ -23,6 +23,7 @@ cp mapchooser_redux.sp addons/sourcemod/scripting/
 cp maptimelimit_redux.sp addons/sourcemod/scripting/
 cp nominations_redux.sp addons/sourcemod/scripting/
 cp rockthevote_redux.sp addons/sourcemod/scripting/
+cp maplister_redux.sp addons/sourcemod/scripting/
 
 cp include/* addons/sourcemod/scripting/include
 
@@ -48,6 +49,11 @@ fi
 
 if [ ! -f "rockthevote_redux.smx" ]; then
     echo "Compile rockthevote_redux failed!"
+    exit 1;
+fi
+
+if [ ! -f "maplister_redux.smx" ]; then
+    echo "Compile maplister_redux failed!"
     exit 1;
 fi
 

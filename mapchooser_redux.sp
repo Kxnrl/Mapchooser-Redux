@@ -1,3 +1,6 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <mapchooser_redux>
 #include <nextmap>
 #include <cstrike>
@@ -7,8 +10,6 @@
 #undef REQUIRE_PLUGIN
 #include <store>
 #include <shop>
-
-#pragma newdecls required
 
 Handle g_NominationsResetForward;
 Handle g_MapVoteStartedForward;
@@ -796,7 +797,7 @@ bool RemoveStringFromArray(ArrayList array, const char[] str)
 
 void CreateNextVote()
 {
-    assert(g_aNextMapList)
+    assert(g_aNextMapList);
     g_aNextMapList.Clear();
 
     ArrayList tempMaps = view_as<ArrayList>(CloneArray(g_aMapList));
@@ -1224,7 +1225,7 @@ void CheckMapData()
             changed = true;
         }
     }
-    while(g_hKvMapData.GotoNextKey(true))
+    while(g_hKvMapData.GotoNextKey(true));
 
     g_hKvMapData.Rewind();
 

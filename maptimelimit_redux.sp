@@ -1,6 +1,7 @@
-#include <mapchooser_redux>
-
+#pragma semicolon 1
 #pragma newdecls required
+
+#include <mapchooser_redux>
 
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];

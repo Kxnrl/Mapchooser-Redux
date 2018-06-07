@@ -1,10 +1,12 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <mapchooser_redux>
 
 #undef REQUIRE_PLUGIN
 #include <store>
 #include <shop>
 
-#pragma newdecls required
 
 ArrayList g_aMapList;
 Handle g_hMapMenu;
@@ -249,7 +251,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             char m_szAuth[32], m_szName[32];
             GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
-            GetClientName(param1, m_szName, 32)
+            GetClientName(param1, m_szName, 32);
             SetTrieString(g_aNominated_Auth, map, m_szAuth, true);
             SetTrieString(g_aNominated_Name, map, m_szName, true);
 
