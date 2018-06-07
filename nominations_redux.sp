@@ -9,7 +9,6 @@
 ArrayList g_aMapList;
 Handle g_hMapMenu;
 int g_iMapFileSerial = -1;
-bool g_bIncludeName = false;
 bool g_pStore;
 bool g_pShop;
 
@@ -79,7 +78,6 @@ public void OnConfigsExecuted()
             SetFailState("Unable to create a valid map list.");
 
     CreateTimer(90.0, Timer_Broadcast, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-    g_bIncludeName = (FindPluginByFile("zombiereloaded.smx") != INVALID_HANDLE);
 }
 
 public void OnMapEnd()
@@ -161,7 +159,7 @@ void BuildMapMenu()
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
 
         char szTrans[256];
-        if(GetMapDesc(map, szTrans, 256, true, g_bIncludeName))
+        if(GetMapDesc(map, szTrans, 256, true, FindConVar("mcr_include_nametag").BoolValue))
             AddMenuItem(g_hMapMenu, map, szTrans);
         else
             AddMenuItem(g_hMapMenu, map, map);

@@ -1307,7 +1307,7 @@ void CheckMapCycle()
 
     File gamemode = OpenFile("gamemodes_server.txt", "w+");
     File mapcycle = OpenFile("mapcycle.txt", "w+");
-    char buffer[256];
+
     if(gamemode == null || mapcycle == null)
     {
         ThrowError("Build new Mapcycle failed: file handle is null");
