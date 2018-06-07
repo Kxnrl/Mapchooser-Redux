@@ -10,6 +10,7 @@ tar -xzf sourcemod.tar.gz
 
 wget "https://github.com/Kxnrl/Store/raw/master/include/store.inc" -q -O include/store.inc
 wget "https://github.com/Kxnrl/SourceMod-Shop/raw/master/SourcePawn/include/shop.inc" -q -O include/shop.inc
+wget "https://github.com/Kxnrl/sourcemod-utils/raw/master/smutils.inc" -q -O include/smutils.inc
 
 chmod +x addons/sourcemod/scripting/spcomp
 

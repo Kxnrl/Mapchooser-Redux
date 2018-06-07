@@ -1,0 +1,278 @@
+"Phrases"
+{
+    "rtv broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "en"    "{yellow}{1}{normal} wants to rock the vote. ({red}{2}{normal}/{green}{3}{normal} votes)"
+        "chi"   "{yellow}{1}{normal}想要RTV投票. ({red}{2}{normal}/{green}{3}{normal}票)"
+    }
+    
+    "rtv self"
+    {
+        "#format" "{1:d},{2:d}"
+        "en"    "You have already voted to Rock the Vote. ({red}{1}{normal}/{green}{2}{normal} votes)"
+        "chi"   "您已发起RTV投票. ({red}{1}{normal}/{green}{2}{normal}票)"
+    }
+    
+    "force rtv"
+    {
+        "en"    "Force to rock the vote."
+        "chi"   "已强制启动RTV投票."
+    }
+    
+    "rtv change map"
+    {
+        "#format" "{1:s}"
+        "en"    "Changing map to [{green}{1}{normal}]!"
+        "chi"   "正在更换地图到[{green}{1}{normal}]."
+    }
+    
+    "rtv not allowed"
+    {
+        "en"    "{red}Rock the Vote is not allowed yet."
+        "chi"   "{red}当前不允许RTV!"
+    }
+    
+    "rtv started"
+    {
+        "en"    "{green}Rock the Vote has already started."
+        "chi"   "{green}RTV投票已启动!"
+    }
+    
+    "mtl broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "en"    "{yellow}{1}{normal} wants to extend map time. ({red}{2}{normal}/{green}{3}{normal} votes)"
+        "chi"   "{yellow}{1}{normal}想要延长地图投票. ({red}{2}{normal}/{green}{3}{normal}票)"
+    }
+    
+    "mtl self"
+    {
+        "#format" "{1:d},{2:d}"
+        "en"    "You have already voted to extend map time. ({red}{1}{normal}/{green}{2}{normal} votes)"
+        "chi"   "您已发起延长地图投票. ({red}{1}{normal}/{green}{2}{normal}票)"
+    }
+    
+    "mtl extend"
+    {
+        "en"    "Current map has been extended for 20 minutes."
+        "chi"   "投票成功,已将当前地图延长20分钟."
+    }
+
+    "mtl not allowed"
+    {
+        "en"    "{red}Map timelimt extend is not allowed yet."
+        "chi"   "{red}当前不允许延长地图!"
+    }
+    
+    "mtl notification"
+    {
+        "en"    "{red}!rtv{normal} to RTV, {red}!ext{normal} to extend map."
+        "chi"   "{red}!rtv{normal}可以发起投票换图, {red}!ext{normal}可以发起投票延长"
+    }
+    
+    "nominated by client"
+    {
+        "#format" "{1:N},{2:s}"
+        "en"    "Current map was nominated by {blue}{1}{normal}({green}{2}{normal})"
+        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预定的"
+    }
+    
+    "nominated by name"
+    {
+        "#format" "{1:s},{2:s}"
+        "en"    "Current map was nominated by {blue}{1}{normal}({green}{2}{normal})"
+        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预定的"
+    }
+    
+    "nominate full vote"
+    {
+        "en"    "The maximum allowed nominations has been reached."
+        "chi"   "预定池已满."
+    }
+    
+    "nominate vote complete"
+    {
+        "#format" "{1:s}"
+        "en"    "Next map is [{yellow}{1}{normal}]"
+        "chi"   "已投票出下一幅地图[{yellow}{1}{normal}]"
+    }
+    
+    "nominate vote in progress"
+    {
+        "en"    "The vote is in progress."
+        "chi"   "下幅地图投票已开始."
+    }
+    
+    "nominate menu current Map"
+    {
+        "en"    "Current Map"
+        "chi"   "当前地图."
+    }
+
+    "nominate menu recently played"
+    {
+        "en"    "Recently Played"
+        "chi"   "最近玩过."
+    }
+
+    "nominate menu was nominated"
+    {
+        "en"    "Nominated"
+        "chi"   "已被预定."
+    }
+    
+    "nominate changed map"
+    {
+        "#format" "{1:N},{2:s}"
+        "en"    "{1} has changed their nomination to {2}."
+        "chi"   "{blue}{1}{normal}更改预定地图为[{yellow}{2}{normal}]"
+    }
+    
+    "nominate nominate map"
+    {
+        "#format" "{1:N},{2:s}"
+        "en"    "{1} has nominated {2}."
+        "chi"   "{blue}{1:N}{normal}预定了地图[{yellow}{2:s}{normal}]"
+    }
+    
+    "nominate nominate cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "en"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
+        "chi"   "{green}你预定[{blue}{1}{green}]花费了{2}信用点"
+    }
+    
+    "NominateResult_MaxPlayers"
+    {
+        "#format" "{1:d}"
+        "en"    "{red}That map requires less than {green}{1}{red} players in server to nominate."
+        "chi"   "{red}该地图需要当前服务器人数小于{green}{1}人{red}才能预定."
+    }
+    
+    "NominateResult_MinPlayers"
+    {
+        "#format" "{1:d}"
+        "en"    "{red}That map requires more than {green}{1}{red} players in server to nominate."
+        "chi"   "{red}该地图需要当前服务器人数大于{green}{1}人{red}才能预定."
+    }
+    
+    "NominateResult_OnlyVIP"
+    {
+        "en"    "{red}That map is nominated by VIP only."
+        "chi"   "{red}该地图只有VIP才能预定."
+    }
+    
+    "NominateResult_OnlyAdmin"
+    {
+        "en"    "{red}That map is nominated by Admin only."
+        "chi"   "{red}该地图只有OP才能预定."
+    }
+    
+    "NominateResult_VoteFull"
+    {
+        "en"    "{red}The maximum allowed nominations has been reached."
+        "chi"   "{red}投票池已满."
+    }
+    
+    "NominateResult_AlreadyInVote"
+    {
+        "en"    "{red}The map you chose has already been nominated."
+        "chi"   "{red}该地图已被预定."
+    }
+    
+    "NominateResult_InvalidMap"
+    {
+        "#format" "{1:s}"
+        "en"    "{red}Failed to nominate {1}."
+        "chi"   "{red}预定[{green}{1}{normal}]失败."
+    }
+    
+    "NominateResult_NoCredits"
+    {
+        "#format" "{1:d}"
+        "en"    "{red}You have not enough credits to nominate {1}."
+        "chi"   "{red}你的余额不足,预定[{blue}{1}{green}]失败."
+    }
+    
+    "nominate menu title"
+    {
+        "en"    "Nominate Map:"
+        "chi"   "预定地图:"
+    }
+    
+    "mcr clear cd"
+    {
+        "en"    "{green}Map history has been emptied."
+        "chi"   "{green}已清除所有地图冷却时间"
+    }
+    
+    "mcr nominate fallback"
+    {
+        "#format" "{1:s},{2:d}"
+        "en"    "{green}[{blue}{1}{green}] you nominated has been cancelled, {2} credits has been returned."
+        "chi"   "{green}你预定的[{blue}{1}{green}]已被取消,已退还{2}信用点"
+    }
+    
+    "mcr runoff"
+    {
+        "#format" "{1:d}"
+        "en"    "No map got over half votes ({1}%%), starting runoff vote."   
+        "chi"   "没有地图比例过半({1}%%). 即将开始第二轮投票!"
+    }
+    
+    "mcr tier"
+    {
+        "#format" "{1:d}"
+        "en"    "The top {green}{1}{normal} maps had the same number of votes. A revote is needed!"
+        "chi"   "有{green}{1}{normal}幅地图票数相等,投票即将重启"
+    }
+    
+    "mcr dont change"
+    {
+        "#format" "{1:d},{2:d}"
+        "en"    "Current map continues! The Vote has spoken! (Received {green}{1}{normal}/{red}{2} votes)"
+        "chi"   "当前地图暂不更换 ({green}{1}{normal}/{red}{2} 票)"
+    }
+    
+    "mcr extend map"
+    {
+        "#format" "{1:d},{2:d}"
+        "en"    "The current map has been extended. (Received {green}{1}{normal}/{red}{2} votes)"
+        "chi"   "当前地图已被延长 ({green}{1}{normal}/{red}{2} 票)"
+    }
+    
+    "mcr next map"
+	{
+		"#format"   "{1:s},{2:d},{3:d}"
+		"en"    "{yellow}Map voting has finished. The next map will be [{green}{1}{yellow}]. (Received {green}{1}{normal}/{red}{2} {yellow}votes)"
+        "chi"   "{yellow}地图投票已结束,下一幅地图将为 [{green}{1}{yellow}]. ({green}{1}{normal}/{red}{2} {yellow}票)"
+	}
+    
+    "mcr voting started"
+    {
+        "en"    "Voting for next map has started."
+        "chi"   "下幅地图投票已开始"
+    }
+    
+    "mcr countdown hud"
+    {
+		"#format"   "{1:d}"
+		"en"    "Voting for the next map will begin in {1} seconds"
+        "chi"   "还有 {1} 秒开始投票"
+	}
+    
+    "mcr countdown text hint"
+    {
+		"#format"   "{1:d}"
+		"en"    "Voting for the next map will begin in {1} seconds"
+        "chi"   "地图投票还有 {1} 秒开始"
+	}
+
+    "mcr countdown chat"
+    {
+		"#format"   "{1:d}"
+		"en"    "{silver}Voting for the next map will begin in {red}{1}{silver} seconds"
+        "chi"   "{silver}地图投票还有 {red}{1}{silver} 秒开始"
+	}
+}

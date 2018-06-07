@@ -2,6 +2,7 @@
 #pragma newdecls required
 
 #include <mapchooser_redux>
+#include <smutils>
 
 #undef REQUIRE_PLUGIN
 #include <store>
@@ -46,6 +47,13 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
+    SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
+    SMUtils_SetChatSpaces("   ");
+    SMUtils_SetChatConSnd(false);
+    SMUtils_SetTextDest(HUD_PRINTCENTER);
+    
+    LoadTranslations("com.kxnrl.mcr.translations");
+    
     int arraySize = ByteCountToCells(256);    
     g_aMapList = CreateArray(arraySize);
 
@@ -123,7 +131,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
 void AttemptNominate(int client)
 {
-    SetMenuTitle(g_hMapMenu, "预定地图\n ", client);
+    SetMenuTitle(g_hMapMenu, "%T\n ", "nominate menu title", client);
     DisplayMenu(g_hMapMenu, client, MENU_TIME_FOREVER);
 }
 
@@ -188,49 +196,49 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
 
             if(result == NominateResult_NoCredits)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x04你的余额不足,预定[\x0C%s\x04]失败", map);
+                Chat(param1, "%T", "NominateResult_NoCredits", param1, map);
                 return 0;
             }
 
             if(result == NominateResult_InvalidMap)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  预定[\x04%s\x01]失败", map);
+                Chat(param1, "%T", "NominateResult_InvalidMap", param1, map);
                 return 0;
             }
 
             if(result == NominateResult_AlreadyInVote)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  该地图已被预定");
+                Chat(param1, "%T", "NominateResult_AlreadyInVote", param1);
                 return 0;
             }
             
             if(result == NominateResult_VoteFull)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  投票池已满");
+                Chat(param1, "%T", "NominateResult_VoteFull", param1);
                 return 0;
             }
             
             if(result == NominateResult_OnlyAdmin)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图只有管理员才能直接更换");
+                Chat(param1, "%T", "NominateResult_OnlyAdmin", param1);
                 return 0;
             }
             
             if(result == NominateResult_OnlyVIP)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图只有VIP才能预定");
+                Chat(param1, "%T", "NominateResult_OnlyVIP", param1);
                 return 0;
             }
 
             if(result == NominateResult_MinPlayers)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图需要当前服务器人数大于\x04%d人\x07才能预定", GetMinPlayers(map));
+                Chat(param1, "%T", "NominateResult_MinPlayers", param1, GetMinPlayers(map));
                 return 0;
             }
             
             if(result == NominateResult_MaxPlayers)
             {
-                PrintToChat(param1, "[\x04MCR\x01]  \x07该地图需要当前服务器人数小于\x04%d人\x07才能预定", GetMaxPlayers(map));
+                Chat(param1, "%T", "NominateResult_MaxPlayers", param1, GetMaxPlayers(map));
                 return 0;
             }
 
@@ -239,14 +247,14 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             if(g_pStore)
             {
                 int credits = GetMapPrice(map);
-                Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-预定");
-                PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%d信用点", map, credits);
+                Store_SetClientCredits(param1, Store_GetClientCredits(param1)-credits, "nomination-nominate");
+                Chat(param1, "%T", "nominate nominate cost", param1, map, credits);
             }
             else if(g_pShop)
             {
                 int credits = GetMapPrice(map);
-                MG_Shop_ClientCostMoney(param1, credits, "nomination-预定");
-                PrintToChat(param1, "[\x04MCR\x01]  \x04你预定[\x0C%s\x04]花费了%dG", map, credits);
+                MG_Shop_ClientCostMoney(param1, credits, "nomination-nominate");
+                Chat(param1, "%T", "nominate nominate cost", param1, map, credits);
             }
 
             char m_szAuth[32], m_szName[32];
@@ -258,9 +266,9 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             LogMessage("[MCR]  \"%L\" nominated %s", param1, map);
 
             if(result == NominateResult_Replaced)
-                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01更改预定地图为[\x05%s\x01]", param1, map);
+                tChatAll("%t", "nominate changed map", param1, map);
             else
-                PrintToChatAll("[\x04MCR\x01]  \x0C%N\x01预定了地图[\x05%s\x01]", param1, map);
+                tChatAll("%t", "nominate nominate map", param1, map);
         }
 
         case MenuAction_DrawItem:
@@ -294,7 +302,7 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
                 LogError("case MenuAction_DisplayItem: Menu selection of item not in trie. Major logic problem somewhere.");
                 return 0;
             }
-            
+
             char buffer[100];
             char display[150];
             char trans[128];
@@ -305,23 +313,23 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             {
                 if((status & MAPSTATUS_EXCLUDE_CURRENT) == MAPSTATUS_EXCLUDE_CURRENT)
                 {
-                    Format(display, sizeof(display), "%s (当前地图)\n%s", buffer, trans);
+                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu current Map", param1, trans);
                     return RedrawMenuItem(display);
                 }
                 
                 if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
                 {
-                    Format(display, sizeof(display), "%s (最近玩过)\n%s", buffer, trans);
+                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu recently played", param1, trans);
                     return RedrawMenuItem(display);
                 }
                 
                 if((status & MAPSTATUS_EXCLUDE_NOMINATED) == MAPSTATUS_EXCLUDE_NOMINATED)
                 {
-                    Format(display, sizeof(display), "%s (已被预定)\n%s", buffer, trans);
+                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu was nominated", param1, trans);
                     return RedrawMenuItem(display);
                 }
             }
-            
+
             return 0;
         }
     }
@@ -337,7 +345,7 @@ stock bool IsNominateAllowed(int client)
     {
         case CanNominate_No_VoteInProgress:
         {
-            PrintToChat(client, "[\x04MCR\x01]  下幅地图投票已开始.");
+            Chat(client, "%T", "nominate vote in progress", client);
             return false;
         }
 
@@ -345,13 +353,13 @@ stock bool IsNominateAllowed(int client)
         {
             char map[128];
             GetNextMap(map, 128);
-            PrintToChat(client, "[\x04MCR\x01]  已投票出下一幅地图[\x05%s\x01]", map);
+            Chat(client, "%T", "nominate vote complete", client, map);
             return false;
         }
         
         case CanNominate_No_VoteFull:
         {
-            PrintToChat(client, "[\x04MCR\x01]  投票池已满");
+            Chat(client, "%T", "nominate full vote", client);
             return false;
         }
     }
@@ -389,9 +397,9 @@ public Action Timer_Broadcast(Handle timer)
     ReplaceString(m_szAuth, 32, "STEAM_1:", "");
     
     if(!client)
-        PrintToChatAll("[\x04MCR\x01]   当前地图是\x0C%s\x01(\x04%s\x01)预定的", m_szName, m_szAuth);
+        tChatAll("%t", "nominated by name", m_szName, m_szAuth);
     else
-        PrintToChatAll("[\x04MCR\x01]   当前地图是\x0C%N\x01(\x04%s\x01)预定的", client, m_szAuth);
+        tChatAll("%t", "nominated by client", client, m_szAuth);
 
     return Plugin_Continue;
 }

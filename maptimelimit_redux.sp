@@ -2,6 +2,7 @@
 #pragma newdecls required
 
 #include <mapchooser_redux>
+#include <smutils>
 
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
@@ -18,6 +19,13 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+    SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
+    SMUtils_SetChatSpaces("   ");
+    SMUtils_SetChatConSnd(false);
+    SMUtils_SetTextDest(HUD_PRINTCENTER);
+    
+    LoadTranslations("com.kxnrl.mcr.translations");
+    
     mp_timelimit = FindConVar("mp_timelimit");
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
@@ -25,7 +33,7 @@ public void OnPluginStart()
 
 public Action Timer_BroadCast(Handle timer)
 {
-    PrintToChatAll("[\x04MCR\x01]  \x07!rtv\x01可以发起投票换图, \x07!ext\x01可以发起投票延长");
+    tChatAll("%t", "mtl notification");
     return Plugin_Continue;
 }
 
@@ -66,7 +74,7 @@ void AttemptEXT(int client)
 {
     if(!g_bAllowEXT)
     {
-        PrintToChat(client, "[\x04MCR\x01]  当前不允许延长地图!");
+        Chat(client, "%T", "mtl not allowed", client);
         return;
     }
 
@@ -90,7 +98,7 @@ void ExtendMap()
     int val = mp_timelimit.IntValue;
     mp_timelimit.SetInt(val+20);
 
-    PrintToChatAll("[\x04MCR\x01]  \x0C投票成功,已将当前地图延长20分钟");
+    tChatAll("%t", "mtl extend");
 }
 
 void ResetEXT()
@@ -102,20 +110,20 @@ void ResetEXT()
 bool EXT_CheckStatus(int client, bool notice, bool self)
 {
     int need, done;
-    GetPlayers(need, done);
+    _CheckPlayer(need, done);
 
     if(notice)
     {
         if(self)
-            PrintToChat(client, "[\x04MCR\x01]  您已发起延长地图投票. (\x07%d\x01/\x04%d\x01票)", done, need);
+            Chat(client, "%T", "mtl self", client, done, need);
         else
-            PrintToChatAll("[\x04MCR\x01]  \x05%N\x01想要延长地图投票. (\x07%d\x01/\x04%d\x01票)", client, done, need);
+            tChatAll("%t", "mtl broadcast", client, done, need);
     }
 
     return (done >= need);
 }
 
-void GetPlayers(int &need, int &done)
+void _CheckPlayer(int &need, int &done)
 {
     need = 0;
     done = 0;

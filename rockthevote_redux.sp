@@ -4,7 +4,7 @@
 #include <mapchooser_redux>
 #include <nextmap>
 #include <cstrike>
-#include <sdktools>
+#include <smutils>
 
 bool g_bAllowRTV;
 bool g_bInChange;
@@ -21,6 +21,13 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+    SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
+    SMUtils_SetChatSpaces("   ");
+    SMUtils_SetChatConSnd(false);
+    SMUtils_SetTextDest(HUD_PRINTCENTER);
+    
+    LoadTranslations("com.kxnrl.mcr.translations");
+
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 }
 
@@ -59,13 +66,13 @@ void AttemptRTV(int client)
 {
     if(!g_bAllowRTV)
     {
-        PrintToChat(client, "[\x04MCR\x01]  当前不允许RTV!");
+        Chat(client, "%T", "rtv not allowed", client);
         return;
     }
 
     if(!CanMapChooserStartVote())
     {
-        PrintToChat(client, "[\x04MCR\x01]  RTV投票已启动!");
+        Chat(client, "%T", "rtv started", client);
         return;
     }
 
@@ -96,7 +103,7 @@ void StartRTV()
         {
             g_bInChange = true;
             
-            PrintToChatAll("[\x04MCR\x01]  正在更换地图到[\x05%s\x01]", map);
+            tChatAll("%t", "rtv change map", map);
             CreateTimer(10.0, Timer_ChangeMap, _, TIMER_FLAG_NO_MAPCHANGE);
         }
 
@@ -142,27 +149,27 @@ public Action Timer_ChangeMap(Handle timer)
 public Action Command_ForceRTV(int client, int args)
 {
     StartRTV();
-    PrintToChatAll("[\x04MCR\x01]  已强制启动RTV投票");
+    tChatAll("%t", "force rtv");
     return Plugin_Handled;
 }
 
 bool RTV_CheckStatus(int client, bool notice, bool self)
 {
     int need, done;
-    GetPlayers(need, done);
+    _CheckPlayer(need, done);
 
     if(notice)
     {
         if(self)
-            PrintToChat(client, "[\x04MCR\x01]  您已发起RTV投票. (\x07%d\x01/\x04%d\x01票)", done, need);
+            Chat(client, "%T", "rtv self", client, done, need);
         else
-            PrintToChatAll("[\x04MCR\x01]  \x05%N\x01想要RTV投票. (\x07%d\x01/\x04%d\x01票)", client, done, need);
+            tChatAll("%t", "rtv broadcast", client, done, need);
     }
 
     return (done >= need);
 }
 
-void GetPlayers(int &need, int &done)
+void _CheckPlayer(int &need, int &done)
 {
     need = 0;
     done = 0;

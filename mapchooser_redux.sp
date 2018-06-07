@@ -4,7 +4,7 @@
 #include <mapchooser_redux>
 #include <nextmap>
 #include <cstrike>
-#include <sdktools>
+#include <smutils>
 
 // options
 #undef REQUIRE_PLUGIN
@@ -46,7 +46,7 @@ bool g_pShop;
 enum TimerLocation
 {
     TimerLocation_Hint = 0,
-    TimerLocation_Center,
+    TimerLocation_Text,
     TimerLocation_Chat,
     TimerLocation_HUD
 }
@@ -82,6 +82,13 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+    SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
+    SMUtils_SetChatSpaces("   ");
+    SMUtils_SetChatConSnd(false);
+    SMUtils_SetTextDest(HUD_PRINTCENTER);
+    
+    LoadTranslations("com.kxnrl.mcr.translations");
+
     int iArraySize = ByteCountToCells(256);
     
     g_aMapList          = new ArrayList(iArraySize);
@@ -94,7 +101,7 @@ public void OnPluginStart()
     g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
     g_Convars[NameTag] = CreateConVar("mcr_include_descnametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
 
-    AutoExecConfig(true, "mapchooser.beta");
+    AutoExecConfig(true, "mapchooser", "sourcemod/mapchooser");
 
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
@@ -354,10 +361,10 @@ public Action Timer_StartMapVote(Handle timer, DataPack data)
 
     switch(view_as<TimerLocation>(g_Convars[TimeLoc].IntValue))
     {
-        case TimerLocation_Center: PrintCenterTextAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-        case TimerLocation_Chat:   PrintToChatAll("[\x04MCR\x01]  离地图投票开始还有 \x07 %s 秒", warningTimeRemaining);
-        case TimerLocation_Hint:   PrintHintTextToAll("离地图投票开始还有 %d 秒", warningTimeRemaining);
-        case TimerLocation_HUD:    DisplayCountdownHUD(warningTimeRemaining);
+        case TimerLocation_Text: tTextAll("%t", "mcr countdown text hint", warningTimeRemaining);
+        case TimerLocation_Chat: tChatAll("%t", "mcr countdown chat",      warningTimeRemaining);
+        case TimerLocation_Hint: tHintAll("%t", "mcr countdown text hint", warningTimeRemaining);
+        case TimerLocation_HUD:  DisplayCountdownHUD(warningTimeRemaining);
     }
 
     if(timePassed++ >= warningMaxTime)
@@ -386,7 +393,7 @@ public Action Timer_StartMapVote(Handle timer, DataPack data)
 
 public Action Command_Mapvote(int client, int args)
 {
-    PrintToChatAll("[\x04MCR\x01]  已启动地图投票");
+    tChatAll("%t", "mcr voting started");
 
     SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, null, true);
 
@@ -400,7 +407,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
     if(IsVoteInProgress())
     {
-        PrintToChatAll("[\x04MCR\x01]  投票进行中,将在%d秒后重试.", FAILURE_TIMER_LENGTH);
+        LogMessage("IsVoteInProgress -> %d", FAILURE_TIMER_LENGTH);
         
         DataPack data = new DataPack();
         data.WriteCell(FAILURE_TIMER_LENGTH);
@@ -546,7 +553,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     Call_Finish();
 
     LogAction(-1, -1, "Voting for next map has started.");
-    PrintToChatAll("[\x04MCR\x01]  下幅地图投票已开始.");
+    tChatAll("%t", "mcr voting started");
 }
 
 public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
@@ -567,7 +574,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             if(timeLimit > 0)
                 ExtendMapTimeLimit(1200);                        
 
-        PrintToChatAll("[\x04MCR\x01]  当前地图已被延长 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        tChatAll("%t", "mcr extend map", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. The current map has been extended.");
 
         g_bHasVoteStarted = false;
@@ -576,7 +583,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     }
     else if(strcmp(map, VOTE_DONTCHANGE, false) == 0)
     {
-        PrintToChatAll("[\x04MCR\x01]  当前地图暂不更换 (%d/%d 票)", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        tChatAll("%t", "mcr dont change", item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. 'No Change' was the winner");
         
         g_bHasVoteStarted = false;
@@ -602,7 +609,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bHasVoteStarted = false;
         g_bMapVoteCompleted = true;
         
-        PrintToChatAll("[\x04MCR\x01]  地图投票已结束,下一幅地图将为 %s. (%d/%d 票)", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        tChatAll("%t", "mcr next map", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }    
 }
@@ -664,7 +671,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                     break;
             }
             
-            PrintToChatAll("[\x04MCR\x01]  有%d幅地图票数相等,投票即将重启.", mapList.Length);
+            tChatAll("%t", "mcr tier", mapList.Length);
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_MapChange), mapList);
             return;
         }
@@ -689,7 +696,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
                 else
                     break;
             }
-            PrintToChatAll("[\x04MCR\x01]  没有地图比例过半(%d%%票). 即将开始第二轮投票!", required_percent);
+            tChatAll("%t", "mcr runoff", required_percent);
             SetupWarningTimer(WarningType_Revote, view_as<MapChange>(g_MapChange), mapList);
             return;
         }
@@ -1001,13 +1008,13 @@ bool InternalRemoveNominationByOwner(int owner)
         {
             int credits = GetMapPrice(oldmap);
             Store_SetClientCredits(owner, Store_GetClientCredits(owner)+credits, "nomination-退还");
-            PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%d信用点", oldmap, credits);
+            Chat(owner, "%T", "mcr nominate fallback", owner, oldmap, credits);
         }
         else if(g_pShop)
         {
             int credits = GetMapPrice(oldmap);
             MG_Shop_ClientEarnMoney(owner, credits, "nomination-退还");
-            PrintToChat(owner, "[\x04MCR\x01]  \x04你预定的[\x0C%s\x04]已被取消,已退还%dG", oldmap, credits);
+            Chat(owner, "%T", "mcr nominate fallback", owner, oldmap, credits);
         }
 
         return true;
@@ -1204,10 +1211,10 @@ void CheckMapData()
     g_hKvMapData.Rewind();
     
     char map[128];
+    bool changed = false;
 
     if(g_hKvMapData.GotoFirstSubKey(true))
     {
-        bool changed = false;
         char path[128];
         do
         {
@@ -1278,7 +1285,7 @@ public Action Timer_Monitor(Handle timer, DataPack pack)
 public Action Command_ClearCD(int client, int args)
 {
     g_aOldMapList.Clear();
-    PrintToChatAll("[\x04MCR\x01]  已清除所有地图冷却时间");
+    tChatAll("%t", "mcr clear cd");
     return Plugin_Handled;
 }
 
@@ -1302,20 +1309,10 @@ stock bool IsClientVIP(int client)
 
 stock void DisplayCountdownHUD(int time)
 {
-    char fmt[128];
-    SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
+    SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 2, 0.2, 0.2, 0.2); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
-        {
-            int lang = GetClientLanguage(client);
-            
-            if(lang == 23 || lang == 27)
-                FormatEx(fmt, 128, "离地图投票开始还有 %d 秒", time);
-            else
-                FormatEx(fmt, 128, "Voting for the next map will begin in %d second%s", time, time > 1 ? "s" : "");
-
-            ShowHudText(client, 5, fmt); // 叁生鉐 is dead...
-        }
+            ShowHudText(client, 5, "%T", "mcr countdown hud", client, time); // 叁生鉐 is dead...
 }
 
 stock bool CleanPlugin()
