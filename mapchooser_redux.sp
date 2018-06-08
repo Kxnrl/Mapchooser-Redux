@@ -427,16 +427,10 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     if(g_bMapVoteCompleted && g_bChangeMapInProgress)
         return;
 
-    SetHudTextParams(-1.0, 0.32, 3.0, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0);
+    SetHudTextParams(-1.0, 0.32, 3.5, 0, 255, 255, 255, 2, 0.3, 0.3, 0.3);
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
-        {
-            int lang = GetClientLanguage(client);
-            if(lang == 23 || lang == 27)
-                ShowHudText(client, 5, "投票已经开始");
-            else
-                ShowHudText(client, 5, "Voting for next map has started");
-        }
+            ShowHudText(client, 5, "%T", "mcr voting started", client);
 
     g_MapChange = when;
     
@@ -1313,7 +1307,7 @@ stock bool IsClientVIP(int client)
 
 stock void DisplayCountdownHUD(int time)
 {
-    SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 2, 0.2, 0.2, 0.2); // Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
+    SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0);// Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
             ShowHudText(client, 5, "%T", "mcr countdown hud", client, time); // 叁生鉐 is dead...

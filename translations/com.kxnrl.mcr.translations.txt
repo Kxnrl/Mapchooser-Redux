@@ -245,8 +245,8 @@
     "mcr next map"
 	{
 		"#format"   "{1:s},{2:d},{3:d}"
-		"en"    "{yellow}Map voting has finished. The next map will be [{green}{1}{yellow}]. (Received {green}{1}{normal}/{red}{2} {yellow}votes)"
-        "chi"   "{yellow}地图投票已结束,下一幅地图将为 [{green}{1}{yellow}]. ({green}{1}{normal}/{red}{2} {yellow}票)"
+		"en"    "{yellow}Map voting has finished. The next map will be [{green}{1}{yellow}]. (Received {green}{2}{normal}/{red}{3} {yellow}votes)"
+        "chi"   "{yellow}地图投票已结束,下一幅地图将为 [{green}{1}{yellow}]. ({green}{2}{normal}/{red}{3} {yellow}票)"
 	}
     
     "mcr voting started"
