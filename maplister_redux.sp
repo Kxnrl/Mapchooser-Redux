@@ -120,7 +120,7 @@ static void IloveSaSuSi_but_Idontlikeheranymore_MapCycle()
     
     LogMessage("Process generate mapcycle ...");
 
-    File file = OpenFile("mapcycle.txt", "r+");
+    File file = OpenFile("mapcycle.txt", "w+");
     if(file == null)
     {
         LogError("IloveSaSuSi_but_Idontlikeheranymore_MapCycle -> Failed to open mapcycle.txt");
