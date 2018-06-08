@@ -101,6 +101,10 @@ public void OnPluginStart()
     g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
     g_Convars[NameTag] = CreateConVar("mcr_include_descnametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
 
+    if(!DirExists("cfg/sourcemod/mapchooser"))
+        if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
+            SetFailState("Failed to create folder \"cfg/sourcemod/mapchooser\"");
+
     AutoExecConfig(true, "mapchooser", "sourcemod/mapchooser");
 
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");

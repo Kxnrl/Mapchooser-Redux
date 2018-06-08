@@ -24,6 +24,10 @@ public void OnPluginStart()
     mcr_generate_mapcycle  = CreateConVar("mcr_generate_mapcycle",  "1", "auto-generate map list in mapcycle.txt", _, true, 0.0, true, 1.0);
     mcr_generate_mapgroup  = CreateConVar("mcr_generate_mapgroup",  "1", "auto-generate map group in gamemodes_server.txt", _, true, 0.0, true, 1.0);
 
+    if(!DirExists("cfg/sourcemod/mapchooser"))
+        if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
+            SetFailState("Failed to create folder \"cfg/sourcemod/mapchooser\"");
+
     AutoExecConfig(true, "maplister", "sourcemod/mapchooser");
 
     g_iMapCount = GetMapCount();
