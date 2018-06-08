@@ -169,7 +169,7 @@ void BuildMapMenu()
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
 
         char szTrans[256];
-        if(GetMapDesc(map, szTrans, 256, true, FindConVar("mcr_include_nametag").BoolValue))
+        if(GetMapDesc(map, szTrans, 256, true, FindConVar("mcr_include_descnametag").BoolValue))
             AddMenuItem(g_hMapMenu, map, szTrans);
         else
             AddMenuItem(g_hMapMenu, map, map);
