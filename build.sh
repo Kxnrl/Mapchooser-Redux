@@ -65,7 +65,7 @@ mv *.sp scripts
 mv include scripts
 mv *.smx plugins
 
-7z a $FILE -t7z -mx9 scripts plugins LICENSE README.md >nul
+7z a $FILE -t7z -mx9 scripts plugins translations LICENSE README.md >nul
 
 echo "Upload file RSYNC ..."
 RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./$FILE $RSYNC_USER@$RSYNC_HOST::TravisCI/MapChooser-Redux/$1/
