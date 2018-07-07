@@ -147,7 +147,7 @@ static void IloveSaSuSi_but_Idontlikeheranymore_MapCycle()
         file.WriteLine(map);
     }
     delete dir;
-    delete file;
+    file.Close();
 }
 
 static void IloveSaSuSi_but_Idontlikeheranymore_MapGroup()

@@ -201,8 +201,8 @@ public void OnConfigsExecuted()
         if(!FileExists(filepath))
             return;
 
-        File file;
-        if((file = OpenFile(filepath, "r")) != null)
+        File file = OpenFile(filepath, "r");
+        if(file != null)
         {
             g_aOldMapList.Clear();
 
@@ -218,7 +218,7 @@ public void OnConfigsExecuted()
                     break;
             }
 
-            delete file;
+            file.Close();
         }
     }
 }
@@ -261,7 +261,7 @@ public void OnMapEnd()
         file.WriteLine(map);
     }
 
-    delete file;
+    file.Close();
 }
 
 public void OnClientDisconnect(int client)
@@ -795,7 +795,6 @@ bool RemoveStringFromArray(ArrayList array, const char[] str)
 
 void CreateNextVote()
 {
-    assert(g_aNextMapList);
     g_aNextMapList.Clear();
 
     ArrayList tempMaps = view_as<ArrayList>(CloneArray(g_aMapList));
