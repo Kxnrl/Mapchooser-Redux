@@ -312,29 +312,37 @@ public void OnMapTimeLeftChanged()
 {
     if(g_aMapList.Length > 0)
         SetupTimeleftTimer();
+    else
+        LogError("No enough maps to start the vote.");
 }
 
 void SetupTimeleftTimer()
 {
-    int timeLeft;
-    if(GetMapTimeLeft(timeLeft) && timeLeft > 0)
+    if(g_bMapVoteCompleted)
     {
-        if(timeLeft - 300 < 0 && !g_bMapVoteCompleted && !g_bHasVoteStarted) {
-            SetupWarningTimer(WarningType_Vote);
-		}
-        else
-        {
-            if(g_tWarning == null)
-            {
-                if(g_tVote != null)
-                {
-                    KillTimer(g_tVote);
-                    g_tVote = null;
-                }
+        LogMessage("Map vote had been completed.");
+        return;
+    }
 
-                g_tVote = CreateTimer(float(timeLeft - 300), Timer_StartWarningTimer, _, TIMER_FLAG_NO_MAPCHANGE);
-            }
-        }        
+    int timeLeft;
+    if(!GetMapTimeLeft(timeLeft) || timeLeft <= 0)
+    {
+        LogMessage("Failed to GetMapTimeLeft()");
+        return;
+    }
+
+    if(timeLeft - 300 < 0 && !g_bHasVoteStarted)
+    {
+        SetupWarningTimer(WarningType_Vote);
+        return;
+    }
+
+    if(g_tWarning == null)
+    {
+        if(g_tVote != null)
+            KillTimer(g_tVote);
+
+        g_tVote = CreateTimer(float(timeLeft - 300), Timer_StartWarningTimer, _, TIMER_FLAG_NO_MAPCHANGE);
     }
 }
 
@@ -592,7 +600,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         if(g_MapChange == MapChange_Instant)
         {
             g_bChangeMapInProgress = true;
-            CreateTimer(10.0 , Timer_ChangeMaprtv);
+            CreateTimer(10.0 , Timer_ChangeMaprtv, _, TIMER_FLAG_NO_MAPCHANGE);
         }
         else if(g_MapChange == MapChange_RoundEnd)
         {
@@ -1125,8 +1133,8 @@ stock bool IsMapEndVoteAllowed()
 {
     if(g_bMapVoteCompleted || g_bHasVoteStarted)
         return false;
-    else
-        return true;
+
+    return true;
 }
 
 public int Native_IsWarningTimer(Handle plugin, int numParams)
