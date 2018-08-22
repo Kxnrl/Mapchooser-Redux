@@ -6,7 +6,6 @@
 
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
-ConVar mp_timelimit;
 
 public Plugin myinfo =
 {
@@ -25,8 +24,6 @@ public void OnPluginStart()
     SMUtils_SetTextDest(HUD_PRINTCENTER);
     
     LoadTranslations("com.kxnrl.mcr.translations");
-    
-    mp_timelimit = FindConVar("mp_timelimit");
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
 }
@@ -95,8 +92,7 @@ void ExtendMap()
     ResetEXT();
     g_bAllowEXT = false;
 
-    int val = mp_timelimit.IntValue;
-    mp_timelimit.SetInt(val+20);
+    ExtendMapTimeLimit(1200); 
 
     tChatAll("%t", "mtl extend");
 }
