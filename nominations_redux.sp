@@ -269,6 +269,13 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
                 tChatAll("%t", "nominate changed map", param1, map);
             else
                 tChatAll("%t", "nominate nominate map", param1, map);
+            
+            if(FindConVar("mcr_include_descnametag").BoolValue)
+            {
+                char desc[128];
+                GetMapDesc(map, desc, 128, false, false);
+                ChatAll("\x0A -> \x0E[\x05%s\x0E]", desc);
+            }
         }
 
         case MenuAction_DrawItem:

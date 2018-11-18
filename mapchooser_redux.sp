@@ -3,7 +3,6 @@
 
 #include <mapchooser_redux>
 #include <nextmap>
-#include <cstrike>
 #include <smutils>
 
 // options
@@ -296,7 +295,7 @@ public Action Command_SetNextmap(int client, int args)
 
     if(!IsMapValid(map))
     {
-        ReplyToCommand(client, "[\x04MCR\x01]  地图无效[%s]", map);
+        ReplyToCommand(client, "[\x04MCR\x01]  Invalid Map [%s]", map);
         return Plugin_Handled;
     }
 
@@ -437,7 +436,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     SetHudTextParams(-1.0, 0.32, 3.5, 0, 255, 255, 255, 2, 0.3, 0.3, 0.3);
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
-            ShowHudText(client, 5, "%T", "mcr voting started", client);
+            ShowHudText(client, 0, "%T", "mcr voting started", client);
 
     g_MapChange = when;
     
@@ -615,6 +614,12 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bMapVoteCompleted = true;
         
         tChatAll("%t", "mcr next map", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
+        if(g_Convars[NameTag])
+        {
+            char desc[128];
+            GetMapDesc(map, desc, 128, false, false);
+            ChatAll("\x0A -> \x0E[\x05%s\x0E]", desc);
+        }
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }    
 }
@@ -642,7 +647,10 @@ public Action Timer_ChangeMaprtv(Handle hTimer)
     FindConVar("mp_maxrounds").SetInt(0);
     FindConVar("mp_roundtime").SetInt(1);
 
-    CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
+    for(int client = 1; client <= MaxClients; ++client)
+    if(IsClientInGame(client))
+    if(IsPlayerAlive(client))
+    ForcePlayerSuicide(client);
 
     CreateTimer(35.0, Timer_ChangeMap, 0, TIMER_FLAG_NO_MAPCHANGE);
 
@@ -721,7 +729,9 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
         }
         case MenuAction_Display:
         {
-            SetPanelTitle(view_as<Handle>(param2), "投票选择下幅地图 \n ");
+            char text[32];
+            FormatEx(text, 32, "%T \n ", "vote item title", param1);
+            SetPanelTitle(view_as<Handle>(param2), text);
         }
         case MenuAction_DisplayItem:
         {
@@ -731,13 +741,13 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
             GetMenuItem(menu, param2, map, 256);
 
             if(StrEqual(map, VOTE_EXTEND, false))
-                strcopy(buffer, 256, "延长当前地图");
+                FormatEx(buffer, 256, "%T", "vote item extend", param1);
             else if(StrEqual(map, VOTE_DONTCHANGE, false))
-                strcopy(buffer, 256, "不要更换地图");
+                FormatEx(buffer, 256, "%T", "vote item dont change", param1);
             else if(StrEqual(map, LINE_ONE, false))
-                strcopy(buffer, 256, "选择你想玩的地铁图...");
+                FormatEx(buffer, 256, "%T", "LINE_ONE", param1);
             else if(StrEqual(map, LINE_TWO, false))
-                strcopy(buffer, 256, "如果你选错可以输入 !revote 重新投票 ;-)");
+                FormatEx(buffer, 256, "%T", "LINE_TWO", param1);
             
             if(buffer[0] != '\0')
                 return RedrawMenuItem(buffer);
@@ -1316,7 +1326,7 @@ stock void DisplayCountdownHUD(int time)
     SetHudTextParams(-1.0, 0.32, 1.2, 0, 255, 255, 255, 0, 30.0, 0.0, 0.0);// Doc -> https://sm.alliedmods.net/new-api/halflife/SetHudTextParams
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
-            ShowHudText(client, 5, "%T", "mcr countdown hud", client, time); // 叁生鉐 is dead...
+            ShowHudText(client, 0, "%T", "mcr countdown hud", client, time); // 叁生鉐 is dead...
 }
 
 stock bool CleanPlugin()

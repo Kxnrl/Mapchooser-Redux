@@ -3,7 +3,6 @@
 
 #include <mapchooser_redux>
 #include <nextmap>
-#include <cstrike>
 #include <smutils>
 
 bool g_bAllowRTV;
@@ -75,6 +74,21 @@ void AttemptRTV(int client)
         Chat(client, "%T", "rtv started", client);
         return;
     }
+    
+    if(HasEndOfMapVoteFinished())
+    {
+        char map[128];
+        if(GetNextMap(map, 128))
+        {
+            Chat(client, "%T", "nominate vote complete", client, map);
+            if(FindConVar("mcr_include_descnametag").BoolValue)
+            {
+                char desc[128];
+                GetMapDesc(map, desc, 128, false, false);
+                Chat(client, "\x0A -> \x0E[\x05%s\x0E]", desc);
+            }
+        }
+    }
 
     if(g_bVoted[client])
     {
@@ -130,18 +144,10 @@ public Action Timer_ChangeMap(Handle timer)
     FindConVar("mp_maxrounds").SetInt(0);
     FindConVar("mp_roundtime").SetInt(1);
 
-    CS_TerminateRound(12.0, CSRoundEnd_Draw, true);
-
     for(int client = 1; client <= MaxClients; ++client)
-    {
-        if(!IsClientInGame(client))
-            continue;
-        
-        if(!IsPlayerAlive(client))
-            continue;
-        
-        ForcePlayerSuicide(client);
-    }
+    if(IsClientInGame(client))
+    if(IsPlayerAlive(client))
+    ForcePlayerSuicide(client);
 
     return Plugin_Stop;
 }

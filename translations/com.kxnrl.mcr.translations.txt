@@ -275,4 +275,38 @@
 		"en"    "{silver}Voting for the next map will begin in {red}{1}{silver} seconds"
         "chi"   "{silver}地图投票还有 {red}{1}{silver} 秒开始"
 	}
+    
+    "vote item extend"
+    {
+        "en"    "Extend map"
+        "chi"   "延长地图"
+    }
+    
+    "vote item dont change"
+    {
+        "en"    "Don't change"
+        "chi"   "不要换图"
+    }
+    
+    "LINE_ONE"
+    {
+        "en"    "Selete a map that you want to play! "
+        "chi"   "选择你想玩的地铁图..."
+    }
+    
+    "LINE_TWO"
+    {
+        "en"    "Type !revote to restart vote menu ;-)"
+        "chi"   "如果你选错可以输入 !revote 重新投票 ;-)"
+    }
+    
+    "vote item title"
+    {
+        "en"    "Vote the next map!"
+        "chi"   "投票选出下一张地图"
+    }
+    
+    "rtv next map"
+    {
+    }
 }
