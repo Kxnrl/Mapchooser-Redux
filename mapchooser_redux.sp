@@ -1270,7 +1270,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
     {
         do
         {
-            g_aMapList.GetString(UTIL_GetRandomInt(0, g_aMapList.Length-1, nmap, 128);
+            g_aMapList.GetString(UTIL_GetRandomInt(0, g_aMapList.Length-1), nmap, 128);
         }
         while(StrEqual(nmap, cmap));
     }
