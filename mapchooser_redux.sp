@@ -1270,7 +1270,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
     {
         do
         {
-            g_aMapList.GetString(UTIL_GetRandomInt(0, GetArraySize(g_aMapList)-1), nmap, 128);
+            g_aMapList.GetString(UTIL_GetRandomInt(0, g_aMapList.Length-1, nmap, 128);
         }
         while(StrEqual(nmap, cmap));
     }
@@ -1278,7 +1278,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
     DataPack pack = new DataPack();
     pack.WriteString(nmap);
     pack.Reset();
-    CreateDataTimer(35.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+    CreateTimer(60.0, Timer_Monitor, pack, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_Monitor(Handle timer, DataPack pack)
@@ -1286,13 +1286,13 @@ public Action Timer_Monitor(Handle timer, DataPack pack)
     char cmap[128], nmap[128];
     GetCurrentMap(cmap, 128);
     pack.ReadString(nmap, 128);
+    delete pack;
 
     if(StrEqual(nmap, cmap))
         return Plugin_Stop;
 
-    ThrowError("Map has not been changed ? %s -> %s", cmap, nmap);
+    LogMessage("Map has not been changed ? %s -> %s", cmap, nmap);
     ForceChangeLevel(nmap, "BUG: Map not change");
-    //ServerCommand("map %s", nmap);
 
     return Plugin_Stop;
 }
