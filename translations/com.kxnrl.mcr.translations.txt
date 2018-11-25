@@ -306,6 +306,13 @@
         "chi"   "投票选出下一张地图"
     }
     
+    "NominateResult_NoMatch"
+    {
+        "#format"   "{1:s"
+        "en"    "{silver}No match for this map name could be found. [{green}{1}{silver}]"
+        "chi"   "{silver}找不到这张地图. [{green}{1}{silver}]"
+    }
+
     "rtv next map"
     {
     }

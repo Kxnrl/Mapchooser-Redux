@@ -10,7 +10,7 @@
 
 
 ArrayList g_aMapList;
-Handle g_hMapMenu;
+Menu g_hMapMenu;
 int g_iMapFileSerial = -1;
 bool g_pStore;
 bool g_pShop;
@@ -21,9 +21,9 @@ bool g_pShop;
 #define MAPSTATUS_EXCLUDE_PREVIOUS (1<<3)
 #define MAPSTATUS_EXCLUDE_NOMINATED (1<<4)
 
-Handle g_aMapTrie;
-Handle g_aNominated_Auth;
-Handle g_aNominated_Name;
+StringMap g_smMaps;
+StringMap g_smAuth;
+StringMap g_smName;
 
 public Plugin myinfo =
 {
@@ -53,13 +53,12 @@ public void OnPluginStart()
     SMUtils_SetTextDest(HUD_PRINTCENTER);
     
     LoadTranslations("com.kxnrl.mcr.translations");
-    
-    int arraySize = ByteCountToCells(256);    
-    g_aMapList = CreateArray(arraySize);
 
-    g_aMapTrie = CreateTrie();
-    g_aNominated_Auth = CreateTrie();
-    g_aNominated_Name = CreateTrie();
+    g_aMapList = new ArrayList(ByteCountToCells(256));
+
+    g_smMaps = new StringMap();
+    g_smAuth = new StringMap();
+    g_smName = new StringMap();
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -94,11 +93,11 @@ public void OnMapEnd()
 {
     char map[128];
     GetCurrentMap(map, 128);
-    RemoveFromTrie(g_aNominated_Auth, map);
-    RemoveFromTrie(g_aNominated_Name, map);
+    g_smAuth.Remove(map);
+    g_smName.Remove(map);
 
     if(g_hKvMapData != null)
-        CloseHandle(g_hKvMapData);
+        delete g_hKvMapData;
     g_hKvMapData = null;
 }
 
@@ -106,13 +105,13 @@ public void OnNominationRemoved(const char[] map, int owner)
 {
     int status;
 
-    if(!GetTrieValue(g_aMapTrie, map, status))
+    if(!g_smMaps.GetValue(map, status))
         return;    
 
     if((status & MAPSTATUS_EXCLUDE_NOMINATED) != MAPSTATUS_EXCLUDE_NOMINATED)
         return;
 
-    SetTrieValue(g_aMapTrie, map, MAPSTATUS_ENABLED);    
+    g_smMaps.SetValue(map, MAPSTATUS_ENABLED);    
 }
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
@@ -125,72 +124,112 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
     if(!IsNominateAllowed(client))
         return;
+    
+    if(sArgs[0] == '!' || sArgs[0] == '/' || sArgs[0] == '.')
+    {
+        char arg[2][128];
+        ExplodeString(sArgs, " ", arg, 2, 128, true);
+        if(strlen(arg[1]) >= 3)
+        {
+            FuzzyNominate(client, arg[1]);
+            return;
+        }
+    }
 
     AttemptNominate(client);
 }
 
+void FuzzyNominate(int client, const char[] find)
+{
+    ArrayList result = new ArrayList(ByteCountToCells(128));
+    
+    char map[128];
+    for(int x = 0; x < g_aMapList.Length; ++x)
+    {
+        g_aMapList.GetString(x, map, 128);
+        if(StrContains(map, find, false) > -1)
+            result.PushString(map);
+    }
+    
+    if(result.Length == 0)
+    {
+        delete result;
+        Chat(client, "%T", "NominateResult_NoMatch", client, find);
+        AttemptNominate(client);
+        return;
+    }
+    
+    Menu menu = new Menu(Handler_MapSelectMenu);
+    
+    char desc[256];
+    for(int x = 0; x < result.Length; ++x)
+    {
+        result.GetString(x, map, 128);
+        menu.AddItem(map, GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_descnametag").BoolValue) ? desc : map);
+    }
+
+    menu.SetTitle("%d of %s", menu.ItemCount, find);
+    menu.Display(client, MENU_TIME_FOREVER);
+
+    delete result;
+}
+
 void AttemptNominate(int client)
 {
-    SetMenuTitle(g_hMapMenu, "%T\n ", "nominate menu title", client);
-    DisplayMenu(g_hMapMenu, client, MENU_TIME_FOREVER);
+    g_hMapMenu.SetTitle("%T\n ", "nominate menu title", client);
+    g_hMapMenu.Display(client, MENU_TIME_FOREVER);
 }
 
 void BuildMapMenu()
 {
-    if(g_hMapMenu != INVALID_HANDLE)
+    if(g_hMapMenu != null)
     {
-        CloseHandle(g_hMapMenu);
-        g_hMapMenu = INVALID_HANDLE;
+        delete g_hMapMenu;
+        g_hMapMenu = null;
     }
 
-    ClearTrie(g_aMapTrie);
+    g_smMaps.Clear();
 
-    g_hMapMenu = CreateMenu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
+    g_hMapMenu = new Menu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
     char map[128];
-    
-    ArrayList excludeMaps = CreateArray(ByteCountToCells(128));
+
+    ArrayList excludeMaps = new ArrayList(ByteCountToCells(128));
     GetExcludeMapList(excludeMaps);
 
     char currentMap[32];
     GetCurrentMap(currentMap, 32);
-    
-    for(int i = 0; i < GetArraySize(g_aMapList); i++)
+
+    char desc[256];
+    for(int i = 0; i < g_aMapList.Length; i++)
     {
         int status = MAPSTATUS_ENABLED;
 
-        GetArrayString(g_aMapList, i, map, 128);
+        g_aMapList.GetString(i, map, 128);
 
-        if(StrEqual(map, currentMap))
+        if(strcmp(map, currentMap) == 0)
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_CURRENT;
 
         if(status == MAPSTATUS_ENABLED)
-            if(FindStringInArray(excludeMaps, map) != -1)
+            if(excludeMaps.FindString(map) != -1)
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
-
-        char szTrans[256];
-        if(GetMapDesc(map, szTrans, 256, true, FindConVar("mcr_include_descnametag").BoolValue))
-            AddMenuItem(g_hMapMenu, map, szTrans);
-        else
-            AddMenuItem(g_hMapMenu, map, map);
-
-        SetTrieValue(g_aMapTrie, map, status);
+        g_hMapMenu.AddItem(map, (GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_descnametag").BoolValue)) ? desc : map);
+        g_smMaps.SetValue(map, status);
     }
 
-    SetMenuExitButton(g_hMapMenu, true);
+    g_hMapMenu.ExitButton = true;
 
-    if(excludeMaps != INVALID_HANDLE)
-        CloseHandle(excludeMaps);
+    delete excludeMaps;
 }
 
-public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int param2)
+public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int param2)
 {
     switch (action)
     {
         case MenuAction_Select:
         {
             char map[128];
-            GetMenuItem(menu, param2, map, 128);        
+            menu.GetItem(param2, map, 128);        
 
             NominateResult result = NominateMap(map, false, param1);
 
@@ -242,8 +281,8 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
                 return 0;
             }
 
-            SetTrieValue(g_aMapTrie, map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED);
-            
+            g_smMaps.SetValue(map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED);
+
             if(g_pStore)
             {
                 int credits = GetMapPrice(map);
@@ -260,8 +299,8 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             char m_szAuth[32], m_szName[32];
             GetClientAuthId(param1, AuthId_Steam2, m_szAuth, 32, true);
             GetClientName(param1, m_szName, 32);
-            SetTrieString(g_aNominated_Auth, map, m_szAuth, true);
-            SetTrieString(g_aNominated_Name, map, m_szName, true);
+            g_smAuth.SetString(map, m_szAuth, true);
+            g_smName.SetString(map, m_szName, true);
 
             LogMessage("[MCR]  \"%L\" nominated %s", param1, map);
 
@@ -281,11 +320,11 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
         case MenuAction_DrawItem:
         {
             char map[128];
-            GetMenuItem(menu, param2, map, 128);
+            menu.GetItem(param2, map, 128);
 
             int status;
 
-            if(!GetTrieValue(g_aMapTrie, map, status))
+            if(!g_smMaps.GetValue(map, status))
             {
                 LogError("case MenuAction_DrawItem: Menu selection of item not in trie. Major logic problem somewhere.");
                 return ITEMDRAW_DEFAULT;
@@ -300,11 +339,11 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
         case MenuAction_DisplayItem:
         {
             char map[128];
-            GetMenuItem(menu, param2, map, 128);
+            menu.GetItem(param2, map, 128);
 
             int status;
             
-            if(!GetTrieValue(g_aMapTrie, map, status))
+            if(!g_smMaps.GetValue(map, status))
             {
                 LogError("case MenuAction_DisplayItem: Menu selection of item not in trie. Major logic problem somewhere.");
                 return 0;
@@ -338,6 +377,12 @@ public int Handler_MapSelectMenu(Handle menu, MenuAction action, int param1, int
             }
 
             return 0;
+        }
+        
+        case MenuAction_End:
+        {
+            if(menu != g_hMapMenu)
+                delete menu;
         }
     }
 
@@ -379,9 +424,9 @@ public void OnMapDataLoaded()
     if(g_hKvMapData != null)
         CloseHandle(g_hKvMapData);
 
-    g_hKvMapData = CreateKeyValues("MapData", "", "");
-    FileToKeyValues(g_hKvMapData, "addons/sourcemod/configs/mapdata.txt");
-    KvRewind(g_hKvMapData);
+    g_hKvMapData = new KeyValues("MapData", "", "");
+    g_hKvMapData.ImportFromFile("addons/sourcemod/configs/mapdata.txt");
+    g_hKvMapData.Rewind();
 
     BuildMapMenu();
 }
@@ -392,21 +437,19 @@ public Action Timer_Broadcast(Handle timer)
     GetCurrentMap(map, 128);
     
     char m_szAuth[32];
-    if(!GetTrieString(g_aNominated_Auth, map, m_szAuth, 32))
+    if(!g_smAuth.GetString(map, m_szAuth, 32))
         return Plugin_Stop;
     
     char m_szName[32];
-    if(!GetTrieString(g_aNominated_Name, map, m_szName, 32))
+    if(!g_smName.GetString(map, m_szName, 32))
         return Plugin_Stop;
     
     int client = FindClientByAuth(m_szAuth);
-    
-    ReplaceString(m_szAuth, 32, "STEAM_1:", "");
-    
+
     if(!client)
-        tChatAll("%t", "nominated by name", m_szName, m_szAuth);
+        tChatAll("%t", "nominated by name", m_szName, m_szAuth[8]);
     else
-        tChatAll("%t", "nominated by client", client, m_szAuth);
+        tChatAll("%t", "nominated by client", client, m_szAuth[8]);
 
     return Plugin_Continue;
 }
