@@ -634,7 +634,7 @@ public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
     FindConVar("mp_maxrounds").SetInt(0);
     FindConVar("mp_roundtime").SetInt(1);
 
-    CreateTimer(35.0, Timer_ChangeMap, 0, TIMER_FLAG_NO_MAPCHANGE);
+    CreateTimer(60.0, Timer_ChangeMap, 0, TIMER_FLAG_NO_MAPCHANGE);
 
     g_bChangeMapInProgress = true;
     g_bChangeMapAtRoundEnd = false;
@@ -652,7 +652,7 @@ public Action Timer_ChangeMaprtv(Handle hTimer)
     if(IsPlayerAlive(client))
     ForcePlayerSuicide(client);
 
-    CreateTimer(35.0, Timer_ChangeMap, 0, TIMER_FLAG_NO_MAPCHANGE);
+    CreateTimer(60.0, Timer_ChangeMap, 0, TIMER_FLAG_NO_MAPCHANGE);
 
     return Plugin_Stop;
 }
@@ -793,6 +793,7 @@ public Action Timer_ChangeMap(Handle timer)
         return Plugin_Stop;    
     }
 
+    LogMessage("Timer_ChangeMap -> ForceChangeLevel -> %s", map);
     ForceChangeLevel(map, "Map Vote");
  
     return Plugin_Stop;
