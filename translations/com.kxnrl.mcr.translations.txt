@@ -308,7 +308,7 @@
     
     "NominateResult_NoMatch"
     {
-        "#format"   "{1:s"
+        "#format"   "{1:s}"
         "en"    "{silver}No match for this map name could be found. [{green}{1}{silver}]"
         "chi"   "{silver}找不到这张地图. [{green}{1}{silver}]"
     }
