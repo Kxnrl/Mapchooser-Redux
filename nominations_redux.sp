@@ -327,19 +327,19 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             if(!g_smMaps.GetValue(map, status))
             {
                 LogError("case MenuAction_DrawItem: Menu selection of item not in trie. Major logic problem somewhere.");
-                return ITEMDRAW_DEFAULT;
+                return ITEMDRAW_DISABLED; //ITEMDRAW_DEFAULT;
             }
-
+            
             if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
                 return ITEMDRAW_DISABLED;    
-    
+
             return ITEMDRAW_DEFAULT;
         }
         
         case MenuAction_DisplayItem:
         {
-            char map[128];
-            menu.GetItem(param2, map, 128);
+            char map[128], display[150];
+            menu.GetItem(param2, map, 128, _, display, 150);
 
             int status;
             
@@ -349,29 +349,29 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 return 0;
             }
 
-            char buffer[100];
-            char display[150];
             char trans[128];
-            strcopy(buffer, 100, map);
             GetMapDesc(map, trans, 128, false, false);
 
             if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
             {
                 if((status & MAPSTATUS_EXCLUDE_CURRENT) == MAPSTATUS_EXCLUDE_CURRENT)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu current Map", param1, trans);
+                    Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu current Map", param1);
                     return RedrawMenuItem(display);
                 }
                 
                 if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu recently played", param1, trans);
+                    Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu recently played", param1);
                     return RedrawMenuItem(display);
                 }
-                
+
                 if((status & MAPSTATUS_EXCLUDE_NOMINATED) == MAPSTATUS_EXCLUDE_NOMINATED)
                 {
-                    Format(display, sizeof(display), "%s (%T)\n%s", buffer, "nominate menu was nominated", param1, trans);
+                    char name[32];
+                    if(g_smName.GetString(map, name, 32))
+                         Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu was nominated name", param1, name);
+                    else Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu was nominated"     , param1);
                     return RedrawMenuItem(display);
                 }
             }

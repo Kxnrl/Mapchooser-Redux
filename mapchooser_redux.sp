@@ -309,10 +309,7 @@ public Action Command_SetNextmap(int client, int args)
 
 public void OnMapTimeLeftChanged()
 {
-    if(g_aMapList.Length > 0)
-        SetupTimeleftTimer();
-    else
-        LogError("No enough maps to start the vote.");
+    SetupTimeleftTimer();
 }
 
 void SetupTimeleftTimer()
@@ -333,6 +330,12 @@ void SetupTimeleftTimer()
     if(timeLeft - 300 < 0 && !g_bHasVoteStarted)
     {
         SetupWarningTimer(WarningType_Vote);
+        return;
+    }
+    
+    if(g_aMapList.Length <= 0)
+    {
+        LogError("No enough maps to start the vote.");
         return;
     }
 

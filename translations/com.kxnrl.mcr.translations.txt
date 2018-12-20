@@ -122,6 +122,13 @@
         "chi"   "已被预定."
     }
     
+    "nominate menu was nominated name"
+    {
+        "#format" "{1:s}"
+        "en"    "Nominated by {1}"
+        "chi"   "预定人: {1}"
+    }
+
     "nominate changed map"
     {
         "#format" "{1:N},{2:s}"
