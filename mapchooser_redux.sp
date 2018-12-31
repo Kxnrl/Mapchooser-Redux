@@ -61,6 +61,7 @@ enum Convars
     ConVar:TimeLoc,
     ConVar:OldMaps,
     ConVar:NameTag,
+    ConVar:DescTag,
 }
 // cvars
 any g_Convars[Convars];
@@ -98,13 +99,14 @@ public void OnPluginStart()
     
     g_Convars[TimeLoc] = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
     g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
-    g_Convars[NameTag] = CreateConVar("mcr_include_descnametag", "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars[NameTag] = CreateConVar("mcr_include_nametag",     "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars[DescTag] = CreateConVar("mcr_include_desctag",     "1", "include desc tag in map desc",                                  _, true, 0.0, true, 1.0);
 
     if(!DirExists("cfg/sourcemod/mapchooser"))
         if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
             SetFailState("Failed to create folder \"cfg/sourcemod/mapchooser\"");
 
-    AutoExecConfig(true, "mapchooser", "sourcemod/mapchooser");
+    AutoExecConfig(true, "mapchooser_redux", "sourcemod/mapchooser");
 
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
@@ -481,7 +483,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             g_aNominateList.GetString(i, map, 256);
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
             RemoveStringFromArray(g_aNextMapList, map);
 
             Call_StartForward(g_NominationsResetForward);
@@ -522,7 +524,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             GetArrayString(g_aNextMapList, count, map, 256);        
             count++;
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
+            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
             i++;
 
             if(count >= g_aNextMapList.Length)
@@ -542,7 +544,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 256);
             
             if(IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue);
+                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
             else if(StrEqual(map, VOTE_DONTCHANGE))
                 AddMenuItem(g_hVoteMenu, VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
@@ -617,7 +619,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bMapVoteCompleted = true;
         
         tChatAll("%t", "mcr next map", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
-        if(g_Convars[NameTag])
+        if(g_Convars[DescTag].BoolValue)
         {
             char desc[128];
             GetMapDesc(map, desc, 128, false, false);

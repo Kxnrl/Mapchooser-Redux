@@ -81,7 +81,7 @@ void AttemptRTV(int client)
         if(GetNextMap(map, 128))
         {
             Chat(client, "%T", "nominate vote complete", client, map);
-            if(FindConVar("mcr_include_descnametag").BoolValue)
+            if(FindConVar("mcr_include_desctag").BoolValue)
             {
                 char desc[128];
                 GetMapDesc(map, desc, 128, false, false);

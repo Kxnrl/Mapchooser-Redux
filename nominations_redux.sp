@@ -165,7 +165,7 @@ void FuzzyNominate(int client, const char[] find)
     for(int x = 0; x < result.Length; ++x)
     {
         result.GetString(x, map, 128);
-        menu.AddItem(map, GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_descnametag").BoolValue) ? desc : map);
+        menu.AddItem(map, FindConVar("mcr_include_desctag").BoolValue && GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_nametag").BoolValue) ? desc : map);
     }
 
     menu.SetTitle("%d of %s", menu.ItemCount, find);
@@ -213,7 +213,7 @@ void BuildMapMenu()
         if(status == MAPSTATUS_ENABLED)
             if(excludeMaps.FindString(map) != -1)
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
-        g_hMapMenu.AddItem(map, (GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_descnametag").BoolValue)) ? desc : map);
+        g_hMapMenu.AddItem(map, FindConVar("mcr_include_desctag").BoolValue && GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_nametag").BoolValue) ? desc : map);
         g_smMaps.SetValue(map, status);
     }
 
@@ -308,8 +308,8 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 tChatAll("%t", "nominate changed map", param1, map);
             else
                 tChatAll("%t", "nominate nominate map", param1, map);
-            
-            if(FindConVar("mcr_include_descnametag").BoolValue)
+
+            if(FindConVar("mcr_include_desctag").BoolValue)
             {
                 char desc[128];
                 GetMapDesc(map, desc, 128, false, false);

@@ -20,7 +20,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    mcr_delete_offical_map = CreateConVar("mcr_delete_offical_map", "1", "auto-delete offical maps", _, true, 0.0, true, 1.0);
+    mcr_delete_offical_map = CreateConVar("mcr_delete_offical_map", "0", "auto-delete offical maps", _, true, 0.0, true, 1.0);
     mcr_generate_mapcycle  = CreateConVar("mcr_generate_mapcycle",  "1", "auto-generate map list in mapcycle.txt", _, true, 0.0, true, 1.0);
     mcr_generate_mapgroup  = CreateConVar("mcr_generate_mapgroup",  "1", "auto-generate map group in gamemodes_server.txt", _, true, 0.0, true, 1.0);
 
@@ -28,7 +28,7 @@ public void OnPluginStart()
         if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
             SetFailState("Failed to create folder \"cfg/sourcemod/mapchooser\"");
 
-    AutoExecConfig(true, "maplister", "sourcemod/mapchooser");
+    AutoExecConfig(true, "maplister_redux", "sourcemod/mapchooser");
 
     g_iMapCount = GetMapCount();
 
@@ -221,6 +221,7 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("cs_assault");
         officalmaps.PushString("cs_insertion");
         officalmaps.PushString("cs_italy");
+        officalmaps.PushString("cs_militia");
         officalmaps.PushString("cs_office");
         officalmaps.PushString("de_austria");
         officalmaps.PushString("de_bank");
@@ -240,6 +241,7 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("de_stmarc");
         officalmaps.PushString("de_sugarcane");
         officalmaps.PushString("de_train");
+        officalmaps.PushString("dz_blacksite");
         officalmaps.PushString("gd_rialto");
         officalmaps.PushString("training1");
     }

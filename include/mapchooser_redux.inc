@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.5.<commits>"
+#define MCR_VERSION "1.6.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -55,12 +55,14 @@ native void GetNominatedMapList(ArrayList maparray, ArrayList ownerarray);
 native bool EndOfMapVoteEnabled();
 
 // stocks
-stock bool AddMapItem(Handle menu, const char[] map, bool includeTag)
+stock bool AddMapItem(Handle menu, const char[] map, bool includeTag, bool ori = false)
 {
-    char szTrans[256];
-    
-    if(GetMapDesc(map, szTrans, 256, true, includeTag))
-        return AddMenuItem(menu, map, szTrans);
+    if(!ori)
+    {
+        char szTrans[192];
+        if(GetMapDesc(map, szTrans, 192, true, includeTag))
+            return AddMenuItem(menu, map, szTrans);
+    }
 
     return AddMenuItem(menu, map, map);
 }
