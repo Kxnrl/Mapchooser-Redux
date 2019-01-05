@@ -3,7 +3,7 @@
   
 |Build Status|Download|
 |---|---
-|[![Build Status](https://img.shields.io/travis/Kxnrl/Mapchooser-Redux/master.svg?style=flat-square)](https://travis-ci.org/Kxnrl/Mapchooser-Redux?branch=master) |[![Download](https://static.kxnrl.com/images/web/buttons/download.png)](https://build.kxnrl.com/Mapchooser-Redux/)  
+|[![Build Status](https://img.shields.io/travis/Kxnrl/Mapchooser-Redux/master.svg?style=flat-square)](https://travis-ci.org/Kxnrl/Mapchooser-Redux?branch=master) |[![Download](https://static.kxnrl.com/images/web/buttons/download.png)](https://build.kxnrl.com/MapChooser-Redux/)  
 
   
   
