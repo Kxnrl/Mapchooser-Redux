@@ -383,7 +383,7 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
                 {
                     int left = GetCooldown(map);
-                    Format(display, sizeof(display), "%s\n%s (%T) [CD:%05d]", map, trans, "nominate menu recently played", param1, left);
+                    Format(display, sizeof(display), "%s\n%s (CD:%5d)", map, trans, left);
                     return RedrawMenuItem(display);
                 }
 

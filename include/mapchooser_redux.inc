@@ -78,8 +78,12 @@ stock int GetMapPrice(const char[] map)
         return 100;
 
     int credits = g_hKvMapData.GetNum("price", 0);
+    if (credits < 100)
+        credits = 100;
+    if (credits > 99999)
+        credits = 99999;
 
-    return (credits < 100) ? 100 : credits;
+    return credits;
 }
 
 stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
@@ -105,7 +109,7 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeNam
     }
 
     if(includePrice)
-        Format(desc, maxLen, "%s[P:%06d]", desc, GetMapPrice(map));
+        Format(desc, maxLen, "%s[%d]", desc, GetMapPrice(map));
 
     return true;
 }

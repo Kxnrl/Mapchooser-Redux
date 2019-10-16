@@ -107,19 +107,13 @@
     "nominate menu current Map"
     {
         "en"    "Current Map"
-        "chi"   "当前地图."
-    }
-
-    "nominate menu recently played"
-    {
-        "en"    "Recently Played"
-        "chi"   "最近玩过."
+        "chi"   "当前地图"
     }
 
     "nominate menu was nominated"
     {
         "en"    "Nominated"
-        "chi"   "已被预定."
+        "chi"   "已被预定"
     }
     
     "nominate menu was nominated name"
@@ -320,7 +314,4 @@
         "chi"   "{silver}找不到这张地图. [{green}{1}{silver}]"
     }
 
-    "rtv next map"
-    {
-    }
 }
