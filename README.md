@@ -16,16 +16,19 @@
   
 ### ConVars  
 - **mcr_timer_location**  - Timer Location of HUD.  
-- **mcr_csgo_arms_fix**   - Enable arms fix.  
-- **mcr_old_maps_count**  - How many maps in cooldown list.  
-- **mcr_delete_offical**  - Auto-delete offical maps. 
+- **mcr_maps_history_count**  - How many maps in cooldown list.  
 - **mcr_include_nametag** - Include name tag in map desc.  
+- **mcr_include_desctag** - Include desc tag in map desc.
+- **mcr_map_extend_times** - How many times can extend the map.  
+- **mcr_delete_offical**  - Auto-delete offical maps.  
+- **mcr_generate_mapcycle** - Auto-generate map list in mapcycle.txt.  
+- **mcr_generate_mapgroup** - Auto-generate map group in gamemodes_server.txt.  
   
   
 ### Configs
 * map pool in mapcycle.txt by default, you can edit it in 'addons/sourcemod/configs/maplist.cfg'
 * map data 'addons/sourcemod/configs/mapdata.txt' 
-* if mapdata.txt does not exists, data will be auto-generated  [example](https://github.com/CSGOGAMERS-Community/CG-Server/blob/master/ZombieEscape/mapdata.txt)  
+* if mapdata.txt does not exists, data will be auto-generated  [example](https://github.com/PuellaMagi/Server-Data/blob/master/ZombieEscape/mapdata.txt)  
   
   
 ### Credit  
