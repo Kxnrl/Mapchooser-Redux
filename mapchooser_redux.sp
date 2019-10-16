@@ -19,7 +19,7 @@ Handle g_tVote;
 Handle g_tRetry;
 Handle g_tWarning;
 
-Handle g_hVoteMenu;
+Menu g_hVoteMenu;
 
 ArrayList g_aMapList;
 ArrayList g_aNominateList;
@@ -62,6 +62,7 @@ enum Convars
     ConVar:OldMaps,
     ConVar:NameTag,
     ConVar:DescTag,
+    ConVar:MaxExts,
 }
 // cvars
 any g_Convars[Convars];
@@ -101,6 +102,7 @@ public void OnPluginStart()
     g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
     g_Convars[NameTag] = CreateConVar("mcr_include_nametag",     "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
     g_Convars[DescTag] = CreateConVar("mcr_include_desctag",     "1", "include desc tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars[MaxExts] = CreateConVar("mcr_map_extend_times",    "3", "How many times can extend the map.",                            _, true, 0.0, true, 9.0);
 
     if(!DirExists("cfg/sourcemod/mapchooser"))
         if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
@@ -119,8 +121,18 @@ public void OnPluginStart()
 
     HookEventEx("cs_win_panel_match",   Event_WinPanel, EventHookMode_Post);
     HookEventEx("round_end",            Event_RoundEnd, EventHookMode_Post);
+
+    ConVar cvar = FindConVar("mp_endmatch_votenextmap");
+    cvar.SetBool(false, true);
+    cvar.AddChangeHook(OnCvarChanged);
     
     BuildKvMapData();
+    LoadOldMapList();
+}
+
+public void OnCvarChanged(ConVar cvar, const char[] nv, const char[] ov)
+{
+    cvar.SetBool(false, true);
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -178,11 +190,12 @@ public void OnConfigsExecuted()
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != null)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
-        
+
+    char map[128];
+    GetCurrentMap(map, 128);
+
+    SaveOldMapList(map);
     CheckMapData();
-
-    FindConVar("mp_endmatch_votenextmap").SetBool(false);
-
     CreateNextVote();
     SetupTimeleftTimer();
 
@@ -193,35 +206,6 @@ public void OnConfigsExecuted()
 
     g_aNominateList.Clear();
     g_aNominateOwners.Clear();
-
-    if(g_aOldMapList.Length < 1)
-    {
-        char filepath[128];
-        BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
-
-        if(!FileExists(filepath))
-            return;
-
-        File file = OpenFile(filepath, "r");
-        if(file != null)
-        {
-            g_aOldMapList.Clear();
-
-            char fileline[128];
-
-            while(file.ReadLine(fileline, 128))
-            {
-                TrimString(fileline);
-
-                g_aOldMapList.PushString(fileline);
-
-                if(g_aOldMapList.Length >= g_Convars[OldMaps].IntValue)
-                    break;
-            }
-
-            file.Close();
-        }
-    }
 }
 
 public void OnMapEnd()
@@ -234,16 +218,20 @@ public void OnMapEnd()
     g_tRetry = null;
     g_tWarning = null;
     g_iRunoffCount = 0;
+}
 
-    char map[128];
-    GetCurrentMap(map, 128);
+void SaveOldMapList(char[] map)
+{
+    if (InOldMapList(map))
+        return;
+
     g_aOldMapList.PushString(map);
 
     if(g_aOldMapList.Length > g_Convars[OldMaps].IntValue)
         g_aOldMapList.Erase(0);
 
     char filepath[128];
-    BuildPath(Path_SM, filepath, 128, "data/mapchooser_oldlist.txt");
+    BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
 
     if(FileExists(filepath))
         DeleteFile(filepath);
@@ -263,6 +251,40 @@ public void OnMapEnd()
     }
 
     file.Close();
+}
+
+void LoadOldMapList()
+{
+    char filepath[128];
+    BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
+
+    if(!FileExists(filepath))
+        return;
+
+    File file = OpenFile(filepath, "r");
+    if(file != null)
+    {
+        g_aOldMapList.Clear();
+
+        char fileline[128];
+
+        while(file.ReadLine(fileline, 128))
+        {
+            TrimString(fileline);
+
+            g_aOldMapList.PushString(fileline);
+
+            if(g_aOldMapList.Length >= g_Convars[OldMaps].IntValue)
+                break;
+        }
+
+        file.Close();
+    }
+}
+
+static bool InOldMapList(const char[] name)
+{
+    return g_aOldMapList.FindString(name) > -1;
 }
 
 public void OnClientDisconnect(int client)
@@ -453,23 +475,23 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     if(menuStyle != INVALID_HANDLE)
         g_hVoteMenu = CreateMenuEx(menuStyle, Handler_MapVoteMenu, MenuAction_End | MenuAction_Display | MenuAction_DisplayItem | MenuAction_VoteCancel);
     else
-        g_hVoteMenu = CreateMenu(Handler_MapVoteMenu, MenuAction_End | MenuAction_Display | MenuAction_DisplayItem | MenuAction_VoteCancel);
+        g_hVoteMenu = new Menu(Handler_MapVoteMenu, MenuAction_End | MenuAction_Display | MenuAction_DisplayItem | MenuAction_VoteCancel);
 
     Handle radioStyle = GetMenuStyleHandle(MenuStyle_Radio);
 
     if(GetMenuStyle(g_hVoteMenu) == radioStyle)
     {
         g_bBlockedSlots = true;
-        AddMenuItem(g_hVoteMenu, LINE_ONE, "Choose something...", ITEMDRAW_DISABLED);
-        AddMenuItem(g_hVoteMenu, LINE_TWO, "...will ya?", ITEMDRAW_DISABLED);
+        g_hVoteMenu.AddItem(LINE_ONE, "Choose something...", ITEMDRAW_DISABLED);
+        g_hVoteMenu.AddItem(LINE_TWO, "...will ya?", ITEMDRAW_DISABLED);
     }
     else
         g_bBlockedSlots = false;
 
-    SetMenuOptionFlags(g_hVoteMenu, MENUFLAG_BUTTON_NOVOTE);
+    g_hVoteMenu.OptionFlags = MENUFLAG_BUTTON_NOVOTE;
 
-    SetMenuTitle(g_hVoteMenu, "选择下一张地图\n ");
-    SetVoteResultCallback(g_hVoteMenu, Handler_MapVoteFinished);
+    g_hVoteMenu.SetTitle("选择下一张地图\n ");
+    g_hVoteMenu.VoteResultCallback = Handler_MapVoteFinished;
 
     char map[256];
 
@@ -521,7 +543,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         while(i < voteSize)
         {
-            GetArrayString(g_aNextMapList, count, map, 256);        
+            g_aNextMapList.GetString(count, map, 256);        
             count++;
 
             AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
@@ -542,13 +564,13 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         for(int i = 0; i < inputlist.Length; i++)
         {
             inputlist.GetString(i, map, 256);
-            
+
             if(IsMapValid(map))
                 AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
             else if(StrEqual(map, VOTE_DONTCHANGE))
-                AddMenuItem(g_hVoteMenu, VOTE_DONTCHANGE, "Don't Change");
+                g_hVoteMenu.AddItem(VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
-                AddMenuItem(g_hVoteMenu, VOTE_EXTEND, "Extend Map");
+                g_hVoteMenu.AddItem(VOTE_EXTEND, "Extend Map");
         }
         delete inputlist;
     }
@@ -865,7 +887,7 @@ void CreateNextVote()
 
     for(int i = 0; i < limit; i++)
     {
-        int b = UTIL_GetRandomInt(0, GetArraySize(tempMaps) - 1);
+        int b = UTIL_GetRandomInt(0, tempMaps.Length - 1);
         tempMaps.GetString(b, map, 256);
         g_aNextMapList.PushString(map);
         tempMaps.Erase(b);
@@ -893,7 +915,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner)
     if(IsOnlyVIP(map) && !IsClientVIP(owner))
         return NominateResult_OnlyVIP;
     
-    if(IsOnlyAdmin(map) && !CheckCommandAccess(owner, "sm_map", ADMFLAG_CHANGEMAP, false))
+    if(IsOnlyAdmin(map) && !IsClientAdmin(owner))
         return NominateResult_OnlyAdmin;
 
     int index;
@@ -1309,22 +1331,17 @@ public Action Command_ClearCD(int client, int args)
     return Plugin_Handled;
 }
 
-stock void GetMapItem(Handle menu, int position, char[] map, int mapLen)
+stock void GetMapItem(Menu menu, int position, char[] map, int mapLen)
 {
-    GetMenuItem(menu, position, map, mapLen);
+    menu.GetItem(position, map, mapLen);
 }
 
-stock void AddExtendToMenu(Handle menu, MapChange when)
+stock void AddExtendToMenu(Menu menu, MapChange when)
 {
     if(when == MapChange_Instant || when == MapChange_RoundEnd)
-        AddMenuItem(menu, VOTE_DONTCHANGE, "Don't Change");
-    else if(g_iExtends < 3)
-        AddMenuItem(menu, VOTE_EXTEND, "Extend Map");
-}
-
-stock bool IsClientVIP(int client)
-{
-    return CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
+        menu.AddItem(VOTE_DONTCHANGE, "Don't Change");
+    else if(g_iExtends < g_Convars[MaxExts].IntValue)
+        menu.AddItem(VOTE_EXTEND, "Extend Map");
 }
 
 stock void DisplayCountdownHUD(int time)

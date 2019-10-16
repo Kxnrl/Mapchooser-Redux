@@ -7,9 +7,11 @@
 #undef REQUIRE_PLUGIN
 #include <store>
 #include <shop>
+#define REQUIRE_PLUGIN
 
 
 ArrayList g_aMapList;
+ArrayList g_aOldList;
 Menu g_hMapMenu;
 int g_iMapFileSerial = -1;
 bool g_pStore;
@@ -55,6 +57,7 @@ public void OnPluginStart()
     LoadTranslations("com.kxnrl.mcr.translations");
 
     g_aMapList = new ArrayList(ByteCountToCells(256));
+    g_aOldList = new ArrayList(ByteCountToCells(256));
 
     g_smMaps = new StringMap();
     g_smAuth = new StringMap();
@@ -158,14 +161,17 @@ void FuzzyNominate(int client, const char[] find)
         AttemptNominate(client);
         return;
     }
-    
+
+    bool desctag = FindConVar("mcr_include_desctag").BoolValue;
+    bool nametag = FindConVar("mcr_include_nametag").BoolValue;
+
     Menu menu = new Menu(Handler_MapSelectMenu);
-    
+
     char desc[256];
     for(int x = 0; x < result.Length; ++x)
     {
         result.GetString(x, map, 128);
-        menu.AddItem(map, FindConVar("mcr_include_desctag").BoolValue && GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_nametag").BoolValue) ? desc : map);
+        menu.AddItem(map, desctag && GetMapDesc(map, desc, 256, true, nametag, (g_pStore || g_pShop)) ? desc : map);
     }
 
     menu.SetTitle("%d of %s", menu.ItemCount, find);
@@ -194,11 +200,14 @@ void BuildMapMenu()
 
     char map[128];
 
-    ArrayList excludeMaps = new ArrayList(ByteCountToCells(128));
-    GetExcludeMapList(excludeMaps);
+    g_aOldList.Clear();
+    GetExcludeMapList(g_aOldList);
 
     char currentMap[32];
     GetCurrentMap(currentMap, 32);
+
+    bool desctag = FindConVar("mcr_include_desctag").BoolValue;
+    bool nametag = FindConVar("mcr_include_nametag").BoolValue;
 
     char desc[256];
     for(int i = 0; i < g_aMapList.Length; i++)
@@ -211,15 +220,13 @@ void BuildMapMenu()
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_CURRENT;
 
         if(status == MAPSTATUS_ENABLED)
-            if(excludeMaps.FindString(map) != -1)
+            if(g_aOldList.FindString(map) != -1)
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
-        g_hMapMenu.AddItem(map, FindConVar("mcr_include_desctag").BoolValue && GetMapDesc(map, desc, 256, true, FindConVar("mcr_include_nametag").BoolValue) ? desc : map);
+        g_hMapMenu.AddItem(map, desctag && GetMapDesc(map, desc, 256, true, nametag, (g_pStore || g_pShop)) ? desc : map);
         g_smMaps.SetValue(map, status);
     }
 
     g_hMapMenu.ExitButton = true;
-
-    delete excludeMaps;
 }
 
 public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int param2)
@@ -331,7 +338,20 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             }
             
             if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
-                return ITEMDRAW_DISABLED;    
+                return ITEMDRAW_DISABLED;
+
+            // players?
+            int players = GetClientCount(false);
+            int max = GetMaxPlayers(map);
+            int min = GetMinPlayers(map);
+            if ((max > 0 && players >= max) || (min > 0 && players < min))
+                return ITEMDRAW_DISABLED;
+
+            // admin or vip
+            bool adm = IsOnlyAdmin(map);
+            bool vip = IsOnlyVIP(map);
+            if ((adm && !IsClientAdmin(param1)) || (vip && !IsClientVIP(param1)))
+                return ITEMDRAW_DISABLED;
 
             return ITEMDRAW_DEFAULT;
         }
@@ -350,7 +370,7 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             }
 
             char trans[128];
-            GetMapDesc(map, trans, 128, false, false);
+            GetMapDesc(map, trans, 128, false, false, (g_pStore || g_pShop));
 
             if((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
             {
@@ -359,10 +379,11 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                     Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu current Map", param1);
                     return RedrawMenuItem(display);
                 }
-                
+
                 if((status & MAPSTATUS_EXCLUDE_PREVIOUS) == MAPSTATUS_EXCLUDE_PREVIOUS)
                 {
-                    Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu recently played", param1);
+                    int left = GetCooldown(map);
+                    Format(display, sizeof(display), "%s\n%s (%T) [CD:%05d]", map, trans, "nominate menu recently played", param1, left);
                     return RedrawMenuItem(display);
                 }
 
@@ -429,6 +450,11 @@ public void OnMapDataLoaded()
     g_hKvMapData.Rewind();
 
     BuildMapMenu();
+}
+
+int GetCooldown(const char[] map)
+{
+    return g_aOldList.FindString(map) + 1;
 }
 
 public Action Timer_Broadcast(Handle timer)

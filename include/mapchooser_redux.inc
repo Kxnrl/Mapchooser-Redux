@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.6.<commits>"
+#define MCR_VERSION "1.7.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -82,7 +82,7 @@ stock int GetMapPrice(const char[] map)
     return (credits < 100) ? 100 : credits;
 }
 
-stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag)
+stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
 {
     if(g_hKvMapData == null)
         return false;
@@ -98,7 +98,14 @@ stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeNam
         Format(desc, maxLen, "%s\n%s", map, desc);
 
     if(includeTag)
+    {
+        Format(desc, maxLen, "%s%s", IsOnlyAdmin(map) ? "✪" : "", desc);
+        Format(desc, maxLen, "%s%s", IsOnlyVIP(map) ? "♚" : "", desc);
         Format(desc, maxLen, "%s%s", IsNiceMap(map) ? "★" : "", desc);
+    }
+
+    if(includePrice)
+        Format(desc, maxLen, "%s[P:%06d]", desc, GetMapPrice(map));
 
     return true;
 }
@@ -202,4 +209,14 @@ stock int UTIL_GetRandomInt(int min, int max)
         random++;
 
     return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
+}
+
+stock bool IsClientVIP(int client)
+{
+    return CheckCommandAccess(client, "check_isclientvip", ADMFLAG_RESERVATION, false);
+}
+
+stock bool IsClientAdmin(int client)
+{
+    return CheckCommandAccess(client, "sm_map", ADMFLAG_CHANGEMAP, false);
 }
