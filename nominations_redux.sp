@@ -456,7 +456,7 @@ int GetCooldown(const char[] map)
 {
     int listlimit = FindConVar("mcr_maps_history_count").IntValue;
     int currindex = g_aOldList.FindString(map) + 1;
-    if (g_aOldList.Length == listlimits)
+    if (g_aOldList.Length == listlimit)
     {
         return currindex;
     }
