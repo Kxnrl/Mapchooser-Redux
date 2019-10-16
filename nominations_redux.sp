@@ -454,7 +454,13 @@ public void OnMapDataLoaded()
 
 int GetCooldown(const char[] map)
 {
-    return g_aOldList.FindString(map) + 1;
+    int listlimit = FindConVar("mcr_maps_history_count").IntValue;
+    int currindex = g_aOldList.FindString(map) + 1;
+    if (g_aOldList.Length == listlimits)
+    {
+        return currindex;
+    }
+    return (listlimit - g_aOldList.Length) + currindex;
 }
 
 public Action Timer_Broadcast(Handle timer)
