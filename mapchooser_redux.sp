@@ -56,16 +56,16 @@ enum WarningType
     WarningType_Revote
 }
 
-enum Convars
+enum struct Convars
 {
-    ConVar:TimeLoc,
-    ConVar:OldMaps,
-    ConVar:NameTag,
-    ConVar:DescTag,
-    ConVar:MaxExts,
+    ConVar TimeLoc;
+    ConVar OldMaps;
+    ConVar NameTag;
+    ConVar DescTag;
+    ConVar MaxExts;
 }
 // cvars
-any g_Convars[Convars];
+Convars g_Convars;
 
 MapChange g_MapChange;
 
@@ -98,11 +98,11 @@ public void OnPluginStart()
     g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
     
-    g_Convars[TimeLoc] = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
-    g_Convars[OldMaps] = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
-    g_Convars[NameTag] = CreateConVar("mcr_include_nametag",     "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
-    g_Convars[DescTag] = CreateConVar("mcr_include_desctag",     "1", "include desc tag in map desc",                                  _, true, 0.0, true, 1.0);
-    g_Convars[MaxExts] = CreateConVar("mcr_map_extend_times",    "3", "How many times can extend the map.",                            _, true, 0.0, true, 9.0);
+    g_Convars.TimeLoc = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
+    g_Convars.OldMaps = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
+    g_Convars.NameTag = CreateConVar("mcr_include_nametag",     "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars.DescTag = CreateConVar("mcr_include_desctag",     "1", "include desc tag in map desc",                                  _, true, 0.0, true, 1.0);
+    g_Convars.MaxExts = CreateConVar("mcr_map_extend_times",    "3", "How many times can extend the map.",                            _, true, 0.0, true, 9.0);
 
     if(!DirExists("cfg/sourcemod/mapchooser"))
         if(!CreateDirectory("cfg/sourcemod/mapchooser", 511))
@@ -227,7 +227,7 @@ void SaveOldMapList(char[] map)
 
     g_aOldMapList.PushString(map);
 
-    if(g_aOldMapList.Length > g_Convars[OldMaps].IntValue)
+    if(g_aOldMapList.Length > g_Convars.OldMaps.IntValue)
         g_aOldMapList.Erase(0);
 
     char filepath[128];
@@ -274,7 +274,7 @@ void LoadOldMapList()
 
             g_aOldMapList.PushString(fileline);
 
-            if(g_aOldMapList.Length >= g_Convars[OldMaps].IntValue)
+            if(g_aOldMapList.Length >= g_Convars.OldMaps.IntValue)
                 break;
         }
 
@@ -396,7 +396,7 @@ public Action Timer_StartMapVote(Handle timer, DataPack data)
     int warningMaxTime = data.ReadCell();
     int warningTimeRemaining = warningMaxTime - timePassed;
 
-    switch(view_as<TimerLocation>(g_Convars[TimeLoc].IntValue))
+    switch(view_as<TimerLocation>(g_Convars.TimeLoc.IntValue))
     {
         case TimerLocation_Text: tTextAll("%t", "mcr countdown text hint", warningTimeRemaining);
         case TimerLocation_Chat: tChatAll("%t", "mcr countdown chat",      warningTimeRemaining);
@@ -505,7 +505,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             g_aNominateList.GetString(i, map, 256);
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
+            AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
             RemoveStringFromArray(g_aNextMapList, map);
 
             Call_StartForward(g_NominationsResetForward);
@@ -546,7 +546,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             g_aNextMapList.GetString(count, map, 256);        
             count++;
 
-            AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
+            AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
             i++;
 
             if(count >= g_aNextMapList.Length)
@@ -566,7 +566,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 256);
 
             if(IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_Convars[NameTag].BoolValue, !g_Convars[DescTag].BoolValue);
+                AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
             else if(StrEqual(map, VOTE_DONTCHANGE))
                 g_hVoteMenu.AddItem(VOTE_DONTCHANGE, "Don't Change");
             else if(StrEqual(map, VOTE_EXTEND))
@@ -641,7 +641,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         g_bMapVoteCompleted = true;
         
         tChatAll("%t", "mcr next map", map, item_info[0][VOTEINFO_ITEM_VOTES], num_votes);
-        if(g_Convars[DescTag].BoolValue)
+        if(g_Convars.DescTag.BoolValue)
         {
             char desc[128];
             GetMapDesc(map, desc, 128, false, false);
@@ -848,7 +848,7 @@ void CreateNextVote()
     GetCurrentMap(map, 256);
     RemoveStringFromArray(tempMaps, map);
 
-    if(tempMaps.Length > g_Convars[OldMaps].IntValue)
+    if(tempMaps.Length > g_Convars.OldMaps.IntValue)
     {
         for(int i = 0; i < g_aOldMapList.Length; i++)
         {
@@ -1340,7 +1340,7 @@ stock void AddExtendToMenu(Menu menu, MapChange when)
 {
     if(when == MapChange_Instant || when == MapChange_RoundEnd)
         menu.AddItem(VOTE_DONTCHANGE, "Don't Change");
-    else if(g_iExtends < g_Convars[MaxExts].IntValue)
+    else if(g_iExtends < g_Convars.MaxExts.IntValue)
         menu.AddItem(VOTE_EXTEND, "Extend Map");
 }
 

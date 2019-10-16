@@ -10,7 +10,7 @@ language: c
 sudo: false
 
 env:
-  - SOURCEMOD=1.9
+  #- SOURCEMOD=1.9 drop 1.9
   - SOURCEMOD=1.10
 
 script:
