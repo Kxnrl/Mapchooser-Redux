@@ -165,7 +165,7 @@ void FuzzyNominate(int client, const char[] find)
     bool desctag = FindConVar("mcr_include_desctag").BoolValue;
     bool nametag = FindConVar("mcr_include_nametag").BoolValue;
 
-    Menu menu = new Menu(Handler_MapSelectMenu);
+    Menu menu = new Menu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
     char desc[256];
     for(int x = 0; x < result.Length; ++x)
