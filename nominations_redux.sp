@@ -288,6 +288,12 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 return 0;
             }
 
+            if(result == NominateResult_RecentlyPlayed)
+            {
+                Chat(param1, "%T", "NominateResult_RecentlyPlayed", param1);
+                return 0;
+            }
+
             g_smMaps.SetValue(map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED);
 
             if(g_pStore)

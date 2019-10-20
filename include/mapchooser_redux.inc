@@ -33,7 +33,8 @@ enum NominateResult
     NominateResult_MaxPlayers,
     NominateResult_NoCredits,
     NominateResult_OnlyAdmin,
-    NominateResult_OnlyVIP
+    NominateResult_OnlyVIP,
+    NominateResult_RecentlyPlayed
 };
 
 KeyValues g_hKvMapData;

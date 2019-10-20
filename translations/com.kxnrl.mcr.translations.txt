@@ -195,6 +195,12 @@
         "en"    "{red}You have not enough credits to nominate {1}."
         "chi"   "{red}你的余额不足,预定[{blue}{1}{green}]失败."
     }
+
+    "NominateResult_RecentlyPlayed"
+    {
+        "en"    "{red}This map has been played recently."
+        "chi"   "{red}该地图最近已被玩过."
+    }
     
     "nominate menu title"
     {

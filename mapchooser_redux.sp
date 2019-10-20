@@ -97,7 +97,7 @@ public void OnPluginStart()
     g_aNominateOwners   = new ArrayList();
     g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
-    
+
     g_Convars.TimeLoc = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
     g_Convars.OldMaps = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
     g_Convars.NameTag = CreateConVar("mcr_include_nametag",     "1", "include name tag in map desc",                                  _, true, 0.0, true, 1.0);
@@ -113,6 +113,7 @@ public void OnPluginStart()
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
     RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP, "sm_clearcd - Forces Mapchooser to clear map history and cooldown.");
+    RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd - show old map list cooldown.");
 
     g_NominationsResetForward   = CreateGlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward     = CreateGlobalForward("OnMapVoteStarted",       ET_Ignore);
@@ -222,7 +223,7 @@ public void OnMapEnd()
 
 void SaveOldMapList(char[] map)
 {
-    if (InOldMapList(map))
+    if(InOldMapList(map))
         return;
 
     g_aOldMapList.PushString(map);
@@ -918,6 +919,9 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner)
     if(IsOnlyAdmin(map) && !IsClientAdmin(owner))
         return NominateResult_OnlyAdmin;
 
+    if(InOldMapList(map))
+        return NominateResult_RecentlyPlayed;
+
     int index;
 
     if(owner && ((index = g_aNominateOwners.FindValue(owner)) != -1))
@@ -1328,6 +1332,17 @@ public Action Command_ClearCD(int client, int args)
 {
     g_aOldMapList.Clear();
     tChatAll("%t", "mcr clear cd");
+    return Plugin_Handled;
+}
+
+public Action Command_ShowMCRCD(int client, int args)
+{
+    char map[32];
+    for(int i = 0; i < g_aOldMapList.Length; i++)
+    {
+        g_aOldMapList.GetString(i, map, 256);
+        PrintToConsole(client, "#%3d -> %s", i, map);
+    }
     return Plugin_Handled;
 }
 
