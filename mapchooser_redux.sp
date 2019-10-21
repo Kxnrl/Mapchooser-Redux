@@ -95,7 +95,6 @@ public void OnPluginStart()
     g_aMapList          = new ArrayList(iArraySize);
     g_aNominateList     = new ArrayList(iArraySize);
     g_aNominateOwners   = new ArrayList();
-    g_aOldMapList       = new ArrayList(iArraySize);
     g_aNextMapList      = new ArrayList(iArraySize);
 
     g_Convars.TimeLoc = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
@@ -128,7 +127,6 @@ public void OnPluginStart()
     cvar.AddChangeHook(OnCvarChanged);
     
     BuildKvMapData();
-    LoadOldMapList();
 }
 
 public void OnCvarChanged(ConVar cvar, const char[] nv, const char[] ov)
@@ -192,14 +190,6 @@ public void OnConfigsExecuted()
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
 
-    char map[128];
-    GetCurrentMap(map, 128);
-
-    SaveOldMapList(map);
-    CheckMapData();
-    CreateNextVote();
-    SetupTimeleftTimer();
-
     g_iExtends = 0;
     g_bMapVoteCompleted = false;
     g_bChangeMapAtRoundEnd = false;
@@ -207,6 +197,22 @@ public void OnConfigsExecuted()
 
     g_aNominateList.Clear();
     g_aNominateOwners.Clear();
+
+    CreateTimer(3.0, Timer_OnMapStarted, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action Timer_OnMapStarted(Handle timer)
+{
+    char map[128];
+    GetCurrentMap(map, 128);
+
+    LoadOldMapList();
+    SaveOldMapList(map);
+    CheckMapData();
+    CreateNextVote();
+    SetupTimeleftTimer();
+
+    return Plugin_Stop;
 }
 
 public void OnMapEnd()
@@ -256,6 +262,14 @@ void SaveOldMapList(char[] map)
 
 void LoadOldMapList()
 {
+    if (g_aOldMapList != null)
+    {
+        // already loaded
+        return;
+    }
+
+    g_aOldMapList = new ArrayList(ByteCountToCells(256));
+
     char filepath[128];
     BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
 

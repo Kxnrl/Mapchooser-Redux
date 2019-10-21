@@ -4,6 +4,7 @@
 #include <mapchooser_redux>
 
 int g_iMapCount = 0;
+bool g_bStartup = true;
 
 ConVar mcr_delete_offical_map;
 ConVar mcr_generate_mapcycle;
@@ -32,10 +33,6 @@ public void OnPluginStart()
 
     g_iMapCount = GetMapCount();
 
-    IloveSaSuSi_but_Idontlikeheranymore_DeleteMap();
-    IloveSaSuSi_but_Idontlikeheranymore_MapCycle();
-    IloveSaSuSi_but_Idontlikeheranymore_MapGroup();
-    
     CreateTimer(600.0, Timer_Detected, _, TIMER_REPEAT);
 }
 
@@ -50,6 +47,17 @@ public Action Timer_Detected(Handle timer)
         IloveSaSuSi_but_Idontlikeheranymore_MapGroup();
     }
     return Plugin_Continue;
+}
+
+public void OnConfigsExecuted()
+{
+    if (g_bStartup)
+    {
+        g_bStartup = false;
+        IloveSaSuSi_but_Idontlikeheranymore_DeleteMap();
+        IloveSaSuSi_but_Idontlikeheranymore_MapCycle();
+        IloveSaSuSi_but_Idontlikeheranymore_MapGroup();
+    }
 }
 
 static int GetMapCount()
