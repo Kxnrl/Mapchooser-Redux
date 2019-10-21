@@ -16,12 +16,12 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Automated Map Voting with Extensions",
     version     = MCR_VERSION,
-    url         = "https://kxnrl.com"
+    url         = "https://www.kxnrl.com"
 };
 
 public void OnPluginStart()
 {
-    mcr_delete_offical_map = CreateConVar("mcr_delete_offical_map", "0", "auto-delete offical maps", _, true, 0.0, true, 1.0);
+    mcr_delete_offical_map = CreateConVar("mcr_delete_offical_map", "1", "auto-delete offical maps", _, true, 0.0, true, 1.0);
     mcr_generate_mapcycle  = CreateConVar("mcr_generate_mapcycle",  "1", "auto-generate map list in mapcycle.txt", _, true, 0.0, true, 1.0);
     mcr_generate_mapgroup  = CreateConVar("mcr_generate_mapgroup",  "1", "auto-generate map group in gamemodes_server.txt", _, true, 0.0, true, 1.0);
 

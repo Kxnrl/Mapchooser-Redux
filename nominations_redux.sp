@@ -33,7 +33,7 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Provides Map Nominations",
     version     = MCR_VERSION,
-    url         = "https://kxnrl.com"
+    url         = "https://www.kxnrl.com"
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -56,8 +56,8 @@ public void OnPluginStart()
     
     LoadTranslations("com.kxnrl.mcr.translations");
 
-    g_aMapList = new ArrayList(ByteCountToCells(256));
-    g_aOldList = new ArrayList(ByteCountToCells(256));
+    g_aMapList = new ArrayList(ByteCountToCells(128));
+    g_aOldList = new ArrayList(ByteCountToCells(128));
 
     g_smMaps = new StringMap();
     g_smAuth = new StringMap();
@@ -167,11 +167,11 @@ void FuzzyNominate(int client, const char[] find)
 
     Menu menu = new Menu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
-    char desc[256];
+    char desc[128];
     for(int x = 0; x < result.Length; ++x)
     {
         result.GetString(x, map, 128);
-        menu.AddItem(map, desctag && GetMapDesc(map, desc, 256, true, nametag, (g_pStore || g_pShop)) ? desc : map);
+        menu.AddItem(map, desctag && GetMapDesc(map, desc, 128, true, nametag, (g_pStore || g_pShop)) ? desc : map);
     }
 
     menu.SetTitle("%d of %s", menu.ItemCount, find);
@@ -209,7 +209,7 @@ void BuildMapMenu()
     bool desctag = FindConVar("mcr_include_desctag").BoolValue;
     bool nametag = FindConVar("mcr_include_nametag").BoolValue;
 
-    char desc[256];
+    char desc[128];
     for(int i = 0; i < g_aMapList.Length; i++)
     {
         int status = MAPSTATUS_ENABLED;
@@ -222,7 +222,7 @@ void BuildMapMenu()
         if(status == MAPSTATUS_ENABLED)
             if(g_aOldList.FindString(map) != -1)
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
-        g_hMapMenu.AddItem(map, desctag && GetMapDesc(map, desc, 256, true, nametag, (g_pStore || g_pShop)) ? desc : map);
+        g_hMapMenu.AddItem(map, desctag && GetMapDesc(map, desc, 128, true, nametag, (g_pStore || g_pShop)) ? desc : map);
         g_smMaps.SetValue(map, status);
     }
 

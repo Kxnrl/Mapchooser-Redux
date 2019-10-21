@@ -15,7 +15,7 @@ public Plugin myinfo =
     author      = "Kyle",
     description = "Provides RTV Map Voting",
     version     = MCR_VERSION,
-    url         = "https://kxnrl.com"
+    url         = "https://www.kxnrl.com"
 };
 
 public void OnPluginStart()

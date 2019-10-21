@@ -90,12 +90,13 @@ public void OnPluginStart()
     
     LoadTranslations("com.kxnrl.mcr.translations");
 
-    int iArraySize = ByteCountToCells(256);
+    int iArraySize = ByteCountToCells(128);
     
     g_aMapList          = new ArrayList(iArraySize);
     g_aNominateList     = new ArrayList(iArraySize);
     g_aNominateOwners   = new ArrayList();
     g_aNextMapList      = new ArrayList(iArraySize);
+    g_aOldMapList       = new ArrayList(iArraySize);
 
     g_Convars.TimeLoc = CreateConVar("mcr_timer_hud_location",  "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game", _, true, 0.0, true, 3.0);
     g_Convars.OldMaps = CreateConVar("mcr_maps_history_count", "15", "How many maps cooldown",                                        _, true, 1.0, true, 300.0);
@@ -127,6 +128,12 @@ public void OnPluginStart()
     cvar.AddChangeHook(OnCvarChanged);
     
     BuildKvMapData();
+}
+
+public void OnAllPluginsLoaded()
+{
+    g_pStore = LibraryExists("store");
+    g_pShop = LibraryExists("shop-core");
 }
 
 public void OnCvarChanged(ConVar cvar, const char[] nv, const char[] ov)
@@ -183,9 +190,6 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnConfigsExecuted()
 {
-    g_pStore = LibraryExists("store");
-    g_pShop = LibraryExists("shop-core");
-
     if(ReadMapList(g_aMapList, g_iMapFileSerial, "mapchooser", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) != null)
         if(g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
@@ -198,21 +202,11 @@ public void OnConfigsExecuted()
     g_aNominateList.Clear();
     g_aNominateOwners.Clear();
 
-    CreateTimer(3.0, Timer_OnMapStarted, _, TIMER_FLAG_NO_MAPCHANGE);
-}
-
-public Action Timer_OnMapStarted(Handle timer)
-{
-    char map[128];
-    GetCurrentMap(map, 128);
-
     LoadOldMapList();
-    SaveOldMapList(map);
+    SaveOldMapList();
     CheckMapData();
     CreateNextVote();
     SetupTimeleftTimer();
-
-    return Plugin_Stop;
 }
 
 public void OnMapEnd()
@@ -227,15 +221,25 @@ public void OnMapEnd()
     g_iRunoffCount = 0;
 }
 
-void SaveOldMapList(char[] map)
+void SaveOldMapList()
 {
+    char map[128];
+    GetCurrentMap(map, 128);
+
     if(InOldMapList(map))
         return;
 
     g_aOldMapList.PushString(map);
 
-    if(g_aOldMapList.Length > g_Convars.OldMaps.IntValue)
+    //if(g_aOldMapList.Length > g_Convars.OldMaps.IntValue)
+    //    g_aOldMapList.Erase(0);
+
+    // loop and push out
+    while(g_aOldMapList.Length > g_Convars.OldMaps.IntValue + 1) // why +1 ?  we include current map
+    {
+        // push out
         g_aOldMapList.Erase(0);
+    }
 
     char filepath[128];
     BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
@@ -262,14 +266,6 @@ void SaveOldMapList(char[] map)
 
 void LoadOldMapList()
 {
-    if (g_aOldMapList != null)
-    {
-        // already loaded
-        return;
-    }
-
-    g_aOldMapList = new ArrayList(ByteCountToCells(256));
-
     char filepath[128];
     BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
 
@@ -289,12 +285,15 @@ void LoadOldMapList()
 
             g_aOldMapList.PushString(fileline);
 
-            if(g_aOldMapList.Length >= g_Convars.OldMaps.IntValue)
-                break;
+            // We reduce list on push old map;
+            //if(g_aOldMapList.Length >= g_Convars.OldMaps.IntValue)
+            //    break;
         }
 
         file.Close();
     }
+
+    LogMessage("Load %d maps as history.", g_aOldMapList.Length);
 }
 
 static bool InOldMapList(const char[] name)
@@ -309,8 +308,8 @@ public void OnClientDisconnect(int client)
     if(index == -1)
         return;
 
-    char oldmap[256];
-    g_aNominateList.GetString(index, oldmap, 256);
+    char oldmap[128];
+    g_aNominateList.GetString(index, oldmap, 128);
     Call_StartForward(g_NominationsResetForward);
     Call_PushString(oldmap);
     Call_PushCell(g_aNominateOwners.Get(index));
@@ -329,8 +328,8 @@ public Action Command_SetNextmap(int client, int args)
         return Plugin_Handled;
     }
 
-    char map[256];
-    GetCmdArg(1, map, 256);
+    char map[128];
+    GetCmdArg(1, map, 128);
 
     if(!IsMapValid(map))
     {
@@ -508,7 +507,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     g_hVoteMenu.SetTitle("选择下一张地图\n ");
     g_hVoteMenu.VoteResultCallback = Handler_MapVoteFinished;
 
-    char map[256];
+    char map[128];
 
     if(inputlist == null)
     {
@@ -518,7 +517,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         for(int i = 0; i < nominationsToAdd; i++)
         {
-            g_aNominateList.GetString(i, map, 256);
+            g_aNominateList.GetString(i, map, 128);
 
             AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
             RemoveStringFromArray(g_aNextMapList, map);
@@ -531,7 +530,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         for(int i = nominationsToAdd; i < g_aNominateList.Length; i++)
         {
-            g_aNominateList.GetString(i, map, 256);
+            g_aNominateList.GetString(i, map, 128);
 
             Call_StartForward(g_NominationsResetForward);
             Call_PushString(map);
@@ -558,7 +557,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         while(i < voteSize)
         {
-            g_aNextMapList.GetString(count, map, 256);        
+            g_aNextMapList.GetString(count, map, 128);        
             count++;
 
             AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
@@ -578,7 +577,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     {
         for(int i = 0; i < inputlist.Length; i++)
         {
-            inputlist.GetString(i, map, 256);
+            inputlist.GetString(i, map, 128);
 
             if(IsMapValid(map))
                 AddMapItem(g_hVoteMenu, map, g_Convars.NameTag.BoolValue, !g_Convars.DescTag.BoolValue);
@@ -604,8 +603,8 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
 public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
 {
-    char map[256];
-    GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 256);
+    char map[128];
+    GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 128);
 
     Call_StartForward(g_MapVoteEndForward);
     Call_PushString(map);
@@ -712,14 +711,14 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
         {
             g_bHasVoteStarted = false;
 
-            ArrayList mapList = new ArrayList(ByteCountToCells(256));
+            ArrayList mapList = new ArrayList(ByteCountToCells(128));
 
             for(int i = 0; i < num_items; i++)
             {
                 if(item_info[i][VOTEINFO_ITEM_VOTES] == highest_votes)
                 {
-                    char map[256];
-                    GetMapItem(menu, item_info[i][VOTEINFO_ITEM_INDEX], map, 256);
+                    char map[128];
+                    GetMapItem(menu, item_info[i][VOTEINFO_ITEM_INDEX], map, 128);
                     mapList.PushString(map);
                 }
                 else
@@ -734,10 +733,10 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
         {
             g_bHasVoteStarted = false;
 
-            ArrayList mapList = new ArrayList(ByteCountToCells(256));
+            ArrayList mapList = new ArrayList(ByteCountToCells(128));
 
-            char map[256];
-            GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 256);
+            char map[128];
+            GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 128);
 
             mapList.PushString(map);
 
@@ -745,7 +744,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
             {
                 if(mapList.Length < 2 || item_info[i][VOTEINFO_ITEM_VOTES] == item_info[i - 1][VOTEINFO_ITEM_VOTES])
                 {
-                    GetMapItem(menu, item_info[i][VOTEINFO_ITEM_INDEX], map, 256);
+                    GetMapItem(menu, item_info[i][VOTEINFO_ITEM_INDEX], map, 128);
                     mapList.PushString(map);
                 }
                 else
@@ -777,19 +776,19 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
         }
         case MenuAction_DisplayItem:
         {
-            char map[256];
-            char buffer[256];
+            char map[128];
+            char buffer[128];
 
-            GetMenuItem(menu, param2, map, 256);
+            GetMenuItem(menu, param2, map, 128);
 
             if(StrEqual(map, VOTE_EXTEND, false))
-                FormatEx(buffer, 256, "%T", "vote item extend", param1);
+                FormatEx(buffer, 128, "%T", "vote item extend", param1);
             else if(StrEqual(map, VOTE_DONTCHANGE, false))
-                FormatEx(buffer, 256, "%T", "vote item dont change", param1);
+                FormatEx(buffer, 128, "%T", "vote item dont change", param1);
             else if(StrEqual(map, LINE_ONE, false))
-                FormatEx(buffer, 256, "%T", "LINE_ONE", param1);
+                FormatEx(buffer, 128, "%T", "LINE_ONE", param1);
             else if(StrEqual(map, LINE_TWO, false))
-                FormatEx(buffer, 256, "%T", "LINE_TWO", param1);
+                FormatEx(buffer, 128, "%T", "LINE_TWO", param1);
             
             if(buffer[0] != '\0')
                 return RedrawMenuItem(buffer);
@@ -801,7 +800,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
                 int count = GetMenuItemCount(menu);
                 
                 int item;
-                char map[256];
+                char map[128];
                 
                 do
                 {
@@ -809,7 +808,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
                     if(g_bBlockedSlots)
                         startInt = 2;
                     item = UTIL_GetRandomInt(startInt, count - 1);
-                    GetMenuItem(menu, item, map, 256);
+                    GetMenuItem(menu, item, map, 128);
                 }
                 while(strcmp(map, VOTE_EXTEND, false) == 0);
 
@@ -827,9 +826,9 @@ public Action Timer_ChangeMap(Handle timer)
 {
     g_bChangeMapInProgress = false;
 
-    char map[256];
+    char map[128];
     
-    if(!GetNextMap(map, 256))
+    if(!GetNextMap(map, 128))
     {
         ThrowError("Timer_ChangeMap -> !GetNextMap");
         return Plugin_Stop;    
@@ -859,15 +858,15 @@ void CreateNextVote()
 
     ArrayList tempMaps = view_as<ArrayList>(CloneArray(g_aMapList));
 
-    char map[256];
-    GetCurrentMap(map, 256);
+    char map[128];
+    GetCurrentMap(map, 128);
     RemoveStringFromArray(tempMaps, map);
 
-    if(tempMaps.Length > g_Convars.OldMaps.IntValue)
+    if(tempMaps.Length > g_Convars.OldMaps.IntValue + 1) // +1 -> include current map
     {
         for(int i = 0; i < g_aOldMapList.Length; i++)
         {
-            g_aOldMapList.GetString(i, map, 256);
+            g_aOldMapList.GetString(i, map, 128);
             RemoveStringFromArray(tempMaps, map);
         }
     }
@@ -875,7 +874,7 @@ void CreateNextVote()
 
     for(int x = 0; x < tempMaps.Length; ++x)
     {
-        tempMaps.GetString(x, map, 256);
+        tempMaps.GetString(x, map, 128);
         // we remove big maps( >150 will broken fastdl .bz2), nice map, and only nominations
         if(IsNiceMap(map) || IsBigMap(map) || IsOnlyNomination(map) || IsOnlyAdmin(map) || IsOnlyVIP(map))
         {
@@ -887,7 +886,7 @@ void CreateNextVote()
     int players = GetClientCount(true); // no any ze server run with bot.
     for(int x = 0; x < tempMaps.Length; ++x)
     {
-        tempMaps.GetString(x, map, 256);
+        tempMaps.GetString(x, map, 128);
         // we remove map if player amount not match with configs
         int max = GetMaxPlayers(map);
         int min = GetMinPlayers(map);
@@ -903,7 +902,7 @@ void CreateNextVote()
     for(int i = 0; i < limit; i++)
     {
         int b = UTIL_GetRandomInt(0, tempMaps.Length - 1);
-        tempMaps.GetString(b, map, 256);
+        tempMaps.GetString(b, map, 128);
         g_aNextMapList.PushString(map);
         tempMaps.Erase(b);
     }
@@ -940,8 +939,8 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner)
 
     if(owner && ((index = g_aNominateOwners.FindValue(owner)) != -1))
     {
-        char oldmap[256];
-        g_aNominateList.GetString(index, oldmap, 256);
+        char oldmap[128];
+        g_aNominateList.GetString(index, oldmap, 128);
         InternalRemoveNominationByOwner(owner);
 
         if(g_pStore && Store_GetClientCredits(owner) < GetMapPrice(map))
@@ -979,8 +978,8 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner)
 
     while(g_aNominateList.Length > 5)
     {
-        char oldmap[256];
-        g_aNominateList.GetString(0, oldmap, 256);
+        char oldmap[128];
+        g_aNominateList.GetString(0, oldmap, 128);
         Call_StartForward(g_NominationsResetForward);
         Call_PushString(oldmap);
         Call_PushCell(g_aNominateOwners.Get(0));
@@ -1011,8 +1010,8 @@ bool InternalRemoveNominationByMap(const char[] map)
 {
     for(int i = 0; i < g_aNominateList.Length; i++)
     {
-        char oldmap[256];
-        g_aNominateList.GetString(i, oldmap, 256);
+        char oldmap[128];
+        g_aNominateList.GetString(i, oldmap, 128);
 
         if(strcmp(map, oldmap, false) == 0)
         {
@@ -1052,8 +1051,8 @@ bool InternalRemoveNominationByOwner(int owner)
 
     if(owner && ((index = FindValueInArray(g_aNominateOwners, owner)) != -1))
     {
-        char oldmap[256];
-        g_aNominateList.GetString(index, oldmap, 256);
+        char oldmap[128];
+        g_aNominateList.GetString(index, oldmap, 128);
 
         Call_StartForward(g_NominationsResetForward);
         Call_PushString(oldmap);
@@ -1115,11 +1114,11 @@ public int Native_GetExcludeMapList(Handle plugin, int numParams)
     if(array == null)
         return;
 
-    char map[256];
+    char map[128];
 
     for(int i = 0; i < g_aOldMapList.Length; i++)
     {
-        g_aOldMapList.GetString(i, map, 256);
+        g_aOldMapList.GetString(i, map, 128);
         array.PushString(map);
     }
 }
@@ -1132,11 +1131,11 @@ public int Native_GetNominatedMapList(Handle plugin, int numParams)
     if(maps == null)
         return;
 
-    char map[256];
+    char map[128];
 
     for(int i = 0; i < g_aNominateList.Length; i++)
     {
-        g_aNominateList.GetString(i, map, 256);
+        g_aNominateList.GetString(i, map, 128);
         maps.PushString(map);
 
         if(owns != null)
@@ -1351,10 +1350,10 @@ public Action Command_ClearCD(int client, int args)
 
 public Action Command_ShowMCRCD(int client, int args)
 {
-    char map[32];
+    char map[128];
     for(int i = 0; i < g_aOldMapList.Length; i++)
     {
-        g_aOldMapList.GetString(i, map, 256);
+        g_aOldMapList.GetString(i, map, 128);
         PrintToConsole(client, "#%3d -> %s", i, map);
     }
     return Plugin_Handled;
