@@ -191,7 +191,7 @@
     
     "NominateResult_NoCredits"
     {
-        "#format" "{1:d}"
+        "#format" "{1:s}"
         "en"    "{red}You have not enough credits to nominate {1}."
         "chi"   "{red}你的余额不足,预定[{blue}{1}{green}]失败."
     }
