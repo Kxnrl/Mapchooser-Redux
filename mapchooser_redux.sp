@@ -229,8 +229,12 @@ void SaveOldMapList()
     char map[128];
     GetCurrentMap(map, 128);
 
-    if(InOldMapList(map))
-        return;
+    int index = GetOldMapListIndex(map);
+    if(index > -1)
+    {
+        // remove before adding
+        g_aOldMapList.Erase(index);
+    }
 
     g_aOldMapList.PushString(map);
 
@@ -301,7 +305,12 @@ void LoadOldMapList()
 
 static bool InOldMapList(const char[] name)
 {
-    return g_aOldMapList.FindString(name) > -1;
+    return GetOldMapListIndex(name) > -1;
+}
+
+static int GetOldMapListIndex(const char[] name)
+{
+    return g_aOldMapList.FindString(name);
 }
 
 public void OnClientDisconnect(int client)
