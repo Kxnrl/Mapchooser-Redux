@@ -1,6 +1,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#include <sourcemod>
 #include <mapchooser_redux>
 #include <smutils>
 
@@ -22,6 +23,8 @@ public void OnPluginStart()
     SMUtils_SetChatSpaces("   ");
     SMUtils_SetChatConSnd(false);
     SMUtils_SetTextDest(HUD_PRINTCENTER);
+
+    RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CHANGEMAP);
     
     LoadTranslations("com.kxnrl.mcr.translations");
 
@@ -54,6 +57,13 @@ public void OnClientConnected(int client)
 public void OnClientDisconnect(int client)
 {
     g_bVoted[client] = false;
+}
+
+public Action Command_Extend(int client, int args)
+{
+    ExtendMap();
+    LogAction(client, -1, "%L -> extend.", client);
+    return Plugin_Handled;
 }
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)

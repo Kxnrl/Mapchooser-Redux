@@ -1,6 +1,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#include <sourcemod>
 #include <mapchooser_redux>
 #include <nextmap>
 #include <smutils>
@@ -112,8 +113,10 @@ public void OnPluginStart()
 
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
-    RegAdminCmd("sm_clearcd",    Command_ClearCD,    ADMFLAG_CHANGEMAP, "sm_clearcd - Forces Mapchooser to clear map history and cooldown.");
+    RegAdminCmd("sm_clearallcd", Command_ClearAllCD, ADMFLAG_ROOT,      "sm_clearallcd - Forces Mapchooser to clear map history and cooldown.");
+    RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_ROOT,      "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
     RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd - show old map list cooldown.");
+
 
     g_NominationsResetForward   = CreateGlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward     = CreateGlobalForward("OnMapVoteStarted",       ET_Ignore);
@@ -447,6 +450,8 @@ public Action Command_Mapvote(int client, int args)
     tChatAll("%t", "mcr voting started");
 
     SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, null, true);
+
+    LogAction(client, -1, "%L -> called mapvote.", client);
 
     return Plugin_Handled;    
 }
@@ -1341,21 +1346,51 @@ public Action Timer_Monitor(Handle timer, DataPack pack)
     return Plugin_Stop;
 }
 
-public Action Command_ClearCD(int client, int args)
+public Action Command_ClearAllCD(int client, int args)
 {
     g_aOldMapList.Clear();
     tChatAll("%t", "mcr clear cd");
+    LogAction(client, -1, "%L -> Clear all cooldown.", client);
+    return Plugin_Handled;
+}
+
+public Action Command_ClearMapCD(int client, int args)
+{
+    if(args != 1)
+    {
+        // block
+        tChat(client, "Usage: sm_clearmapcd <map>");
+        return Plugin_Handled;
+    }
+
+    char map[128], arg[128];
+    GetCmdArg(1, arg, 128);
+
+    for(int i = 0; i < g_aOldMapList.Length; i++)
+    {
+        g_aOldMapList.GetString(i, map, 128);
+        if(StrContains(map, arg, false) > -1)
+        {
+            g_aOldMapList.Erase(i); i--;
+            tChatAll("%t", "mcr clear map cd", map);
+            LogAction(client, -1, "%L -> Clear [%s] cooldown.", client, map);
+            break;
+        }
+    }
+
     return Plugin_Handled;
 }
 
 public Action Command_ShowMCRCD(int client, int args)
 {
+    PrintToConsole(client, "============[MCR]============");
     char map[128];
     for(int i = 0; i < g_aOldMapList.Length; i++)
     {
         g_aOldMapList.GetString(i, map, 128);
         PrintToConsole(client, "#%3d -> %s", i, map);
     }
+    tChat(client, "%t", "mcr show cd");
     return Plugin_Handled;
 }
 
