@@ -15,6 +15,7 @@ Handle g_NominationsResetForward;
 Handle g_MapVoteStartedForward;
 Handle g_MapVoteEndForward;
 Handle g_MapDataLoadedForward;
+Handle g_MapVotePoolChanged;
 
 Handle g_tVote;
 Handle g_tRetry;
@@ -117,12 +118,13 @@ public void OnPluginStart()
     RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_ROOT,      "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
     RegAdminCmd("sm_resetmapcd", Command_ResetMapCD, ADMFLAG_ROOT,      "sm_resetmapcd - Forces Mapchooser to reset specified map cooldown.");
     RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd - show old map list cooldown.");
-
+    RegAdminCmd("sm_reloadmcr",  Command_ReloadMCR,  ADMFLAG_ROOT,      "sm_reloadmcr - Reload this plugin.");
 
     g_NominationsResetForward   = CreateGlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell);
     g_MapVoteStartedForward     = CreateGlobalForward("OnMapVoteStarted",       ET_Ignore);
     g_MapVoteEndForward         = CreateGlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String);
     g_MapDataLoadedForward      = CreateGlobalForward("OnMapDataLoaded",        ET_Ignore);
+    g_MapVotePoolChanged        = CreateGlobalForward("OnMapVotePoolChanged",   ET_Ignore);
 
     HookEventEx("cs_win_panel_match",   Event_WinPanel, EventHookMode_Post);
     HookEventEx("round_end",            Event_RoundEnd, EventHookMode_Post);
@@ -130,14 +132,15 @@ public void OnPluginStart()
     ConVar cvar = FindConVar("mp_endmatch_votenextmap");
     cvar.SetBool(false, true);
     cvar.AddChangeHook(OnCvarChanged);
-    
-    BuildKvMapData();
 }
 
 public void OnAllPluginsLoaded()
 {
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
+
+    BuildKvMapData();
+    LoadOldMapList();
 }
 
 public void OnCvarChanged(ConVar cvar, const char[] nv, const char[] ov)
@@ -206,7 +209,6 @@ public void OnConfigsExecuted()
     g_aNominateList.Clear();
     g_aNominateOwners.Clear();
 
-    LoadOldMapList();
     SaveOldMapList();
     CheckMapData();
     CreateNextVote();
@@ -248,6 +250,10 @@ void SaveOldMapList()
         // push out
         g_aOldMapList.Erase(0);
     }
+
+    // call forward
+    Call_StartForward(g_MapVotePoolChanged);
+    Call_Finish();
 
     char filepath[128];
     BuildPath(Path_SM, filepath, 128, "data/oldmaplist.txt");
@@ -301,7 +307,9 @@ void LoadOldMapList()
         file.Close();
     }
 
-    LogMessage("Load %d maps as history.", g_aOldMapList.Length);
+    //LogMessage("Load %d maps as history.", g_aOldMapList.Length);
+    Call_StartForward(g_MapVotePoolChanged);
+    Call_Finish();
 }
 
 static bool InOldMapList(const char[] name)
@@ -898,7 +906,7 @@ void CreateNextVote()
         }
     }
 
-    int players = GetClientCount(true); // no any ze server run with bot.
+    int players = GetRealPlayers();
     for(int x = 0; x < tempMaps.Length; ++x)
     {
         tempMaps.GetString(x, map, 128);
@@ -980,11 +988,11 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner)
         return NominateResult_NoCredits;
     
     int max = GetMaxPlayers(map);
-    if(max != 0 && GetClientCount(true) > max)
+    if(max != 0 && GetRealPlayers() > max)
         return NominateResult_MaxPlayers;
     
     int min = GetMinPlayers(map);
-    if(min != 0 && GetClientCount(true) < min)
+    if(min != 0 && GetRealPlayers() < min)
         return NominateResult_MinPlayers;
 
     g_aNominateList.PushString(map);
@@ -1361,6 +1369,8 @@ public Action Command_ClearAllCD(int client, int args)
     g_aOldMapList.Clear();
     tChatAll("%t", "mcr clear cd");
     LogAction(client, -1, "%L -> Clear all cooldown.", client);
+    SaveOldMapList();
+    CreateNextVote();
     return Plugin_Handled;
 }
 
@@ -1387,6 +1397,9 @@ public Action Command_ClearMapCD(int client, int args)
             break;
         }
     }
+
+    SaveOldMapList();
+    CreateNextVote();
 
     return Plugin_Handled;
 }
@@ -1422,6 +1435,7 @@ public Action Command_ResetMapCD(int client, int args)
     }
 
     SaveOldMapList();
+    CreateNextVote();
 
     return Plugin_Handled;
 }
@@ -1436,6 +1450,16 @@ public Action Command_ShowMCRCD(int client, int args)
         PrintToConsole(client, "#%3d -> %s", i, map);
     }
     tChat(client, "%t", "mcr show cd");
+    return Plugin_Handled;
+}
+
+public Action Command_ReloadMCR(int client, int args)
+{
+    BuildKvMapData();
+    CheckMapData();
+    LoadOldMapList();
+    CreateNextVote();
+    ReplyToCommand(client, "[\x02M\x04C\x0BR]  Mapchooser-Redux has beed reloaded.");
     return Plugin_Handled;
 }
 
@@ -1458,6 +1482,16 @@ stock void DisplayCountdownHUD(int time)
     for(int client = 1; client <= MaxClients; ++client)
         if(IsClientInGame(client) && !IsFakeClient(client))
             ShowHudText(client, 0, "%T", "mcr countdown hud", client, time); // 叁生鉐 is dead...
+}
+
+stock int GetRealPlayers()
+{
+    int count = 0;
+    for(int client = 1; client <= MaxClients; ++client)
+        if(IsClientInGame(client) && !IsFakeClient(client))
+            count++;
+
+    return count;
 }
 
 stock bool CleanPlugin()

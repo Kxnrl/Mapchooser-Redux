@@ -449,12 +449,15 @@ stock bool IsNominateAllowed(int client)
 public void OnMapDataLoaded()
 {
     if(g_hKvMapData != null)
-        CloseHandle(g_hKvMapData);
+        delete g_hKvMapData;
 
     g_hKvMapData = new KeyValues("MapData", "", "");
     g_hKvMapData.ImportFromFile("addons/sourcemod/configs/mapdata.txt");
     g_hKvMapData.Rewind();
+}
 
+public void OnMapVotePoolChanged()
+{
     BuildMapMenu();
 }
 

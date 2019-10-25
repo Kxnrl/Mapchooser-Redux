@@ -1,4 +1,4 @@
-#define MCR_VERSION "1.7.<commits>"
+#define MCR_VERSION "1.8.<commits>"
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -43,6 +43,7 @@ forward void OnNominationRemoved(const char[] map, int client);
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
+forward void OnMapVotePoolChanged();
 
 native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner);
