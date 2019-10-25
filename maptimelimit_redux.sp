@@ -25,7 +25,7 @@ public void OnPluginStart()
     SMUtils_SetTextDest(HUD_PRINTCENTER);
 
     RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CHANGEMAP);
-    
+
     LoadTranslations("com.kxnrl.mcr.translations");
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
@@ -61,7 +61,7 @@ public void OnClientDisconnect(int client)
 
 public Action Command_Extend(int client, int args)
 {
-    ExtendMap();
+    ExtendMap(client);
     LogAction(client, -1, "%L -> extend.", client);
     return Plugin_Handled;
 }
@@ -97,14 +97,17 @@ void AttemptEXT(int client)
         ExtendMap();
 }
 
-void ExtendMap()
+void ExtendMap(int admin = 0)
 {
     ResetEXT();
     g_bAllowEXT = false;
 
     ExtendMapTimeLimit(1200); 
 
+    if (admin == 0)
     tChatAll("%t", "mtl extend");
+    else
+    tChatAll("%s", "mtl extend admin", admin);
 }
 
 void ResetEXT()

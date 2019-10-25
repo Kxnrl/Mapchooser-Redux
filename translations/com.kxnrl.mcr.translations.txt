@@ -59,6 +59,13 @@
         "chi"   "投票成功,已将当前地图延长20分钟."
     }
 
+    "mtl extend admin"
+    {
+        "#format" "{1:N}"
+        "en"    "Current map has been extended for 20 minutes by {blue}{1}"
+        "chi"   "{blue}{1} {silver}已将当前地图延长20分钟."
+    }
+
     "mtl not allowed"
     {
         "en"    "{red}Map timelimt extend is not allowed yet."
