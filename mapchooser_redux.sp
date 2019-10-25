@@ -115,6 +115,7 @@ public void OnPluginStart()
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
     RegAdminCmd("sm_clearallcd", Command_ClearAllCD, ADMFLAG_ROOT,      "sm_clearallcd - Forces Mapchooser to clear map history and cooldown.");
     RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_ROOT,      "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
+    RegAdminCmd("sm_resetmapcd", Command_ResetMapCD, ADMFLAG_ROOT,      "sm_resetmapcd - Forces Mapchooser to reset specified map cooldown.");
     RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd - show old map list cooldown.");
 
 
@@ -1386,6 +1387,41 @@ public Action Command_ClearMapCD(int client, int args)
             break;
         }
     }
+
+    return Plugin_Handled;
+}
+
+public Action Command_ResetMapCD(int client, int args)
+{
+    if(args != 1)
+    {
+        // block
+        tChat(client, "Usage: sm_resetmapcd <map>");
+        return Plugin_Handled;
+    }
+
+    char map[128], arg[128];
+    GetCmdArg(1, arg, 128);
+
+    for(int i = 0; i < g_aOldMapList.Length; i++)
+    {
+        g_aOldMapList.GetString(i, map, 128);
+        if(StrContains(map, arg, false) > -1)
+        {
+            int index = GetOldMapListIndex(map);
+            if (index > -1)
+            {
+                // remove before adding
+                g_aOldMapList.Erase(index);
+            }
+            g_aOldMapList.PushString(map);
+            tChatAll("%t", "mcr reset map cd", map);
+            LogAction(client, -1, "%L -> Reset [%s] cooldown.", client, map);
+            break;
+        }
+    }
+
+    SaveOldMapList();
 
     return Plugin_Handled;
 }

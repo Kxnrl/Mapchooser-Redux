@@ -221,6 +221,13 @@
         "chi"   "{green}已清除[{1}]冷却时间."
     }
 
+    "mcr reset map cd"
+    {
+        "#format" "{1:s}"
+        "en"    "{green}{1} has been reset from cooldown pool."
+        "chi"   "{green}已重置[{1}]冷却时间."
+    }
+
     "mcr show cd"
     {
         "en"    "{green}Please check your console output."
