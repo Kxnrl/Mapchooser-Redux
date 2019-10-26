@@ -347,11 +347,13 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 return ITEMDRAW_DISABLED;
 
             // players?
+            /*
             int players = GetClientCount(false);
             int max = GetMaxPlayers(map);
             int min = GetMinPlayers(map);
             if ((max > 0 && players >= max) || (min > 0 && players < min))
                 return ITEMDRAW_DISABLED;
+            */
 
             // admin or vip
             bool adm = IsOnlyAdmin(map);
