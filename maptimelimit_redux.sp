@@ -97,17 +97,19 @@ void AttemptEXT(int client)
         ExtendMap();
 }
 
-void ExtendMap(int admin = 0)
+void ExtendMap(int admin = -1)
 {
     ResetEXT();
+
+    if (admin < 0)
     g_bAllowEXT = false;
 
     ExtendMapTimeLimit(1200); 
 
-    if (admin == 0)
+    if (admin < 0)
     tChatAll("%t", "mtl extend");
     else
-    tChatAll("%s", "mtl extend admin", admin);
+    tChatAll("%t", "mtl extend admin", admin);
 }
 
 void ResetEXT()
