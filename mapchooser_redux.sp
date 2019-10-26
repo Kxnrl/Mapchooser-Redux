@@ -209,8 +209,8 @@ public void OnConfigsExecuted()
     g_aNominateList.Clear();
     g_aNominateOwners.Clear();
 
-    SaveOldMapList();
     CheckMapData();
+    SaveOldMapList();
     CreateNextVote();
     SetupTimeleftTimer();
 }
@@ -306,10 +306,6 @@ void LoadOldMapList()
 
         file.Close();
     }
-
-    //LogMessage("Load %d maps as history.", g_aOldMapList.Length);
-    Call_StartForward(g_MapVotePoolChanged);
-    Call_Finish();
 }
 
 static bool InOldMapList(const char[] name)
