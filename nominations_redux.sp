@@ -1,6 +1,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#include <sourcemod>
 #include <mapchooser_redux>
 #include <smutils>
 
@@ -62,6 +63,10 @@ public void OnPluginStart()
     g_smMaps = new StringMap();
     g_smAuth = new StringMap();
     g_smName = new StringMap();
+
+    RegConsoleCmd("nominate",   Command_Nominate);
+    RegConsoleCmd("nomination", Command_Nominate);
+    RegConsoleCmd("sm_yd",      Command_Nominate);
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -117,6 +122,31 @@ public void OnNominationRemoved(const char[] map, int owner)
     g_smMaps.SetValue(map, MAPSTATUS_ENABLED);    
 }
 
+public Action Command_Nominate(int client, int args)
+{
+    if(!client)
+        return Plugin_Handled;
+
+    if(!IsNominateAllowed(client))
+        return Plugin_Handled;
+
+    if(args < 1)
+    {
+        AttemptNominate(client);
+        return Plugin_Handled;
+    }
+
+    char map[32];
+    GetCmdArg(1, map, 32);
+    if(strlen(map) >= 3)
+    {
+        FuzzyNominate(client, map);
+        return Plugin_Handled;
+    }
+
+    return Plugin_Handled;
+}
+
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
     if(!client)
@@ -127,17 +157,6 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
     if(!IsNominateAllowed(client))
         return;
-    
-    if(sArgs[0] == '!' || sArgs[0] == '/' || sArgs[0] == '.')
-    {
-        char arg[2][128];
-        ExplodeString(sArgs, " ", arg, 2, 128, true);
-        if(strlen(arg[1]) >= 3)
-        {
-            FuzzyNominate(client, arg[1]);
-            return;
-        }
-    }
 
     AttemptNominate(client);
 }
