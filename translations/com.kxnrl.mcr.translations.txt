@@ -148,7 +148,7 @@
     {
         "#format" "{1:s},{2:d}"
         "en"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
-        "chi"   "{green}你预定[{blue}{1}{green}]花费了{2}信用点"
+        "chi"   "{green}你预定[{blue}{1}{green}]花费了{2}积分"
     }
     
     "NominateResult_MaxPlayers"
@@ -245,7 +245,7 @@
     {
         "#format" "{1:s},{2:d}"
         "en"    "{green}[{blue}{1}{green}] you nominated has been cancelled, {2} credits has been returned."
-        "chi"   "{green}你预定的[{blue}{1}{green}]已被取消,已退还{2}信用点"
+        "chi"   "{green}你预定的[{blue}{1}{green}]已被取消,已退还{2}积分"
     }
     
     "mcr runoff"
