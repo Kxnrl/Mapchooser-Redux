@@ -62,6 +62,7 @@ void Data_OnMapEnd()
         if (mapdata.m_CooldownLeft > 0)
         {
             mapdata.m_CooldownLeft--;
+            g_MapData.SetArray(map, mapdata, typeofdata, true);
             SaveMapPool(map);
         }
     }
@@ -481,6 +482,7 @@ void ClearAllCooldown()
         if (mapdata.m_CooldownLeft > 0)
         {
             mapdata.m_CooldownLeft--;
+            g_MapData.SetArray(map, mapdata, typeofdata, true);
             SaveMapPool(map);
         }
     }
@@ -513,6 +515,7 @@ void ResetMapCooldown(int client, const char[] map)
         if (g_MapData.GetArray(alter, mapdata, typeofdata))
         {
             mapdata.m_CooldownLeft = mapdata.m_MaxCooldown;
+            g_MapData.SetArray(alter, mapdata, typeofdata, true);
             SaveMapPool(alter);
 
             tChatAll("%t", "mcr reset map cd", alter);
