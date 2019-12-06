@@ -150,7 +150,7 @@ stock int GetMapPrice(const char[] map, bool recently = true, bool partyblock = 
 
     if (recently && interval > -1)
     {
-        int last = GetLastPlayed(map);
+        int last = mapdata.m_RecentlyPlayed;
         int time = GetTime();
         int hour = (time - last) / 3600;
         if (hour < interval) //
