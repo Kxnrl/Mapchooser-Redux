@@ -68,10 +68,10 @@ public Action Command_Extend(int client, int args)
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-    if(!client)
+    if (!client)
         return;
 
-    if(strcmp(sArgs, ".ext", false) != 0 && strcmp(sArgs, "!ext", false) != 0)
+    if (strcmp(sArgs, ".ext", false) != 0 && strcmp(sArgs, "!ext", false) != 0)
         return;
 
     AttemptEXT(client);
@@ -79,13 +79,13 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
 void AttemptEXT(int client)
 {
-    if(!g_bAllowEXT)
+    if (!g_bAllowEXT)
     {
         Chat(client, "%T", "mtl not allowed", client);
         return;
     }
 
-    if(g_bVoted[client])
+    if (g_bVoted[client])
     {
         EXT_CheckStatus(client, true, true);
         return;
@@ -93,7 +93,7 @@ void AttemptEXT(int client)
 
     g_bVoted[client] = true;
 
-    if(EXT_CheckStatus(client, true, false)) 
+    if (EXT_CheckStatus(client, true, false)) 
         ExtendMap();
 }
 
@@ -123,9 +123,9 @@ bool EXT_CheckStatus(int client, bool notice, bool self)
     int need, done;
     _CheckPlayer(need, done);
 
-    if(notice)
+    if (notice)
     {
-        if(self)
+        if (self)
             Chat(client, "%T", "mtl self", client, done, need);
         else
             tChatAll("%t", "mtl broadcast", client, done, need);
@@ -142,15 +142,15 @@ void _CheckPlayer(int &need, int &done)
     int players = 0;
 
     for(int client = 1; client <= MaxClients; client++)
-        if(IsClientInGame(client) && !IsFakeClient(client) && !IsClientSourceTV(client))
+        if (IsClientInGame(client) && !IsFakeClient(client) && !IsClientSourceTV(client))
         {
             players++;
-            if(g_bVoted[client])
+            if (g_bVoted[client])
                 done++;
         }
 
     need = RoundToCeil(players*0.6); 
 
-    if(need == 1 && players >= 2)
+    if (need == 1 && players >= 2)
         need = 2;
 }

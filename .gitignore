@@ -50,6 +50,7 @@ include/sdktools_entoutput.inc
 include/sdktools_functions.inc
 include/sdktools_gamerules.inc
 include/sdktools_hooks.inc
+include/sdktools_variant_t.inc
 include/sdktools_sound.inc
 include/sdktools_stocks.inc
 include/sdktools_stringtables.inc

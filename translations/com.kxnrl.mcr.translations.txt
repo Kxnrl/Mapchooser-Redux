@@ -97,6 +97,12 @@
         "en"    "The maximum allowed nominations has been reached."
         "chi"   "预定池已满."
     }
+
+    "nominate partyblock"
+    {
+        "en"    "{red}The nomination is not allowed yet: partyblock."
+        "chi"   "{red}已被包场."
+    }
     
     "nominate vote complete"
     {
@@ -143,12 +149,26 @@
         "en"    "{1} has nominated {2}."
         "chi"   "{blue}{1:N}{normal}预定了地图[{yellow}{2:s}{normal}]"
     }
+
+    "nominate partyblock map"
+    {
+        "#format" "{1:N},{2:s}"
+        "en"    "{1} has nominated {2}."
+        "chi"   "{blue}{1:N}{normal}包场了地图[{yellow}{2:s}{normal}]"
+    }
     
     "nominate nominate cost"
     {
         "#format" "{1:s},{2:d}"
         "en"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
         "chi"   "{green}你预定[{blue}{1}{green}]花费了{2}积分"
+    }
+
+    "nominate partyblock cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "en"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
+        "chi"   "{green}你包场[{blue}{1}{green}]花费了{2}积分"
     }
     
     "NominateResult_MaxPlayers"
@@ -208,11 +228,29 @@
         "en"    "{red}This map has been played recently."
         "chi"   "{red}该地图最近已被玩过."
     }
+
+    "NominateResult_PartyBlock"
+    {
+        "en"    "{red}Current has been partyblock."
+        "chi"   "{red}下一张地图已被包场."
+    }
+
+    "NominateResult_PartyBlockDisabled"
+    {
+        "en"    "{red}Partyblock is not allowed yet."
+        "chi"   "{red}包场功能已被禁用!"
+    }
     
     "nominate menu title"
     {
         "en"    "Nominate Map:"
         "chi"   "预定地图:"
+    }
+
+    "partyblock menu title"
+    {
+        "en"    "Nominate Map:"
+        "chi"   "包场地图:"
     }
     
     "mcr clear cd"

@@ -1,4 +1,7 @@
-#define MCR_VERSION "1.8.<commits>"
+#define MCR_VERSION "2.0.<commits>"
+
+//credits: https://github.com/powerlord/sourcemod-mapchooser-extended
+//credits: https://github.com/alliedmodders/sourcemod/blob/master/plugins/
 
 #define VOTE_EXTEND             "##extend##"
 #define VOTE_DONTCHANGE         "##dontchange##"
@@ -6,6 +9,7 @@
 #define LINE_TWO                "##linetwo##"
 #define LINE_SPACER             "##linespacer##"
 #define FAILURE_TIMER_LENGTH    5
+#define typeofdata              sizeof(MapData)
 
 enum MapChange
 {
@@ -19,6 +23,7 @@ enum CanNominateResult
     CanNominate_No_VoteFull,
     CanNominate_No_VoteInProgress,
     CanNominate_No_VoteComplete,
+    CanNominate_No_PartyBlock,
     CanNominate_Yes
 };
 
@@ -34,188 +39,57 @@ enum NominateResult
     NominateResult_NoCredits,
     NominateResult_OnlyAdmin,
     NominateResult_OnlyVIP,
-    NominateResult_RecentlyPlayed
+    NominateResult_RecentlyPlayed,
+    NominateResult_PartyBlock,
+    NominateResult_PartyBlockDisabled,
+    NominateResult_PartyBlockAdded
 };
 
-KeyValues g_hKvMapData;
+enum struct MapData
+{
+    // mapdata.kv
+    char m_FileName[128];
+    char m_Description[64];
+    int  m_Price;
+    int  m_PricePartyBlock;
+    int  m_FileSize;
+    int  m_MinPlayers;
+    int  m_MaxPlayers;
+    int  m_MaxCooldown;
+    bool m_NominateOnly;
+    bool m_VipOnly;
+    bool m_AdminOnly;
+    bool m_CertainTimes[24]; // 0-23
 
-forward void OnNominationRemoved(const char[] map, int client);
+    // mappool.kv
+    int  m_CooldownLeft;
+    int  m_RecentlyPlayed;
+}
+
+enum struct Nominations
+{
+    char m_Map[128];
+    int  m_Owner;
+}
+
+forward void OnNominationRemoved(const char[] map, int client, bool partyblock);
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
 
 native CanNominateResult CanNominate();
-native NominateResult NominateMap(const char[] map, bool force, int owner);
+native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock);
 native bool RemoveNominationByMap(const char[] map);
 native bool RemoveNominationByOwner(int client);
-native void InitiateMapChooserVote(MapChange when, ArrayList inputarray);
+native void InitiateMapChooserVote(MapChange when, ArrayList inputarray = null);
 native bool CanMapChooserStartVote();
 native bool HasEndOfMapVoteFinished();
-native void GetExcludeMapList(ArrayList array);
-native void GetNominatedMapList(ArrayList maparray, ArrayList ownerarray);
 native bool EndOfMapVoteEnabled();
+native bool GetMapData(const char[] map, any[] data, int size);
 
-// stocks
-stock bool AddMapItem(Handle menu, const char[] map, bool includeTag, bool ori = false)
-{
-    if(!ori)
-    {
-        char szTrans[192];
-        if(GetMapDesc(map, szTrans, 192, true, includeTag))
-            return AddMenuItem(menu, map, szTrans);
-    }
-
-    return AddMenuItem(menu, map, map);
-}
-
-stock int GetMapPrice(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return 100;
-
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return 100;
-
-    int credits = g_hKvMapData.GetNum("price", 0);
-    if (credits < 100)
-        credits = 100;
-    if (credits > 99999)
-        credits = 99999;
-
-    return credits;
-}
-
-stock bool GetMapDesc(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
-{
-    if(g_hKvMapData == null)
-        return false;
-
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    g_hKvMapData.GetString("desc", desc, maxLen, map);
-
-    if(includeName)
-        Format(desc, maxLen, "%s\n%s", map, desc);
-
-    if(includeTag)
-    {
-        Format(desc, maxLen, "%s%s", IsOnlyAdmin(map) ? "✪" : "", desc);
-        Format(desc, maxLen, "%s%s", IsOnlyVIP(map) ? "♚" : "", desc);
-        Format(desc, maxLen, "%s%s", IsNiceMap(map) ? "★" : "", desc);
-    }
-
-    if(includePrice)
-        Format(desc, maxLen, "%s[%d]", desc, GetMapPrice(map));
-
-    return true;
-}
-
-stock bool IsNiceMap(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return false;
-    
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    return (g_hKvMapData.GetNum("nice", 0) == 1);
-}
-
-stock bool IsBigMap(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return false;
-
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    return (g_hKvMapData.GetNum("size", 0) > 149);
-}
-
-stock int GetMinPlayers(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return 0;
-    
-    g_hKvMapData.Rewind();
-    
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return 0;
-
-    return g_hKvMapData.GetNum("minplayers", 0);
-}
-
-stock int GetMaxPlayers(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return 0;
-    
-    g_hKvMapData.Rewind();
-    
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return 0;
-    
-    return g_hKvMapData.GetNum("maxplayers", 0);
-}
-
-stock bool IsOnlyNomination(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return false;
-    
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    return (g_hKvMapData.GetNum("nominationonly", 0) == 1);
-}
-
-stock bool IsOnlyAdmin(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return false;
-    
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    return (g_hKvMapData.GetNum("adminonly", 0) == 1);
-}
-
-stock bool IsOnlyVIP(const char[] map)
-{
-    if(g_hKvMapData == null)
-        return false;
-    
-    g_hKvMapData.Rewind();
-
-    if(!g_hKvMapData.JumpToKey(map, false))
-        return false;
-
-    return (g_hKvMapData.GetNum("viponly", 0) == 1);
-}
-
-stock int UTIL_GetRandomInt(int min, int max)
-{
-    int random = GetURandomInt();
-    
-    if(random == 0)
-        random++;
-
-    return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
-}
+native ArrayList GetExcludeMapList();
+native ArrayList GetNominatedMapList();
 
 stock bool IsClientVIP(int client)
 {
@@ -225,4 +99,123 @@ stock bool IsClientVIP(int client)
 stock bool IsClientAdmin(int client)
 {
     return CheckCommandAccess(client, "sm_map", ADMFLAG_CHANGEMAP, false);
+}
+
+stock bool GetMapDesc(const char[] map, char[] buffer, int maxlen)
+{
+    MapData mapdata;
+    if (GetMapData(map, mapdata, typeofdata))
+    {
+        strcopy(buffer, maxlen, mapdata.m_Description);
+    }
+    return false;
+}
+
+stock bool GetMapDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
+{
+    MapData mapdata;
+    if (!GetMapData(map, mapdata, typeofdata))
+        return false;
+
+    strcopy(desc, maxLen, mapdata.m_Description);
+
+    if (includeName)
+        Format(desc, maxLen, "%s\n%s", map, desc);
+
+    if (includeTag)
+    {
+        Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "✪" : "", desc);
+        Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "♚" : "", desc);
+    }
+
+    if (includePrice)
+    {
+        // ?
+        Format(desc, maxLen, "%s [%d]", desc, mapdata.m_Price);
+    }
+
+    return true;
+}
+
+stock int GetMapPrice(const char[] map, bool recently = true, bool partyblock = false)
+{
+    MapData mapdata;
+    if (!GetMapData(map, mapdata, typeofdata))
+        return 100;
+
+    if (partyblock)
+        return mapdata.m_PricePartyBlock;
+
+    int interval = FindConVar("mcr_rectplayed_interval").IntValue;
+
+    if (recently && interval > -1)
+    {
+        int last = GetLastPlayed(map);
+        int time = GetTime();
+        int hour = (time - last) / 3600;
+        if (hour < interval) //
+        {
+            return RoundFloat(mapdata.m_Price *= (1.0 + FindConVar("mcr_rectplayed_ltp_mtpl").FloatValue));
+        }
+    }
+
+    return mapdata.m_Price;
+}
+
+stock bool GetMapPermission(const char[] map, bool &vip, bool &adm, int &min, int &max)
+{
+    MapData mapdata;
+    if (!GetMapData(map, mapdata, typeofdata))
+        return false;
+
+    vip = mapdata.m_VipOnly;
+    adm = mapdata.m_AdminOnly;
+    min = mapdata.m_MinPlayers;
+    max = mapdata.m_MaxPlayers;
+    return true;
+}
+
+stock int GetMapCooldown(const char[] map)
+{
+    MapData mapdata;
+    if (!GetMapData(map, mapdata, typeofdata))
+        return 100;
+
+    return mapdata.m_CooldownLeft;
+}
+
+stock bool IsNominated(const char[] map)
+{
+
+    ArrayList list = GetNominatedMapList();
+    for(int i = 0; i < list.Length; i++)
+    {
+        Nominations n;
+        list.GetArray(i, n, sizeof(Nominations));
+        if (strcmp(n.m_Map, map) == 0)
+        {
+            delete list;
+            return true;
+        }
+    }
+    delete list;
+    return false;
+}
+
+stock bool GetNominated(const char[] map, Nominations n)
+{
+    ArrayList list = GetNominatedMapList(); 
+    for(int i = 0; i < list.Length; i++)
+    {
+        Nominations _n;
+        list.GetArray(i, _n, sizeof(Nominations));
+        if (strcmp(n.m_Map, map) == 0)
+        {
+            delete list;
+            n = _n;
+            return true;
+        }
+    }
+    delete list;
+    return false;
 }
