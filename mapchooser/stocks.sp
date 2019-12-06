@@ -171,7 +171,7 @@ stock ArrayList GetAllMapsName()
     return maps;
 }
 
-stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = false, int client = -1)
+stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = false, int client = -1, int flag = ITEMDRAW_DEFAULT)
 {
     if (!ori)
     {

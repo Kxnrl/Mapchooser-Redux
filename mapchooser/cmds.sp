@@ -5,8 +5,28 @@ void Cmds_OnPluginStart()
     RegAdminCmd("sm_clearallcd", Command_ClearAllCD, ADMFLAG_ROOT,      "sm_clearallcd - Forces Mapchooser to clear map history and cooldown.");
     RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_ROOT,      "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
     RegAdminCmd("sm_resetmapcd", Command_ResetMapCD, ADMFLAG_ROOT,      "sm_resetmapcd - Forces Mapchooser to reset specified map cooldown.");
-    RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd - show old map list cooldown.");
-    RegAdminCmd("sm_reloadmcr",  Command_ReloadMCR,  ADMFLAG_ROOT,      "sm_reloadmcr - Reload this plugin.");
+    RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd  - show old map list cooldown.");
+    RegAdminCmd("sm_reloadmcr",  Command_ReloadMCR,  ADMFLAG_ROOT,      "sm_reloadmcr  - Reload this plugin.");
+    RegAdminCmd("sm_dumpmcrmap", Command_DumpMap,    ADMFLAG_CHANGEMAP, "sm_dumpmcrmap - Dump map attributes.");
+}
+
+public Action Command_DumpMap(int client, int args)
+{
+    char map[128];
+    if (args < 1)
+    {
+        GetCurrentMap(map, 128);
+    }
+    else
+    {
+        GetCmdArg(1, map, 128);
+    }
+
+    DisplayMapAttributes(client, map);
+
+    ReplyToCommand(client, "[\x07M\x04C\x0CR\x01]  Check console output.");
+
+    return Plugin_Handled;
 }
 
 public Action Command_SetNextmap(int client, int args)

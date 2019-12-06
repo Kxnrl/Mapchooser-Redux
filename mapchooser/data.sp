@@ -203,7 +203,10 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("GetDescEx -> Failed to get map %s", map);
         return false;
+    }
 
     strcopy(desc, maxLen, mapdata.m_Description);
 
@@ -229,7 +232,10 @@ bool IsBigMap(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsBigMap -> Failed to get map %s", map);
         return GetMapFileSize(map) > 150;
+    }
 
     return mapdata.m_FileSize > 150;
 }
@@ -238,7 +244,10 @@ int GetPrice(const char[] map, bool recently = true, bool partyblock = false)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsBigMap -> Failed to get map %s", map);
         return 100;
+    }
 
     if (partyblock)
         return mapdata.m_PricePartyBlock;
@@ -261,7 +270,10 @@ int GetMinPlayers(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("GetMinPlayers -> Failed to get map %s", map);
         return 0;
+    }
 
     return mapdata.m_MinPlayers;
 }
@@ -270,7 +282,10 @@ int GetMaxPlayers(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("GetMaxPlayers -> Failed to get map %s", map);
         return 0;
+    }
 
     return mapdata.m_MaxPlayers;
 }
@@ -279,7 +294,10 @@ bool IsNominateOnly(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsNominateOnly -> Failed to get map %s", map);
         return false;
+    }
 
     return mapdata.m_NominateOnly;
 }
@@ -288,7 +306,10 @@ bool IsAdminOnly(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsAdminOnly -> Failed to get map %s", map);
         return false;
+    }
 
     return mapdata.m_AdminOnly;
 }
@@ -297,7 +318,10 @@ bool IsVIPOnly(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsVIPOnly -> Failed to get map %s", map);
         return false;
+    }
 
     return mapdata.m_VipOnly;
 }
@@ -306,7 +330,10 @@ bool IsCertainTimes(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("IsCertainTimes -> Failed to get map %s", map);
         return false;
+    }
 
     return mapdata.m_CertainTimes[GetTodayHours()];
 }
@@ -315,9 +342,13 @@ bool SetLastPlayed(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("SetLastPlayed -> Failed to get map %s", map);
         return false;
+    }
 
     mapdata.m_RecentlyPlayed = GetTime();
+    g_MapData.SetArray(map, mapdata, typeofdata, true);
     SaveMapPool(map);
     return true;
 }
@@ -326,7 +357,10 @@ int GetLastPlayed(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("GetLastPlayed -> Failed to get map %s", map);
         return 0;
+    }
 
     return mapdata.m_RecentlyPlayed;
 }
@@ -335,7 +369,10 @@ int GetCooldown(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("GetCooldown -> Failed to get map %s", map);
         return 0;
+    }
 
     return mapdata.m_CooldownLeft;
 }
@@ -344,9 +381,13 @@ bool SetCooldown(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("SetCooldown -> Failed to get map %s", map);
         return false;
+    }
 
     mapdata.m_CooldownLeft = mapdata.m_MaxCooldown;
+    g_MapData.SetArray(map, mapdata, typeofdata, true);
     SaveMapPool(map);
     return true;
 }
@@ -364,7 +405,7 @@ static void LoadMapPool()
     }
     if (!kv.ImportFromFile(path))
     {
-        LogError("LoadMapPool -> failed to import keyvalues from %s", path);
+        LogStackTrace("LoadMapPool -> failed to import keyvalues from %s", path);
         delete kv;
         return;
     }
@@ -401,6 +442,7 @@ static void SaveMapPool(const char[] map)
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
         // ??
+        LogStackTrace("SaveMapPool -> Failed to save %s", map);
         return;
     }
 
@@ -454,8 +496,8 @@ void ClearMapCooldown(int client, const char[] map)
         if (StrContains(alter, map, false) > -1)
         if (SetCooldown(alter))
         {
-            tChatAll("%t", "mcr clear map cd", map);
-            LogAction(client, -1, "%L -> Clear [%s] cooldown.", client, map);
+            tChatAll("%t", "mcr clear map cd", alter);
+            LogAction(client, -1, "%L -> Clear [%s] cooldown.", client, alter);
         }
     }
 }
@@ -473,8 +515,8 @@ void ResetMapCooldown(int client, const char[] map)
             mapdata.m_CooldownLeft = mapdata.m_MaxCooldown;
             SaveMapPool(alter);
 
-            tChatAll("%t", "mcr reset map cd", map);
-            LogAction(client, -1, "%L -> Reset [%s] cooldown.", client, map);
+            tChatAll("%t", "mcr reset map cd", alter);
+            LogAction(client, -1, "%L -> Reset [%s] cooldown.", client, alter);
         }
     }
 }
@@ -516,4 +558,32 @@ ArrayList GetCooldownMaps()
     }
 
     return maps;
+}
+
+void DisplayMapAttributes(int client, const char[] map)
+{
+    char alter[128]; MapData mapdata;
+    for (int i = 0; i < g_aMapList.Length; i++)
+    {
+        g_aMapList.GetString(i, alter, 128);
+
+        if (StrContains(alter, map, false) > -1)
+        if (g_MapData.GetArray(alter, mapdata, typeofdata))
+        {
+            PrintToConsole(client, "===========[%s]===========", alter);
+            PrintToConsole(client, "m_FileName       : %s", mapdata.m_FileName);
+            PrintToConsole(client, "m_Description    : %s", mapdata.m_Description);
+            PrintToConsole(client, "m_Price          : %d", mapdata.m_Price);
+            PrintToConsole(client, "m_PricePartyBlock: %d", mapdata.m_PricePartyBlock);
+            PrintToConsole(client, "m_FileSize       : %d", mapdata.m_FileSize);
+            PrintToConsole(client, "m_MinPlayers     : %d", mapdata.m_MinPlayers);
+            PrintToConsole(client, "m_MinPlayers     : %d", mapdata.m_MaxPlayers);
+            PrintToConsole(client, "m_MaxCooldown    : %d", mapdata.m_MaxCooldown);
+            PrintToConsole(client, "m_NominateOnly   : %b", mapdata.m_NominateOnly);
+            PrintToConsole(client, "m_AdminOnly      : %b", mapdata.m_AdminOnly);
+            PrintToConsole(client, "m_VipOnly        : %b", mapdata.m_VipOnly);
+            PrintToConsole(client, "m_CooldownLeft   : %b", mapdata.m_CooldownLeft);
+            PrintToConsole(client, "m_RecentlyPlayed : %b", mapdata.m_RecentlyPlayed);
+        }
+    }
 }
