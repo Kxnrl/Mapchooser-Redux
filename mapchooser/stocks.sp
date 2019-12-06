@@ -144,7 +144,7 @@ stock ArrayList GetAllMapsName()
     DirectoryListing dir = OpenDirectory("maps");
     if (dir == null)
     {
-        LogError("SetAllMapsDefault -> Failed to open maps.");
+        LogError("GetAllMapsName -> Failed to open maps.");
         return maps;
     }
 
@@ -160,7 +160,7 @@ stock ArrayList GetAllMapsName()
 
         if (!IsMapValid(map))
         {
-            LogError("SetAllMapsDefault -> %s is invalid map.", map);
+            LogError("GetAllMapsName -> %s is invalid map.", map);
             continue;
         }
 

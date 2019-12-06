@@ -438,7 +438,11 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             }
 
             char trans[128];
-            GetMapDescEx(map, trans, 128, false, false, (g_pStore || g_pShop));
+            GetMapDescEx(map, trans, 128, false, false, false);
+            if (g_pStore || g_pShop)
+            {
+                Format(trans, 128, "%s [%d]", trans, GetMapPrice(map, true, g_bPartyblock[param1]));
+            }
 
             if ((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
             {
