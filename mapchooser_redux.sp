@@ -753,13 +753,16 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         return NominateResult_VoteFull;
 
     if (IsVIPOnly(map) && !IsClientVIP(owner))
-        return NominateResult_OnlyVIP;
+        return NominateResult_VIPOnly;
 
     if (IsAdminOnly(map) && !IsClientAdmin(owner))
-        return NominateResult_OnlyAdmin;
+        return NominateResult_AdminOnly;
 
     if (GetCooldown(map) > 0)
         return NominateResult_RecentlyPlayed;
+
+    if (!IsCertainTimes(map))
+        return NominateResult_CertainTimes;
 
     int max = GetMaxPlayers(map);
     if (max != 0 && GetRealPlayers() > max)

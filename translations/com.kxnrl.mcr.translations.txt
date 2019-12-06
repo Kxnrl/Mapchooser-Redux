@@ -185,13 +185,13 @@
         "chi"   "{red}该地图需要当前服务器人数大于{green}{1}人{red}才能预定."
     }
     
-    "NominateResult_OnlyVIP"
+    "NominateResult_VIPOnly"
     {
         "en"    "{red}That map is nominated by VIP only."
         "chi"   "{red}该地图只有VIP才能预定."
     }
     
-    "NominateResult_OnlyAdmin"
+    "NominateResult_AdminOnly"
     {
         "en"    "{red}That map is nominated by Admin only."
         "chi"   "{red}该地图只有OP才能预定."

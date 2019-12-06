@@ -319,15 +319,21 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             int min, max; bool vip, adm;
             GetMapPermission(map, vip, adm, min, max);
 
-            if (result == NominateResult_OnlyAdmin)
+            if (result == NominateResult_AdminOnly)
             {
-                Chat(param1, "%T", "NominateResult_OnlyAdmin", param1);
+                Chat(param1, "%T", "NominateResult_AdminOnly", param1);
                 return 0;
             }
             
-            if (result == NominateResult_OnlyVIP)
+            if (result == NominateResult_VIPOnly)
             {
-                Chat(param1, "%T", "NominateResult_OnlyVIP", param1);
+                Chat(param1, "%T", "NominateResult_VIPOnly", param1);
+                return 0;
+            }
+
+            if (result == NominateResult_CertainTimes)
+            {
+                Chat(param1, "%T", "NominateResult_CertainTimes", param1);
                 return 0;
             }
 
