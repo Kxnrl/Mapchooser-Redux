@@ -362,6 +362,12 @@ static void LoadMapPool()
         delete kv;
         return;
     }
+    if (!kv.ImportFromFile(path))
+    {
+        LogError("LoadMapPool -> failed to import keyvalues from %s", path);
+        delete kv;
+        return;
+    }
 
     ArrayList maps = GetAllMapsName();
 
@@ -402,12 +408,7 @@ static void SaveMapPool(const char[] map)
     BuildPath(Path_SM, path, 128, "data/mappool.kv");
 
     KeyValues kv = new KeyValues("MapData");
-    if (!FileExists(path))
-    {
-        delete kv;
-        return;
-    }
-    else
+    if (FileExists(path))
     {
         kv.ImportFromFile(path);
     }
@@ -422,7 +423,6 @@ static void SaveMapPool(const char[] map)
 
     Call_MapVotePoolChanged();
 }
-
 
 void ClearAllCooldown()
 {
