@@ -542,10 +542,8 @@ void DisplayCooldownList(int client)
     }
 }
 
-ArrayList GetCooldownMaps()
+void GetCooldownMaps(ArrayList maps)
 {
-    ArrayList maps = new ArrayList(ByteCountToCells(128));
-
     char map[128]; MapData mapdata;
     for (int i = 0; i < g_aMapList.Length; i++)
     {
@@ -559,8 +557,6 @@ ArrayList GetCooldownMaps()
             }
         }
     }
-
-    return maps;
 }
 
 void DisplayMapAttributes(int client, const char[] map)

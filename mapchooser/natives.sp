@@ -177,12 +177,18 @@ public any Native_CheckVoteDone(Handle plugin, int numParams)
 
 public any Native_GetExcludeMapList(Handle plugin, int numParams)
 {
-    return GetCooldownMaps();
+    GetCooldownMaps(view_as<ArrayList>(GetNativeCell(1)));
 }
 
 public any Native_GetNominatedMapList(Handle plugin, int numParams)
 {
-    return g_aNominations.Clone();
+    ArrayList m_aNominations = view_as<ArrayList>(GetNativeCell(1));
+    for (int i = 0; i < g_aNominations.Length; i++)
+    {
+        Nominations n;
+        g_aNominations.GetArray(i, n, sizeof(Nominations));
+        m_aNominations.PushArray(  n, sizeof(Nominations));
+    }
 }
 
 public any Native_EndOfMapVoteEnabled(Handle plugin, int numParams)

@@ -53,6 +53,7 @@ public void OnPluginStart()
     LoadTranslations("com.kxnrl.mcr.translations");
 
     g_aMapList = new ArrayList(ByteCountToCells(128));
+    g_aOldList = new ArrayList(ByteCountToCells(128));
 
     g_smState = new StringMap();
     g_smOwner = new StringMap();
@@ -214,7 +215,9 @@ void FuzzyNominate(int client, const char[] find)
         menu.AddItem(map, desctag && GetMapDescEx(map, desc, 128, true, nametag, (g_pStore || g_pShop)) ? desc : map);
     }
 
-    menu.SetTitle("%d results of %s", menu.ItemCount, find);
+    menu.SetTitle("%T", "fuzzy title", client, menu.ItemCount, find, g_bPartyblock[client] ? "partyblock nominate menu item" : "nominate nominate menu item", client);
+    
+    
     menu.Display(client, MENU_TIME_FOREVER);
 
     delete result;
@@ -238,20 +241,16 @@ void BuildMapMenu()
 
     g_hMapMenu = new Menu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
-    char map[128];
+    g_aOldList.Clear();
+    GetExcludeMapList(g_aOldList);
 
-    if (g_aOldList != null)
-        delete g_aOldList;
-
-    g_aOldList = GetExcludeMapList();
-
-    char currentMap[32];
-    GetCurrentMap(currentMap, 32);
+    char currentMap[64];
+    GetCurrentMap(currentMap, 64);
 
     bool desctag = FindConVar("mcr_include_desctag").BoolValue;
     bool nametag = FindConVar("mcr_include_nametag").BoolValue;
 
-    char desc[128]; Nominations n;
+    char desc[128], map[128]; Nominations n;
     for(int i = 0; i < g_aMapList.Length; i++)
     {
         int status = MAPSTATUS_ENABLED;
@@ -447,7 +446,7 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             GetMapDescEx(map, trans, 128, false, false, false);
             if (g_pStore || g_pShop)
             {
-                Format(trans, 128, "%s [pb: %d]", trans, GetMapPrice(map, true, g_bPartyblock[param1]));
+                Format(trans, 128, "%s [%T: %d]", trans, g_bPartyblock[param1] ? "partyblock nominate menu item" : "nominate nominate menu item", param1, GetMapPrice(map, true, g_bPartyblock[param1]));
             }
 
             if ((status & MAPSTATUS_DISABLED) == MAPSTATUS_DISABLED)
@@ -483,9 +482,10 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 return RedrawMenuItem(display);
             }
 
-            return 0;
+            Format(display, sizeof(display), "%s\n%s", map, trans);
+            return RedrawMenuItem(display);
         }
-        
+
         case MenuAction_End:
         {
             if (menu != g_hMapMenu)

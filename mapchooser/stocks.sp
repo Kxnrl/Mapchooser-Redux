@@ -185,7 +185,7 @@ stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = f
                 Format(trans, 192, "%s [%s: %s]", trans, g_bPartyblock ? "pb" : "by", name);
             }
             // not null
-            return menu.AddItem(map, trans);
+            return menu.AddItem(map, trans, flag);
         }
     }
 

@@ -82,20 +82,20 @@
     {
         "#format" "{1:N},{2:s}"
         "en"    "Current map was nominated by {blue}{1}{normal}({green}{2}{normal})"
-        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预定的"
+        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预订的"
     }
     
     "nominated by name"
     {
         "#format" "{1:s},{2:s}"
         "en"    "Current map was nominated by {blue}{1}{normal}({green}{2}{normal})"
-        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预定的"
+        "chi"   "当前地图是{blue}{1}{normal}({green}{2}{normal})预订的"
     }
     
     "nominate full vote"
     {
         "en"    "The maximum allowed nominations has been reached."
-        "chi"   "预定池已满."
+        "chi"   "预订池已满."
     }
 
     "nominate partyblock"
@@ -126,28 +126,28 @@
     "nominate menu was nominated"
     {
         "en"    "Nominated"
-        "chi"   "已被预定"
+        "chi"   "已被预订"
     }
     
     "nominate menu was nominated name"
     {
         "#format" "{1:s}"
         "en"    "Nominated by {1}"
-        "chi"   "预定人: {1}"
+        "chi"   "预订人: {1}"
     }
 
     "nominate changed map"
     {
         "#format" "{1:N},{2:s}"
         "en"    "{1} has changed their nomination to {2}."
-        "chi"   "{blue}{1}{normal}更改预定地图为[{yellow}{2}{normal}]"
+        "chi"   "{blue}{1}{normal}更改预订地图为[{yellow}{2}{normal}]"
     }
     
     "nominate nominate map"
     {
         "#format" "{1:N},{2:s}"
         "en"    "{1} has nominated {2}."
-        "chi"   "{blue}{1:N}{normal}预定了地图[{yellow}{2:s}{normal}]"
+        "chi"   "{blue}{1:N}{normal}预订了地图[{yellow}{2:s}{normal}]"
     }
 
     "nominate partyblock map"
@@ -161,7 +161,7 @@
     {
         "#format" "{1:s},{2:d}"
         "en"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
-        "chi"   "{green}你预定[{blue}{1}{green}]花费了{2}积分"
+        "chi"   "{green}你预订[{blue}{1}{green}]花费了{2}积分"
     }
 
     "nominate partyblock cost"
@@ -175,26 +175,26 @@
     {
         "#format" "{1:d}"
         "en"    "{red}That map requires less than {green}{1}{red} players in server to nominate."
-        "chi"   "{red}该地图需要当前服务器人数小于{green}{1}人{red}才能预定."
+        "chi"   "{red}该地图需要当前服务器人数小于{green}{1}人{red}才能预订."
     }
     
     "NominateResult_MinPlayers"
     {
         "#format" "{1:d}"
         "en"    "{red}That map requires more than {green}{1}{red} players in server to nominate."
-        "chi"   "{red}该地图需要当前服务器人数大于{green}{1}人{red}才能预定."
+        "chi"   "{red}该地图需要当前服务器人数大于{green}{1}人{red}才能预订."
     }
     
     "NominateResult_VIPOnly"
     {
         "en"    "{red}That map is nominated by VIP only."
-        "chi"   "{red}该地图只有VIP才能预定."
+        "chi"   "{red}该地图只有VIP才能预订."
     }
     
     "NominateResult_AdminOnly"
     {
         "en"    "{red}That map is nominated by Admin only."
-        "chi"   "{red}该地图只有OP才能预定."
+        "chi"   "{red}该地图只有OP才能预订."
     }
     
     "NominateResult_VoteFull"
@@ -206,21 +206,21 @@
     "NominateResult_AlreadyInVote"
     {
         "en"    "{red}The map you chose has already been nominated."
-        "chi"   "{red}该地图已被预定."
+        "chi"   "{red}该地图已被预订."
     }
     
     "NominateResult_InvalidMap"
     {
         "#format" "{1:s}"
         "en"    "{red}Failed to nominate {1}."
-        "chi"   "{red}预定[{green}{1}{normal}]失败."
+        "chi"   "{red}预订[{green}{1}{normal}]失败."
     }
     
     "NominateResult_NoCredits"
     {
         "#format" "{1:s}"
         "en"    "{red}You have not enough credits to nominate {1}."
-        "chi"   "{red}你的余额不足,预定[{blue}{1}{green}]失败."
+        "chi"   "{red}你的余额不足,预订[{blue}{1}{green}]失败."
     }
 
     "NominateResult_RecentlyPlayed"
@@ -244,7 +244,7 @@
     "nominate menu title"
     {
         "en"    "Nominate Map:"
-        "chi"   "预定地图:"
+        "chi"   "预订地图:"
     }
 
     "partyblock menu title"
@@ -283,7 +283,7 @@
     {
         "#format" "{1:s},{2:d}"
         "en"    "{green}[{blue}{1}{green}] you nominated has been cancelled, {2} credits has been returned."
-        "chi"   "{green}你预定的[{blue}{1}{green}]已被取消,已退还{2}积分"
+        "chi"   "{green}你预订的[{blue}{1}{green}]已被取消,已退还{2}积分"
     }
     
     "mcr runoff"
@@ -385,4 +385,22 @@
         "chi"   "{silver}找不到这张地图. [{green}{1}{silver}]"
     }
 
+    "partyblock nominate menu item"
+    {
+        "en"    "PB"
+        "chi"   "包场"
+    }
+
+    "nominate nominate menu item"
+    {
+        "en"    "nominations"
+        "chi"   "预订"
+    }
+
+    "fuzzy title"
+    {
+        "#format"   "{1:d},{2:s},{3:t}"
+        "en"    "{1} results of [{2}] for {3}"
+        "chi"   "{3}: 在 [{2}] 中找到 {1} 条记录"
+    }
 }

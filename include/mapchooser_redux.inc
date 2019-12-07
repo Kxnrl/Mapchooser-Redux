@@ -88,9 +88,8 @@ native bool CanMapChooserStartVote();
 native bool HasEndOfMapVoteFinished();
 native bool EndOfMapVoteEnabled();
 native bool GetMapData(const char[] map, any[] data, int size);
-
-native ArrayList GetExcludeMapList();
-native ArrayList GetNominatedMapList();
+native void GetExcludeMapList(ArrayList array);
+native void GetNominatedMapList(ArrayList array);
 
 stock bool IsClientVIP(int client)
 {
@@ -125,8 +124,15 @@ stock bool GetMapDescEx(const char[] map, char[] desc, int maxLen, bool includeN
 
     if (includeTag)
     {
-        Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "✪" : "", desc);
-        Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "♚" : "", desc);
+        if (mapdata.m_AdminOnly)
+        {
+            // admin onlu
+            Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "[ADMIN] "   : "", desc); //✪
+        }
+        else if (mapdata.m_VipOnly)
+        {
+            Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "[VIP]     " : "", desc); //♚
+        }
     }
 
     if (includePrice)
@@ -187,8 +193,8 @@ stock int GetMapCooldown(const char[] map)
 
 stock bool IsNominated(const char[] map)
 {
-
-    ArrayList list = GetNominatedMapList();
+    ArrayList list = new ArrayList(sizeof(Nominations));
+    GetNominatedMapList(list);
     for(int i = 0; i < list.Length; i++)
     {
         Nominations n;
@@ -205,7 +211,9 @@ stock bool IsNominated(const char[] map)
 
 stock bool GetNominated(const char[] map, Nominations n)
 {
-    ArrayList list = GetNominatedMapList(); 
+    ArrayList list = new ArrayList(sizeof(Nominations));
+    GetNominatedMapList(list);
+
     for(int i = 0; i < list.Length; i++)
     {
         Nominations _n;

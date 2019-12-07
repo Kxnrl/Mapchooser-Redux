@@ -587,7 +587,7 @@ public void Handler_MapVoteFinished(Menu menu, int num_votes, int num_clients, c
     Handler_VoteFinishedGeneric(menu, num_votes, num_clients, client_info, num_items, item_info);
 }
 
-public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int param2)
+public int Handler_MapVoteMenu(Menu menu, MenuAction action, int param1, int param2)
 {
     switch(action)
     {
@@ -607,7 +607,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
             char map[128];
             char buffer[128];
 
-            GetMenuItem(menu, param2, map, 128);
+            menu.GetItem(param2, map, 128);
 
             if (StrEqual(map, VOTE_EXTEND, false))
                 FormatEx(buffer, 128, "%T", "vote item extend", param1);
@@ -617,7 +617,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
                 FormatEx(buffer, 128, "%T", "LINE_ONE", param1);
             else if (StrEqual(map, LINE_TWO, false))
                 FormatEx(buffer, 128, "%T", "LINE_TWO", param1);
-            
+
             if (buffer[0] != '\0')
                 return RedrawMenuItem(buffer);
         }
@@ -636,7 +636,7 @@ public int Handler_MapVoteMenu(Handle menu, MenuAction action, int param1, int p
                     if (g_bBlockedSlots)
                         startInt = 2;
                     item = RandomInt(startInt, count - 1);
-                    GetMenuItem(menu, item, map, 128);
+                    menu.GetItem(item, map, 128);
                 }
                 while(strcmp(map, VOTE_EXTEND, false) == 0);
 
