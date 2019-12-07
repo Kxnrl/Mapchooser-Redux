@@ -385,6 +385,12 @@
         "chi"   "{silver}找不到这张地图. [{green}{1}{silver}]"
     }
 
+    "NominateResult_CertainTimes"
+    {
+        "en"    "{silver}Not in available time period"
+        "chi"   "{silver}当前地图不在可用时间段."
+    }
+
     "partyblock nominate menu item"
     {
         "en"    "PB"
