@@ -170,7 +170,7 @@ public Action Command_Partyblock(int client, int args)
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-    if (!client)
+    if (!client || sArgs[0] == '!' || sArgs[0] == '/' || sArgs[0] == '.')
         return;
 
     if (StrContains(sArgs, "nominat", false) == -1 && strcmp(sArgs, "nextmap", false) != 0)
