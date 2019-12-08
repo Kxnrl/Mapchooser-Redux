@@ -94,6 +94,8 @@ static void SetAllMapsDefault(KeyValues kv)
 {
     ArrayList maps = GetAllMapsName();
 
+    LogMessage("Process SetAllMapsDefault with %d maps.", maps.Length);
+
     char map[128];
     for(int index = 0; index < maps.Length; index++)
     {
@@ -417,6 +419,7 @@ static void LoadMapPool()
     for(int index = 0; index < maps.Length; index++)
     {
         maps.GetString(index, map, 128);
+        kv.Rewind();
 
         MapData mapdata;
         if (!g_MapData.GetArray(map, mapdata, typeofdata))
