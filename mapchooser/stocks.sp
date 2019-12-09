@@ -175,8 +175,8 @@ stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = f
 {
     if (!ori)
     {
-        char trans[192];
-        if (GetDescEx(map, trans, 192, true, includeTag))
+        char trans[128];
+        if (GetDescEx(map, trans, 128, true, includeTag))
         {
             if (ClientIsValid(client))
             {

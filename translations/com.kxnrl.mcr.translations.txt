@@ -363,15 +363,15 @@
     "LINE_ONE"
     {
         "en"    "Selete a map that you want to play! "
-        "chi"   "选择你想玩的地铁图..."
+        "chi"   "请选择你想玩的地图"
     }
     
     "LINE_TWO"
     {
         "en"    "Type !revote to restart vote menu ;-)"
-        "chi"   "如果你选错可以输入 !revote 重新投票 ;-)"
+        "chi"   "选错可使用 !revote 重新投票"
     }
-    
+
     "vote item title"
     {
         "en"    "Vote the next map!"

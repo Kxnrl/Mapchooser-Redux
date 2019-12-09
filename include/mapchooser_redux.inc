@@ -50,7 +50,7 @@ enum struct MapData
 {
     // mapdata.kv
     char m_FileName[128];
-    char m_Description[64];
+    char m_Description[32];
     int  m_Price;
     int  m_PricePartyBlock;
     int  m_FileSize;

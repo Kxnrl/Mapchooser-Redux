@@ -116,7 +116,7 @@ static void SetAllMapsDefault(KeyValues kv)
 
         MapData mapdata;
         strcopy(mapdata.m_FileName,   128, map);
-        strcopy(mapdata.m_Description, 64, "null");
+        strcopy(mapdata.m_Description, 32, "null");
         mapdata.m_Price = 100;
         mapdata.m_PricePartyBlock = 3000;
         mapdata.m_FileSize = GetMapFileSize(map);
@@ -157,7 +157,7 @@ static void LoadAllMapsData(KeyValues kv)
 
             MapData mapdata;
             strcopy(mapdata.m_FileName,   128, map);
-            strcopy(mapdata.m_Description, 64, "null");
+            strcopy(mapdata.m_Description, 32, "null");
             mapdata.m_Price = 100;
             mapdata.m_PricePartyBlock = 3000;
             mapdata.m_FileSize = GetMapFileSize(map);
@@ -169,7 +169,7 @@ static void LoadAllMapsData(KeyValues kv)
 
         MapData mapdata;
         strcopy(mapdata.m_FileName, 128, map);
-        kv.GetString("m_Description", mapdata.m_Description, 64, "null");
+        kv.GetString("m_Description", mapdata.m_Description, 32, "null");
         mapdata.m_Price           = kv.GetNum("m_Price", 100);
         mapdata.m_PricePartyBlock = kv.GetNum("m_PricePartyBlock", 3000);
         mapdata.m_FileSize        = GetMapFileSize(map);
@@ -218,8 +218,8 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
 
     if (includeTag)
     {
-        Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "✪" : "", desc);
-        Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "♚" : "", desc);
+        Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "[ADMIN] "   : "", desc);
+        Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "[VIP]     " : "", desc);
     }
 
     if (includePrice)
