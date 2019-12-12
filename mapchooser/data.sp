@@ -192,7 +192,7 @@ static void LoadAllMapsData(KeyValues kv)
         {
             char o[24][4];
             int c = ExplodeString(m_CertainTimes, ",", o, 24, 4, false);
-            for (int i = 0; i < c; i++)
+            for (int i = 0; i < c; i++) if (strlen(o[i]) > 0)
                 mapdata.m_CertainTimes[StringToInt(o[i])] = true;
         }
 
@@ -539,7 +539,7 @@ void DisplayCooldownList(int client)
         {
             if (mapdata.m_CooldownLeft > 0)
             {
-                PrintToConsole(client, "[%s/%s] -> %s", PadLeft(mapdata.m_CooldownLeft, 3), PadLeft(mapdata.m_MaxCooldown, 3), map);
+                PrintToConsole(client, "[%s/%s] -> %s", PadLeft(mapdata.m_CooldownLeft, 3, " "), PadLeft(mapdata.m_MaxCooldown, 3, " "), map);
             }
         }
     }
