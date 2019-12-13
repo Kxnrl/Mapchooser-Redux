@@ -524,7 +524,7 @@ void ClearMapCooldown(int client, const char[] map)
 
 void ResetMapCooldown(int client, const char[] map)
 {
-    char alter[128]; MapData mapdata;
+    char alter[128];
     for (int i = 0; i < g_aMapList.Length; i++)
     {
         g_aMapList.GetString(i, alter, 128);
