@@ -395,6 +395,21 @@ bool SetCooldown(const char[] map)
     return true;
 }
 
+bool ClearCooldown(const char[] map)
+{
+    MapData mapdata;
+    if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        LogStackTrace("ClearCooldown -> Failed to get map %s", map);
+        return false;
+    }
+
+    mapdata.m_CooldownLeft = 0;
+    g_MapData.SetArray(map, mapdata, typeofdata, true);
+    SaveMapPool(map);
+    return true;
+}
+
 static void LoadMapPool()
 {
     char path[128];
@@ -499,7 +514,7 @@ void ClearMapCooldown(int client, const char[] map)
         g_aMapList.GetString(i, alter, 128);
 
         if (StrContains(alter, map, false) > -1)
-        if (SetCooldown(alter))
+        if (ClearCooldown(alter))
         {
             tChatAll("%t", "mcr clear map cd", alter);
             LogAction(client, -1, "%L -> Clear [%s] cooldown.", client, alter);
@@ -515,12 +530,8 @@ void ResetMapCooldown(int client, const char[] map)
         g_aMapList.GetString(i, alter, 128);
 
         if (StrContains(alter, map, false) > -1)
-        if (g_MapData.GetArray(alter, mapdata, typeofdata))
+        if (SetCooldown(alter))
         {
-            mapdata.m_CooldownLeft = mapdata.m_MaxCooldown;
-            g_MapData.SetArray(alter, mapdata, typeofdata, true);
-            SaveMapPool(alter);
-
             tChatAll("%t", "mcr reset map cd", alter);
             LogAction(client, -1, "%L -> Reset [%s] cooldown.", client, alter);
         }
