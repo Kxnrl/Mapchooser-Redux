@@ -499,7 +499,7 @@ void ClearAllCooldown()
 
         if (mapdata.m_CooldownLeft > 0)
         {
-            mapdata.m_CooldownLeft--;
+            mapdata.m_CooldownLeft = 0;
             g_MapData.SetArray(map, mapdata, typeofdata, true);
             SaveMapPool(map);
         }
