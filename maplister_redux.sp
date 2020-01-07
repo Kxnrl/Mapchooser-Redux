@@ -4,6 +4,9 @@
 #include <sourcemod>
 #include <mapchooser_redux>
 
+#undef REQUIRE_PLUGIN
+#include <fys.pupd>
+
 int g_iMapCount = 0;
 bool g_bStartup = true;
 
@@ -35,6 +38,11 @@ public void OnPluginStart()
     g_iMapCount = GetMapCount();
 
     CreateTimer(600.0, Timer_Detected, _, TIMER_REPEAT);
+}
+
+public void Pupd_OnCheckAllPlugins()
+{
+    Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
 public Action Timer_Detected(Handle timer)

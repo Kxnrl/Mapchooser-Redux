@@ -10,6 +10,7 @@
 #undef REQUIRE_PLUGIN
 #include <store>
 #include <shop>
+#include <fys.pupd>
 
 Handle g_tVote;
 Handle g_tRetry;
@@ -110,6 +111,11 @@ public void OnAllPluginsLoaded()
     g_pShop = LibraryExists("shop-core");
 
     Data_OnAllPluginsLoaded();
+}
+
+public void Pupd_OnCheckAllPlugins()
+{
+    Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
 public void OnConfigsExecuted()

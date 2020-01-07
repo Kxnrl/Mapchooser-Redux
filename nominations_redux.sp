@@ -5,6 +5,9 @@
 #include <mapchooser_redux>
 #include <smutils>
 
+#undef REQUIRE_PLUGIN
+#include <fys.pupd>
+
 ArrayList g_aMapList;
 ArrayList g_aOldList;
 Menu g_hMapMenu;
@@ -64,6 +67,11 @@ public void OnPluginStart()
 
     RegConsoleCmd("sm_bc",      Command_Partyblock);
     RegConsoleCmd("partyblock", Command_Partyblock);
+}
+
+public void Pupd_OnCheckAllPlugins()
+{
+    Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
 public void OnLibraryAdded(const char[] name)

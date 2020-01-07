@@ -5,6 +5,9 @@
 #include <mapchooser_redux>
 #include <smutils>
 
+#undef REQUIRE_PLUGIN
+#include <fys.pupd>
+
 bool g_bAllowRTV;
 bool g_bInChange;
 bool g_bVoted[MAXPLAYERS+1];
@@ -28,6 +31,11 @@ public void OnPluginStart()
     LoadTranslations("com.kxnrl.mcr.translations");
 
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
+}
+
+public void Pupd_OnCheckAllPlugins()
+{
+    Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
 public void OnMapStart()

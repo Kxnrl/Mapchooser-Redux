@@ -1,0 +1,28 @@
+#if defined _fys_Updater_Include_
+    #endinput
+#endif
+
+#define _fys_Updater_Include_
+
+native bool Pupd_CheckPlugin(bool reload, const char[] url);
+
+forward void Pupd_OnCheckAllPlugins();
+forward void Pupd_OnPluginUpdated(const char[] file, bool reload);
+
+public SharedPlugin __pl_fys_Updater =
+{
+    name = "fys-Updater",
+    file = "fys.pupd.smx",
+#if defined REQUIRE_PLUGIN
+    required = 1
+#else
+    required = 0
+#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public void __ext_fys_Updater_SetNTVOptional()
+{
+    MarkNativeAsOptional("Pupd_CheckPlugin");
+}
+#endif

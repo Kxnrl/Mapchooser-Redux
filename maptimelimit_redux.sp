@@ -5,6 +5,9 @@
 #include <mapchooser_redux>
 #include <smutils>
 
+#undef REQUIRE_PLUGIN
+#include <fys.pupd>
+
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
 
@@ -29,6 +32,11 @@ public void OnPluginStart()
     LoadTranslations("com.kxnrl.mcr.translations");
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
+}
+
+public void Pupd_OnCheckAllPlugins()
+{
+    Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
 public Action Timer_BroadCast(Handle timer)
