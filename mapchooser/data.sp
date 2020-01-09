@@ -595,8 +595,8 @@ void DisplayMapAttributes(int client, const char[] map)
             PrintToConsole(client, "m_NominateOnly   : %b", mapdata.m_NominateOnly);
             PrintToConsole(client, "m_AdminOnly      : %b", mapdata.m_AdminOnly);
             PrintToConsole(client, "m_VipOnly        : %b", mapdata.m_VipOnly);
-            PrintToConsole(client, "m_CooldownLeft   : %b", mapdata.m_CooldownLeft);
-            PrintToConsole(client, "m_RecentlyPlayed : %b", mapdata.m_RecentlyPlayed);
+            PrintToConsole(client, "m_CooldownLeft   : %d", mapdata.m_CooldownLeft);
+            PrintToConsole(client, "m_RecentlyPlayed : %d", mapdata.m_RecentlyPlayed);
         }
     }
 }
