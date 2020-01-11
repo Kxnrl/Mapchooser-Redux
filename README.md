@@ -12,13 +12,16 @@
 * Rock the vote to change map or extend map  
 * Nominate map to vote pool
 * Map attributes  
+* Party block
   
   
 ### ConVars  
 - **mcr_timer_location**  - Timer Location of HUD.  
-- **mcr_maps_history_count**  - How many maps in cooldown list.  
 - **mcr_include_nametag** - Include name tag in map desc.  
 - **mcr_include_desctag** - Include desc tag in map desc.
+- **mcr_rectplayed_interval** - How much time in hours ago played can count to recently played pool, (-1 disable all recently played function.  
+- **mcr_rectplayed_ltp_mtpl** - What percentage increase of nomination map price for recently played.  
+- **mcr_partyblock_enabled** - Enable or not party block fuction.
 - **mcr_map_extend_times** - How many times can extend the map.  
 - **mcr_delete_offical**  - Auto-delete offical maps.  
 - **mcr_generate_mapcycle** - Auto-generate map list in mapcycle.txt.  
