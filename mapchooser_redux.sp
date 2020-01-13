@@ -365,7 +365,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner, i == 0 ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
         }
 
-        AddExtendToMenu(g_hVoteMenu, when);
+        //AddExtendToMenu(g_hVoteMenu, when);
     }
     else if (inputlist == null)
     {
