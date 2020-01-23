@@ -155,6 +155,10 @@ stock ArrayList GetAllMapsName()
         if (type != FileType_File || StrContains(map, ".bsp", false) == -1)
             continue;
 
+        // https://github.com/Kxnrl/Mapchooser-Redux/issues/27
+        if (StrContains(map, ".bsp.bz2", false) > -1)
+            continue;
+
         int c = FindCharInString(map, '.', true);
         map[c] = '\0';
 
