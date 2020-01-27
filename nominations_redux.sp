@@ -181,7 +181,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
     if (!client || sArgs[0] == '!' || sArgs[0] == '/' || sArgs[0] == '.')
         return;
 
-    if (StrContains(sArgs, "nominat", false) == -1 && strcmp(sArgs, "nextmap", false) != 0)
+    if (StrContains(sArgs, "nominat", false) == -1)
         return;
 
     if (!IsNominateAllowed(client))
