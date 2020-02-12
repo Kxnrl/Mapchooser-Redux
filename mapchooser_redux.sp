@@ -62,6 +62,8 @@ enum struct Convars
     ConVar Recents;
     ConVar LtpMtpl;
     ConVar BCState;
+    ConVar Shuffle;
+    ConVar Refunds;
 }
 
 // cvars
@@ -259,9 +261,9 @@ public Action Timer_StartMapVote(Handle timer, DataPack data)
 
     switch(view_as<TimerLocation>(g_ConVars.TimeLoc.IntValue))
     {
-        case TimerLocation_Text: tTextAll("%t", "mcr countdown text hint", warningTimeRemaining);
-        case TimerLocation_Chat: tChatAll("%t", "mcr countdown chat",      warningTimeRemaining);
-        case TimerLocation_Hint: tHintAll("%t", "mcr countdown text hint", warningTimeRemaining);
+        case TimerLocation_Text: tTextAll("%t", g_ConVars.Shuffle.BoolValue ? "mcr countdown text hint shuffle" : "mcr countdown text hint", warningTimeRemaining);
+        case TimerLocation_Chat: tChatAll("%t", g_ConVars.Shuffle.BoolValue ? "mcr countdown chat shuffle"      : "mcr countdown chat",      warningTimeRemaining);
+        case TimerLocation_Hint: tHintAll("%t", g_ConVars.Shuffle.BoolValue ? "mcr countdown text hint shuffle" : "mcr countdown text hint", warningTimeRemaining);
         case TimerLocation_HUD:  DisplayCountdownHUD(warningTimeRemaining);
     }
 
@@ -372,55 +374,113 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         char map[128];
         int voteSize = 5, nominationsToAdd = g_aNominations.Length >= voteSize ? voteSize : g_aNominations.Length;
 
-        for(int i = 0; i < nominationsToAdd; i++)
+        static ArrayList votePool = null;
+        if (votePool != null)
+            delete votePool;
+        votePool = new ArrayList(sizeof(Nominations));
+
+        if (g_ConVars.Shuffle.BoolValue)
         {
-            Nominations n;
-            g_aNominations.GetArray(i, n, sizeof(Nominations));
-
-            AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
-            RemoveStringFromArray(g_aNextMapList, map);
-
-            Call_NominationsReset(n.m_Map, n.m_Owner, false);
-        }
-
-        for(int i = nominationsToAdd; i < g_aNominations.Length; i++)
-        {
-            Nominations n;
-            g_aNominations.GetArray(i, n, sizeof(Nominations));
-
-            Call_NominationsReset(n.m_Map, n.m_Owner, false);
-        }
-
-        int i = nominationsToAdd;
-        int count = 0;
-
-        if (i < voteSize && g_aNextMapList.Length == 0)
-        {
-            if (i == 0)
+            // randomly pool
+            for(int i = 0; i < nominationsToAdd; i++)
             {
-                LogMessage("No maps available for vote.");
-                return;
+                Nominations n;
+                g_aNominations.GetArray(i, n, sizeof(Nominations));
+                votePool.PushArray(n, sizeof(Nominations));
+                RemoveStringFromArray(g_aNextMapList, n.m_Map);
             }
-            else
+            /*
+            for(int i = 0; i < g_aNominations.Length; i++)
             {
-                LogMessage("Not enough maps to fill map list.");
-                voteSize = i;
+                Nominations n;
+                g_aNominations.GetArray(i, n, sizeof(Nominations));
+                Call_NominationsReset(n.m_Map, n.m_Owner, false);
+            }
+            */
+            if (votePool.Length < voteSize && g_aNextMapList.Length == 0)
+            {
+                if (votePool.Length == 0)
+                {
+                    LogMessage("No maps available for vote.");
+                    return;
+                }
+                else
+                {
+                    LogMessage("Not enough maps to fill map list.");
+                    voteSize = votePool.Length;
+                }
+            }
+            int count = 0;
+            while(votePool.Length < voteSize && count < g_aNextMapList.Length)
+            {
+                g_aNextMapList.GetString(count, map, 128);        
+                count++;
+
+                Nominations n;
+                strcopy(n.m_Map, 128, map);
+                n.m_Owner = -1;
+                votePool.PushArray(n, sizeof(Nominations));
+            }
+            // Randomly menu
+            while (votePool.Length > 0)
+            {
+                Nominations n;
+                int i = RandomInt(0, votePool.Length - 1);
+                votePool.GetArray(i, n, sizeof(Nominations));
+                votePool.Erase(i);
+                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < nominationsToAdd; i++)
+            {
+                Nominations n;
+                g_aNominations.GetArray(i, n, sizeof(Nominations));
+
+                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
+                RemoveStringFromArray(g_aNextMapList, map);
+
+                Call_NominationsReset(n.m_Map, n.m_Owner, false);
+            }
+
+            /*
+            for(int i = nominationsToAdd; i < g_aNominations.Length; i++)
+            {
+                Nominations n;
+                g_aNominations.GetArray(i, n, sizeof(Nominations));
+                Call_NominationsReset(n.m_Map, n.m_Owner, false);
+            }
+            */
+
+            int i = nominationsToAdd;
+            int count = 0;
+
+            if (i < voteSize && g_aNextMapList.Length == 0)
+            {
+                if (i == 0)
+                {
+                    LogMessage("No maps available for vote.");
+                    return;
+                }
+                else
+                {
+                    LogMessage("Not enough maps to fill map list.");
+                    voteSize = i;
+                }
+            }
+
+            while(i < voteSize && count < g_aNextMapList.Length)
+            {
+                g_aNextMapList.GetString(count, map, 128);        
+                count++;
+
+                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue);
+                i++;
             }
         }
 
-        while(i < voteSize)
-        {
-            g_aNextMapList.GetString(count, map, 128);        
-            count++;
-
-            AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue);
-            i++;
-
-            if (count >= g_aNextMapList.Length)
-                break;
-        }
-
-        g_aNominations.Clear();
+        //g_aNominations.Clear();
 
         AddExtendToMenu(g_hVoteMenu, when);
     }
@@ -458,6 +518,8 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 128);
 
     Call_MapVoteEnd(map);
+
+    RefundAllCredits(map);
 
     if (strcmp(map, VOTE_EXTEND, false) == 0)
     {
@@ -511,7 +573,10 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             ChatAll("\x0A -> \x0E[\x05%s\x0E]", desc);
         }
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
-    }    
+    }
+
+    // reset
+    g_bPartyblock = false;
 }
 
 
@@ -977,4 +1042,44 @@ bool InternalRemoveNominationByMap(const char[] map)
     }
 
     return false;
+}
+
+void RefundAllCredits(const char[] map)
+{
+    while (g_aNominations.Length > 0)
+    {
+        Nominations n;
+        g_aNominations.GetArray(0, n, sizeof(Nominations));
+
+        g_aNominations.Erase(0);
+        Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
+
+        if (strcmp(map, n.m_Map) == 0)
+        {
+            // skip passing map
+            continue;
+        }
+
+        if (g_bPartyblock)
+        {
+            // skip all partyblocks
+            continue;
+        }
+
+        int credits = GetRefundCredits(n.m_Map);
+
+        if (credits > 0 && ClientIsValid(n.m_Owner))
+        if (g_pStore)
+        {
+            Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+credits, "nomination-fallback");
+            Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, credits);
+        }
+        else if (g_pShop)
+        {
+            MG_Shop_ClientEarnMoney(n.m_Owner, credits, "nomination-fallback");
+            Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, credits);
+        }
+    }
+
+    g_aNominations.Clear();
 }

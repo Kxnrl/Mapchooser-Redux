@@ -14,6 +14,7 @@ enum struct MapData
     bool m_VipOnly;
     bool m_AdminOnly;
     bool m_CertainTimes[24]; // 0-23
+    float m_RefundRatio;
 
     // mappool.kv
     int  m_CooldownLeft;
@@ -179,6 +180,7 @@ static void LoadAllMapsData(KeyValues kv)
         mapdata.m_NominateOnly    = kv.GetNum("m_NominateOnly", 0) == 1;
         mapdata.m_VipOnly         = kv.GetNum("m_VipOnly", 0) == 1;
         mapdata.m_AdminOnly       = kv.GetNum("m_AdminOnly", 0) == 1;
+        mapdata.m_RefundRatio     = kv.GetFloat("m_RefundRatio", -1.0);
 
         char m_CertainTimes[128];
         kv.GetString("m_CertainTimes", m_CertainTimes, 128, "all");
@@ -231,6 +233,24 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
     return true;
 }
 
+float GetRefundRatio(const char[] map)
+{
+    MapData mapdata;
+    if (!g_MapData.GetArray(map, mapdata, typeofdata))
+    {
+        // fallback to default cvar
+        return g_ConVars.Refunds.FloatValue;
+    }
+
+    if (mapdata.m_RefundRatio < 0.0)
+        return g_ConVars.Refunds.FloatValue;
+
+    if (mapdata.m_RefundRatio > 1.0)
+        return 1.0;
+
+    return mapdata.m_RefundRatio;
+}
+
 bool IsBigMap(const char[] map)
 {
     MapData mapdata;
@@ -243,12 +263,21 @@ bool IsBigMap(const char[] map)
     return mapdata.m_FileSize > 150;
 }
 
+int GetRefundCredits(const char[] map)
+{
+    // disallow refund
+    if (g_ConVars.Refunds.FloatValue <= 0.0)
+        return 0;
+
+    return RoundToCeil(float(GetPrice(map)) * GetRefundRatio(map));
+}
+
 int GetPrice(const char[] map, bool recently = true, bool partyblock = false)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("IsBigMap -> Failed to get map %s", map);
+        LogStackTrace("GetPrice -> Failed to get map %s", map);
         return 100;
     }
 
@@ -597,6 +626,7 @@ void DisplayMapAttributes(int client, const char[] map)
             PrintToConsole(client, "m_VipOnly        : %b", mapdata.m_VipOnly);
             PrintToConsole(client, "m_CooldownLeft   : %d", mapdata.m_CooldownLeft);
             PrintToConsole(client, "m_RecentlyPlayed : %d", mapdata.m_RecentlyPlayed);
+            PrintToConsole(client, "m_RefundRatio    : %f", mapdata.m_RefundRatio);
         }
     }
 }

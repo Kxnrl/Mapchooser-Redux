@@ -7,6 +7,8 @@ void Cvars_OnPluginStart()
     g_ConVars.Recents = CreateConVar("mcr_rectplayed_interval", "144", "How much time in hours ago played can count to recently played pool, (-1 disable all recently played function) ", _, true, -1.0, true, 300.0);
     g_ConVars.LtpMtpl = CreateConVar("mcr_rectplayed_ltp_mtpl", "0.5", "What percentage increase of nomination map price for recently played",                                            _, true, 0.0, true, 9.9);
     g_ConVars.BCState = CreateConVar("mcr_partyblock_enabled",    "1", "Enable or not party block fuction.",                                                                              _, true, 0.0, true, 1.0);
+    g_ConVars.Shuffle = CreateConVar("mcr_votemenu_shuffle",      "1", "Enable or not shuffle mapvote menu.",                                                                             _, true, 0.0, true, 1.0);
+    g_ConVars.Refunds = CreateConVar("mcr_refund_credits_ratio","0.6", "Refund ratio of credits if map fail to be choosen.",                                                              _, true, 0.0, true, 1.0);
 
     if (!DirExists("cfg/sourcemod/mapchooser"))
         if (!CreateDirectory("cfg/sourcemod/mapchooser", 511))

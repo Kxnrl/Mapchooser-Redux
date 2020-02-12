@@ -333,6 +333,13 @@
 		"en"    "Voting for the next map will begin in {1} seconds"
         "chi"   "还有 {1} 秒开始投票"
 	}
+
+    "mcr countdown hud shuffle"
+    {
+		"#format"   "{1:d}"
+		"en"    "Voting for the next map will begin in {1} seconds"
+        "chi"   "还有 {1} 秒开始投票\n预定地图随机排列,谨慎选择!"
+	}
     
     "mcr countdown text hint"
     {
@@ -341,6 +348,13 @@
         "chi"   "地图投票还有 {1} 秒开始"
 	}
 
+    "mcr countdown text hint shuffle"
+    {
+        "#format"   "{1:d}"
+		"en"    "Voting for the next map will begin in {1} seconds"
+        "chi"   "地图投票还有 {1} 秒开始\n预定地图随机排列,谨慎选择!"
+    }
+
     "mcr countdown chat"
     {
 		"#format"   "{1:d}"
@@ -348,6 +362,13 @@
         "chi"   "{silver}地图投票还有 {red}{1}{silver} 秒开始"
 	}
     
+    "mcr countdown chat shuffle"
+    {
+		"#format"   "{1:d}"
+		"en"    "{silver}Voting for the next map will begin in {red}{1}{silver} seconds"
+        "chi"   "{silver}地图投票还有 {red}{1}{silver} 秒开始, {red}预定地图随机排列,谨慎选择!"
+	}
+
     "vote item extend"
     {
         "en"    "Extend map"

@@ -61,6 +61,7 @@ enum struct MapData
     bool m_VipOnly;
     bool m_AdminOnly;
     bool m_CertainTimes[24]; // 0-23
+    float m_RefundRatio;
 
     // mappool.kv
     int  m_CooldownLeft;

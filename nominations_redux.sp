@@ -69,6 +69,12 @@ public void OnPluginStart()
     RegConsoleCmd("partyblock", Command_Partyblock);
 }
 
+public void OnAllPluginsLoaded()
+{
+    g_pStore = LibraryExists("store");
+    g_pShop = LibraryExists("shop-core");
+}
+
 public void Pupd_OnCheckAllPlugins()
 {
     Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
@@ -92,9 +98,6 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnConfigsExecuted()
 {
-    g_pStore = LibraryExists("store");
-    g_pShop = LibraryExists("shop-core");
-
     if (ReadMapList(g_aMapList, g_iMapFileSerial, "nominations", MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER) == INVALID_HANDLE)
         if (g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
