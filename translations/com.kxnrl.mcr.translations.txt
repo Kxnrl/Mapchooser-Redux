@@ -303,15 +303,15 @@
     "mcr dont change"
     {
         "#format" "{1:d},{2:d}"
-        "en"    "Current map continues! The Vote has spoken! (Received {green}{1}{normal}/{red}{2} votes)"
-        "chi"   "当前地图暂不更换 ({green}{1}{normal}/{red}{2} 票)"
+        "en"    "Current map continues! The Vote has spoken! (Received {green}{1}{normal}/{red}{2}{normal} votes)"
+        "chi"   "当前地图暂不更换 ({green}{1}{normal}/{red}{2} {normal}票)"
     }
     
     "mcr extend map"
     {
         "#format" "{1:d},{2:d}"
-        "en"    "The current map has been extended. (Received {green}{1}{normal}/{red}{2} votes)"
-        "chi"   "当前地图已被延长 ({green}{1}{normal}/{red}{2} 票)"
+        "en"    "The current map has been extended. (Received {green}{1}{normal}/{red}{2} {normal}votes)"
+        "chi"   "当前地图已被延长 ({green}{1}{normal}/{red}{2} {normal}票)"
     }
     
     "mcr next map"

@@ -519,8 +519,6 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
 
     Call_MapVoteEnd(map);
 
-    RefundAllCredits(map);
-
     if (strcmp(map, VOTE_EXTEND, false) == 0)
     {
         g_iExtends++;
@@ -574,6 +572,9 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         }
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }
+
+    // refunds
+    RefundAllCredits(map);
 
     // reset
     g_bPartyblock = false;
