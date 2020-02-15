@@ -72,9 +72,12 @@ enum struct Nominations
 {
     char m_Map[128];
     int  m_Owner;
+    char m_OwnerName[32];
+    char m_OwnerAuth[32];
 }
 
 forward void OnNominationRemoved(const char[] map, int client, bool partyblock);
+forward void OnNominationVoted(const char[] map, const char[] name, const char[] auth);
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();

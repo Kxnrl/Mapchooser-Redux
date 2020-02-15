@@ -112,12 +112,12 @@ public void OnMapEnd()
     g_smOwner.Remove(map);
 }
 
-public void OnNominationRemoved(const char[] map, int owner)
+public void OnNominationRemoved(const char[] map, int client, bool partyblock)
 {
     int status;
 
     if (!g_smState.GetValue(map, status))
-        return;    
+        return;
 
     if ((status & MAPSTATUS_EXCLUDE_NOMINATED) != MAPSTATUS_EXCLUDE_NOMINATED)
         return;
@@ -377,10 +377,6 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
                 return 0;
             }
 
-            owner_t owner;
-            GetClientAuthId(param1, AuthId_Steam2, owner.m_Auth, 32, true);
-            GetClientName(param1, owner.m_Name, 32);
-            g_smOwner.SetArray(map, owner, sizeof(owner_t), true);
             g_smState.SetValue(map, MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED, true);
 
             if (result == NominateResult_PartyBlockAdded)
@@ -577,4 +573,12 @@ int FindClientByAuth(const char[] steamid)
                     return client;
 
     return 0;
+}
+
+public void OnNominationVoted(const char[] map, const char[] name, const char[] auth)
+{
+    owner_t owner;
+    strcopy(owner.m_Auth, 32, auth);
+    strcopy(owner.m_Name, 32, name);
+    g_smOwner.SetArray(map, owner, sizeof(owner_t), true);
 }

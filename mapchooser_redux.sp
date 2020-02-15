@@ -64,6 +64,7 @@ enum struct Convars
     ConVar BCState;
     ConVar Shuffle;
     ConVar Refunds;
+    ConVar Require;
 }
 
 // cvars
@@ -184,6 +185,8 @@ public void OnClientDisconnect(int client)
         {
             Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
             g_aNominations.Erase(index);
+
+            LogMessage("Removed [%s] by %L from nomination list.", n.m_Map, n.m_Owner);
 
             // party block disconnect
             if (g_bPartyblock)
@@ -379,7 +382,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             delete votePool;
         votePool = new ArrayList(sizeof(Nominations));
 
-        if (g_ConVars.Shuffle.BoolValue)
+        if (g_ConVars.Shuffle.BoolValue && g_aNominations.Length >= g_ConVars.Require.IntValue)
         {
             // randomly pool
             for(int i = 0; i < nominationsToAdd; i++)
@@ -913,6 +916,8 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
 
         n.m_Owner = owner;
         strcopy(n.m_Map, 128, map);
+        GetClientName(owner, n.m_OwnerName, 32);
+        GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
         g_aNominations.PushArray(n, sizeof(Nominations));
         g_bPartyblock = true;
         return NominateResult_PartyBlockAdded;
@@ -923,10 +928,11 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     {
         Nominations n;
         g_aNominations.GetArray(i, n, sizeof(Nominations));
-        Call_NominationsReset(n.m_Map, n.m_Owner, false);
 
         if (n.m_Owner == owner)
         {
+            Call_NominationsReset(n.m_Map, n.m_Owner, false);
+
             int credits = GetPrice(n.m_Map);
 
             if (g_pStore)
@@ -978,6 +984,8 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     Nominations n;
     n.m_Owner = owner;
     strcopy(n.m_Map, 128, map);
+    GetClientName(owner, n.m_OwnerName, 32);
+    GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
     g_aNominations.PushArray(n, sizeof(Nominations));
 
     return NominateResult_Added;
@@ -1058,6 +1066,7 @@ void RefundAllCredits(const char[] map)
         if (strcmp(map, n.m_Map) == 0)
         {
             // skip passing map
+            Call_NominationsVoted(n.m_Map, n.m_OwnerName, n.m_OwnerAuth);
             continue;
         }
 
