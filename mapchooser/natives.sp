@@ -39,6 +39,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     MarkNativeAsOptional("MG_Shop_ClientEarnMoney");
     MarkNativeAsOptional("MG_Shop_ClientCostMoney");
 
+    MarkNativeAsOptional("Pupd_CheckPlugin");
+
     return APLRes_Success;
 }
 

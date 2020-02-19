@@ -23,6 +23,12 @@ public Plugin myinfo =
     url         = "https://www.kxnrl.com"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("Pupd_CheckPlugin");
+    return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
     mcr_delete_offical_map = CreateConVar("mcr_delete_offical_map", "1", "auto-delete offical maps", _, true, 0.0, true, 1.0);

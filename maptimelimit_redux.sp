@@ -20,6 +20,12 @@ public Plugin myinfo =
     url         = "https://www.kxnrl.com"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("Pupd_CheckPlugin");
+    return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
     SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
