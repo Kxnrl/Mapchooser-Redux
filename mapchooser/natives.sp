@@ -6,6 +6,7 @@ enum struct Forwards
     GlobalForward m_MapDataLoaded;
     GlobalForward m_MapVotePoolChanged;
     GlobalForward m_NominationsVoted;
+    GlobalForward m_OnNominateMap;
 }
 
 static Forwards g_Forward;
@@ -68,6 +69,17 @@ void Natives_OnPluginStart()
     g_Forward.m_MapVoteEnd         = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String);
     g_Forward.m_MapDataLoaded      = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
+    g_Forward.m_OnNominateMap      = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell);
+}
+
+bool Call_OnNominateMap(const char[] map, int _cell)
+{
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnNominateMap);
+    Call_PushString(map);
+    Call_PushCell(_cell);
+    Call_Finish(allow);
+    return allow;
 }
 
 void Call_NominationsReset(const char[] map, int _cell, bool _bool)

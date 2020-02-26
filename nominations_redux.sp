@@ -303,6 +303,12 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
 
             NominateResult result = NominateMap(map, false, param1, g_bPartyblock[param1]);
 
+            if (result == NominateResult_Reject)
+            {
+                // reject by api
+                return 0;
+            }
+
             if (result == NominateResult_NoCredits)
             {
                 Chat(param1, "%T", "NominateResult_NoCredits", param1, map);

@@ -43,7 +43,8 @@ enum NominateResult
     NominateResult_RecentlyPlayed,
     NominateResult_PartyBlock,
     NominateResult_PartyBlockDisabled,
-    NominateResult_PartyBlockAdded
+    NominateResult_PartyBlockAdded,
+    NominateResult_Reject
 };
 
 enum struct MapData
@@ -82,6 +83,7 @@ forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
+forward bool OnNominateMap(const char[] map, int client);
 
 native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock = false);

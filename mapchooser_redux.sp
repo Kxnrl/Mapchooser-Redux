@@ -816,6 +816,12 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     if (!IsMapValid(map))
         return NominateResult_InvalidMap;
 
+    if (!Call_OnNominateMap(map, owner))
+    {
+        // rejected
+        return NominateResult_Reject;
+    }
+
     for (int i = 0; i < g_aNominations.Length; i++)
     {
         Nominations n;
