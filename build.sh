@@ -25,6 +25,7 @@ cp maptimelimit_redux.sp addons/sourcemod/scripting/
 cp nominations_redux.sp addons/sourcemod/scripting/
 cp rockthevote_redux.sp addons/sourcemod/scripting/
 cp maplister_redux.sp addons/sourcemod/scripting/
+cp forcemapend_redux.sp addons/sourcemod/scripting/
 
 cp include/* addons/sourcemod/scripting/include
 
@@ -55,6 +56,11 @@ fi
 
 if [ ! -f "maplister_redux.smx" ]; then
     echo "Compile maplister_redux failed!"
+    exit 1;
+fi
+
+if [ ! -f "forcemapend_redux.smx" ]; then
+    echo "Compile forcemapend_redux failed!"
     exit 1;
 fi
 
