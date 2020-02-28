@@ -110,5 +110,5 @@ public Action Timer_Tick(Handle timer)
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-    return Plugin_Continue;
+    return Plugin_Handled;
 }
