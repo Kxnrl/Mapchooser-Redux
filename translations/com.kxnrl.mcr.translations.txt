@@ -383,7 +383,7 @@
     
     "LINE_ONE"
     {
-        "en"    "Selete a map that you want to play! "
+        "en"    "Select a map that you want to play! "
         "chi"   "请选择你想玩的地图"
     }
     
