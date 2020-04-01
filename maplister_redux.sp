@@ -248,10 +248,12 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("cs_militia");
         officalmaps.PushString("cs_office");
         officalmaps.PushString("de_bank");
+        officalmaps.PushString("de_anubis");
         officalmaps.PushString("de_breach");
         officalmaps.PushString("de_cache");
         officalmaps.PushString("de_canals");
         officalmaps.PushString("de_cbble");
+        officalmaps.PushString("de_chlorine");
         officalmaps.PushString("de_dust2");
         officalmaps.PushString("de_inferno");
         officalmaps.PushString("de_lake");
