@@ -816,7 +816,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     if (!IsMapValid(map))
         return NominateResult_InvalidMap;
 
-    if (!Call_OnNominateMap(map, owner))
+    if (!Call_OnNominateMap(map, owner, partyblock))
     {
         // rejected
         return NominateResult_Reject;
@@ -871,7 +871,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         }
 
         int price = GetPrice(map, false, true); Nominations n;
-        if (!Call_OnNominatePrice(map, owner, price))
+        if (!Call_OnNominatePrice(map, owner, price, partyblock))
         {
             // block
             return NominateResult_NoCredits;
@@ -944,7 +944,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
             Call_NominationsReset(n.m_Map, n.m_Owner, false);
 
             int price = GetPrice(map);
-            if (!Call_OnNominatePrice(map, owner, price))
+            if (!Call_OnNominatePrice(map, owner, price, partyblock))
             {
                 // block
                 return NominateResult_NoCredits;
@@ -982,7 +982,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     }
 
     int price = GetPrice(map);
-    if (!Call_OnNominatePrice(map, owner, price))
+    if (!Call_OnNominatePrice(map, owner, price, partyblock))
     {
         // block
         return NominateResult_NoCredits;
