@@ -924,6 +924,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         }
 
         n.m_Owner = owner;
+        n.m_Price = price;
         strcopy(n.m_Map, 128, map);
         GetClientName(owner, n.m_OwnerName, 32);
         GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
@@ -942,8 +943,8 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         {
             Call_NominationsReset(n.m_Map, n.m_Owner, false);
 
-            int credits = GetPrice(map);
-            if (!Call_OnNominatePrice(map, owner, credits))
+            int price = GetPrice(map);
+            if (!Call_OnNominatePrice(map, owner, price))
             {
                 // block
                 return NominateResult_NoCredits;
@@ -951,19 +952,21 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
 
             if (g_pStore)
             {
-                Store_SetClientCredits(owner, Store_GetClientCredits(owner)+n.m_Price-credits, "nomination-replace");
+                Store_SetClientCredits(owner, Store_GetClientCredits(owner)+n.m_Price-price, "nomination-replace");
                 Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, n.m_Price);
-                Chat(owner, "%T", "nominate nominate cost", owner, map, credits);
+                Chat(owner, "%T", "nominate nominate cost", owner, map, price);
             }
             else if (g_pShop)
             {
                 MG_Shop_ClientEarnMoney(owner, n.m_Price, "nomination-fallback");
                 Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, n.m_Price);
-                MG_Shop_ClientCostMoney(owner, credits, "nomination-nominate");
-                Chat(owner, "%T", "nominate nominate cost", owner, map, credits);
+                MG_Shop_ClientCostMoney(owner, price, "nomination-nominate");
+                Chat(owner, "%T", "nominate nominate cost", owner, map, price);
             }
 
             strcopy(n.m_Map, 128, map);
+            n.m_Owner = owner;
+            n.m_Price = price;
             g_aNominations.SetArray(i, n, sizeof(Nominations));
 
             return NominateResult_Replaced;
@@ -978,28 +981,29 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         g_aNominations.Erase(0);
     }
 
-    int credits = GetPrice(map);
-    if (!Call_OnNominatePrice(map, owner, credits))
+    int price = GetPrice(map);
+    if (!Call_OnNominatePrice(map, owner, price))
     {
         // block
         return NominateResult_NoCredits;
     }
 
-    if (ClientIsValid(owner) && credits > 0)
+    if (ClientIsValid(owner) && price > 0)
     if (g_pStore)
     {
         
-        Store_SetClientCredits(owner, Store_GetClientCredits(owner)-credits, "nomination-nominate");
-        Chat(owner, "%T", "nominate nominate cost", owner, map, credits);
+        Store_SetClientCredits(owner, Store_GetClientCredits(owner)-price, "nomination-nominate");
+        Chat(owner, "%T", "nominate nominate cost", owner, map, price);
     }
     else if (g_pShop)
     {
-        MG_Shop_ClientCostMoney(owner, credits, "nomination-nominate");
-        Chat(owner, "%T", "nominate nominate cost", owner, map, credits);
+        MG_Shop_ClientCostMoney(owner, price, "nomination-nominate");
+        Chat(owner, "%T", "nominate nominate cost", owner, map, price);
     }
 
     Nominations n;
     n.m_Owner = owner;
+    n.m_Price = price;
     strcopy(n.m_Map, 128, map);
     GetClientName(owner, n.m_OwnerName, 32);
     GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
