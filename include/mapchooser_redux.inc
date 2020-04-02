@@ -73,6 +73,7 @@ enum struct Nominations
 {
     char m_Map[128];
     int  m_Owner;
+    int  m_Price;
     char m_OwnerName[32];
     char m_OwnerAuth[32];
 }
@@ -84,6 +85,7 @@ forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
 forward bool OnNominateMap(const char[] map, int client);
+forward bool OnNominatePrice(const char[] map, int client, int &price); 
 
 native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock = false);

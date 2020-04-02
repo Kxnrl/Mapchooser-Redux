@@ -7,6 +7,7 @@ enum struct Forwards
     GlobalForward m_MapVotePoolChanged;
     GlobalForward m_NominationsVoted;
     GlobalForward m_OnNominateMap;
+    GlobalForward m_OnNominatePrice;
 }
 
 static Forwards g_Forward;
@@ -70,6 +71,22 @@ void Natives_OnPluginStart()
     g_Forward.m_MapDataLoaded      = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
     g_Forward.m_OnNominateMap      = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell);
+    g_Forward.m_OnNominatePrice    = new GlobalForward("OnNominatePrice",        ET_Hook,   Param_String, Param_Cell, Param_CellByRef);
+}
+
+bool Call_OnNominatePrice(const char[] map, int _cell, int &_ref)
+{
+    // module not found
+    if (!g_pShop && !g_pStore)
+        return true;
+
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnNominatePrice);
+    Call_PushString(map);
+    Call_PushCell(_cell);
+    Call_PushCellRef(_ref);
+    Call_Finish(allow);
+    return allow;
 }
 
 bool Call_OnNominateMap(const char[] map, int _cell)
