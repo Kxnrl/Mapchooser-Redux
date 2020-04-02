@@ -871,7 +871,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         }
 
         int price = GetPrice(map, false, true); Nominations n;
-        if (!Call_OnNominatePrice(map, client, price))
+        if (!Call_OnNominatePrice(map, owner, price))
         {
             // block
             return NominateResult_NoCredits;
