@@ -263,7 +263,7 @@ bool IsBigMap(const char[] map)
     return mapdata.m_FileSize > 150;
 }
 
-int GetRefundCredits(const char[] map)
+stock int GetRefundCredits(const char[] map)
 {
     // disallow refund
     if (g_ConVars.Refunds.FloatValue <= 0.0)
