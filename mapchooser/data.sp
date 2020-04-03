@@ -272,6 +272,15 @@ int GetRefundCredits(const char[] map)
     return RoundToCeil(float(GetPrice(map)) * GetRefundRatio(map));
 }
 
+int GetRefundCreditsByNomination(Nominations n)
+{
+    // disallow refund
+    if (g_ConVars.Refunds.FloatValue <= 0.0)
+        return 0;
+
+    return RoundToCeil(float(n.m_Price) * GetRefundRatio(map));
+}
+
 int GetPrice(const char[] map, bool recently = true, bool partyblock = false)
 {
     MapData mapdata;
