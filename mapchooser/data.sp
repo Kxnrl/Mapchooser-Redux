@@ -278,7 +278,7 @@ int GetRefundCreditsByNomination(Nominations n)
     if (g_ConVars.Refunds.FloatValue <= 0.0)
         return 0;
 
-    return RoundToCeil(float(n.m_Price) * GetRefundRatio(map));
+    return RoundToCeil(float(n.m_Price) * GetRefundRatio(n.m_Map));
 }
 
 int GetPrice(const char[] map, bool recently = true, bool partyblock = false)
