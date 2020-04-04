@@ -65,6 +65,7 @@ enum struct Convars
     ConVar Shuffle;
     ConVar Refunds;
     ConVar Require;
+    ConVar NoVotes;
 }
 
 // cvars
@@ -350,13 +351,20 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     if (GetMenuStyle(g_hVoteMenu) == radioStyle)
     {
         g_bBlockedSlots = true;
+        if (!g_ConVars.NoVotes.BoolValue)
+        {
+            g_hVoteMenu.AddItem(LINE_SPACER, "", ITEMDRAW_SPACER);
+        }
         g_hVoteMenu.AddItem(LINE_ONE, "Choose something...", ITEMDRAW_DISABLED);
         g_hVoteMenu.AddItem(LINE_TWO, "...will ya?", ITEMDRAW_DISABLED);
     }
     else
         g_bBlockedSlots = false;
 
-    g_hVoteMenu.OptionFlags = MENUFLAG_BUTTON_NOVOTE;
+    if (g_ConVars.NoVotes.BoolValue)
+    {
+        g_hVoteMenu.OptionFlags = MENUFLAG_BUTTON_NOVOTE; 
+    }
 
     g_hVoteMenu.SetTitle("选择下一张地图\n ");
     g_hVoteMenu.VoteResultCallback = Handler_MapVoteFinished;

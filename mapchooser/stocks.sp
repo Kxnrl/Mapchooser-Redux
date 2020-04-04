@@ -6,7 +6,7 @@ stock void GetMapItem(Menu menu, int position, char[] map, int mapLen)
 
 stock void AddExtendToMenu(Menu menu, MapChange when)
 {
-    if (when == MapChange_Instant || when == MapChange_RoundEnd)
+    if ((when == MapChange_Instant || when == MapChange_RoundEnd) && g_ConVars.NoVotes.BoolValue)
         menu.AddItem(VOTE_DONTCHANGE, "Don't Change");
     else if (g_iExtends < g_ConVars.MaxExts.IntValue)
         menu.AddItem(VOTE_EXTEND, "Extend Map");

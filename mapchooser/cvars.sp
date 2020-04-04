@@ -9,7 +9,8 @@ void Cvars_OnPluginStart()
     g_ConVars.BCState = CreateConVar("mcr_partyblock_enabled",    "1", "Enable or not party block fuction.",                                                                              _, true, 0.0, true, 1.0);
     g_ConVars.Shuffle = CreateConVar("mcr_votemenu_shuffle",      "1", "Enable or not shuffle mapvote menu.",                                                                             _, true, 0.0, true, 1.0);
     g_ConVars.Refunds = CreateConVar("mcr_refund_credits_ratio","0.6", "Refund ratio of credits if map fail to be choosen.",                                                              _, true, 0.0, true, 1.0);
-    g_ConVars.Require = CreateConVar("mcf_shuffle_require_maps",  "1", "How many nominations can shuaffle the map vote menu.",                                                            _, true, 0.0, true, 5.0);
+    g_ConVars.Require = CreateConVar("mcr_shuffle_require_maps",  "1", "How many nominations can shuaffle the map vote menu.",                                                            _, true, 0.0, true, 5.0);
+    g_ConVars.NoVotes = CreateConVar("mcr_add_novote_button",     "1", "Add no vote button into menu.",                                                                                   _, true, 0.0, true, 1.0);
 
     if (!DirExists("cfg/sourcemod/mapchooser"))
         if (!CreateDirectory("cfg/sourcemod/mapchooser", 511))
