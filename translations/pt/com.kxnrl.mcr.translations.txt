@@ -1,0 +1,332 @@
+"Phrases"
+{
+    "rtv broadcast"
+    {
+        "pt"    "{yellow}{1}{normal} pediu um Rock the Vote. ({red}{2}{normal}/{green}{3}{normal} votos)"
+    }
+    
+    "rtv self"
+    {
+        "pt"    "Você já votou no Rock the Vote. ({red}{1}{normal}/{green}{2}{normal} votos)"
+    }
+    
+    "force rtv"
+    {
+        "pt"    "Forçar Rock the Vote."
+    }
+    
+    "rtv change map"
+    {
+        "pt"    "Alterando o mapa para [{green}{1}{normal}]!"
+    }
+    
+    "rtv not allowed"
+    {
+        "pt"    "{red}Rock the Vote ainda não é permitido."
+    }
+    
+    "rtv started"
+    {
+        "pt"    "{green}Rock the Vote já começou."
+    }
+    
+    "mtl broadcast"
+    {
+        "pt"    "{yellow}{1}{normal} wants to extend map time. ({red}{2}{normal}/{green}{3}{normal} votos)"
+    }
+    
+    "mtl self"
+    {
+        "pt"    "You have already voted to extend map time. ({red}{1}{normal}/{green}{2}{normal} votos)"
+    }
+    
+    "mtl extend"
+    {
+        "pt"    "O mapa atual foi estendido por 20 minutos."
+    }
+
+    "mtl extend admin"
+    {
+        "pt"    "O mapa atual foi estendido por 20 minutos por {blue}{1}"
+    }
+
+    "mtl not allowed"
+    {
+        "pt"    "{red}Prolongamento do tempo do mapa ainda não é permitido."
+    }
+    
+    "mtl notification"
+    {
+        "pt"    "{red}!rtv{normal} para Rock the Vote, {red}!ext{normal} para estender o mapa."
+    }
+    
+    "nominated by client"
+    {
+        "pt"    "O mapa atual foi indicado por {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominated by name"
+    {
+        "pt"    "O mapa atual foi indicado por {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominate full vote"
+    {
+        "pt"    "The maximum allowed nominations has been reached."
+    }
+
+    "nominate partyblock"
+    {
+        "pt"    "{red}The nomination is not allowed yet: partyblock."
+    }
+    
+    "nominate vote complete"
+    {
+        "pt"    "Próximo mapa é [{yellow}{1}{normal}]"
+    }
+    
+    "nominate vote in progress"
+    {
+        "pt"    "A votação está em andamento."
+    }
+    
+    "nominate menu current Map"
+    {
+        "pt"    "Mapa atual"
+    }
+
+    "nominate menu was nominated"
+    {
+        "pt"    "Nominated"
+    }
+    
+    "nominate menu was nominated name"
+    {
+        "pt"    "Nominated by {1}"
+    }
+
+    "nominate changed map"
+    {
+        "pt"    "{1} has changed their nomination to {2}."
+    }
+    
+    "nominate nominate map"
+    {
+        "pt"    "{1} has nominated {2}."
+    }
+
+    "nominate partyblock map"
+    {
+        "pt"    "{1} has nominated {2}."
+    }
+    
+    "nominate nominate cost"
+    {
+        "pt"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
+    }
+
+    "nominate partyblock cost"
+    {
+        "pt"    "{green}You cost {2} credits to nominate {blue}{1}{green}"
+    }
+    
+    "NominateResult_MaxPlayers"
+    {
+        "pt"    "{red}That map requires less than {green}{1}{red} players in server to nominate."
+    }
+    
+    "NominateResult_MinPlayers"
+    {
+        "pt"    "{red}That map requires more than {green}{1}{red} players in server to nominate."
+    }
+    
+    "NominateResult_VIPOnly"
+    {
+        "pt"    "{red}That map is nominated by VIP only."
+    }
+    
+    "NominateResult_AdminOnly"
+    {
+        "pt"    "{red}That map is nominated by Admin only."
+    }
+    
+    "NominateResult_VoteFull"
+    {
+        "pt"    "{red}The maximum allowed nominations has been reached."
+    }
+    
+    "NominateResult_AlreadyInVote"
+    {
+        "pt"    "{red}The map you chose has already been nominated."
+    }
+    
+    "NominateResult_InvalidMap"
+    {
+        "pt"    "{red}Failed to nominate {1}."
+    }
+    
+    "NominateResult_NoCredits"
+    {
+        "pt"    "{red}You have not enough credits to nominate {1}."
+    }
+
+    "NominateResult_RecentlyPlayed"
+    {
+        "pt"    "{red}This map has been played recently."
+    }
+
+    "NominateResult_PartyBlock"
+    {
+        "pt"    "{red}Atual foi PartyBlock."
+    }
+
+    "NominateResult_PartyBlockDisabled"
+    {
+        "pt"    "{red}PartyBlock ainda não é permitido."
+    }
+    
+    "nominate menu title"
+    {
+        "pt"    "Nominate Map:"
+    }
+
+    "partyblock menu title"
+    {
+        "pt"    "Nominate Map:"
+    }
+    
+    "mcr clear cd"
+    {
+        "pt"    "{green}Histórico de mapa foi esvaziado."
+    }
+
+    "mcr clear map cd"
+    {
+        "pt"    "{green}{1} foi removido do pool de recarga."
+    }
+
+    "mcr reset map cd"
+    {
+        "pt"    "{green}{1} foi resetado do pool de recarga."
+    }
+
+    "mcr show cd"
+    {
+        "pt"    "{green}Por favor, verifique seu console output."
+    }
+    
+    "mcr nominate fallback"
+    {
+        "pt"    "{green}[{blue}{1}{green}] you nominated has been cancelled, {2} credits has been returned."
+    }
+    
+    "mcr runoff"
+    {
+        "pt"    "Nenhum mapa obteve mais da metade dos votos ({1}%%), iniciando o segundo turno de votação."
+    }
+    
+    "mcr tier"
+    {
+        "pt"    "Os principais mapas {green}{1}{normal} têm o mesmo número de votos. É necessária um segundo turno de votação!"
+    }
+    
+    "mcr dont change"
+    {
+        "pt"    "O mapa atual continua! A votação falou. (Recebeu {green}{1}{normal}/{red}{2}{normal} votos)"
+    }
+    
+    "mcr extend map"
+    {
+        "pt"    "O mapa atual foi estendido. (Recebeu {green}{1}{normal}/{red}{2} {normal}votos)"
+    }
+    
+    "mcr next map"
+	{
+		"pt"    "{yellow}A votação no mapa foi concluída! O próximo mapa será [{green}{1}{yellow}]. (Recebeu {green}{2}{normal}/{red}{3} {yellow}votos)"
+	}
+    
+    "mcr voting started"
+    {
+        "pt"    "Votação para o próximo mapa foi iniciada."
+    }
+    
+    "mcr countdown hud"
+    {
+		"pt"    "Votação para o próximo mapa começará em {1} segundos"
+	}
+
+    "mcr countdown hud shuffle"
+    {
+		"pt"    "Votação para o próximo mapa começará em {1} segundos"
+	}
+    
+    "mcr countdown text hint"
+    {
+		"pt"    "Votação para o próximo mapa começará em {1} segundos"
+	}
+
+    "mcr countdown text hint shuffle"
+    {
+		"pt"    "Votação para o próximo mapa começará em {1} segundos"
+    }
+
+    "mcr countdown chat"
+    {
+		"pt"    "{silver}Votação para o próximo mapa começará em {red}{1}{silver} segundos"
+	}
+    
+    "mcr countdown chat shuffle"
+    {
+		"pt"    "{silver}Votação para o próximo mapa começará em {red}{1}{silver} segundos"
+	}
+
+    "vote item extend"
+    {
+        "pt"    "Estender mapa"
+    }
+    
+    "vote item dont change"
+    {
+        "pt"    "Não mudar mapa"
+    }
+    
+    "LINE_ONE"
+    {
+        "pt"    "Selecione um mapa que você deseja jogar! "
+    }
+    
+    "LINE_TWO"
+    {
+        "pt"    "Digite !revote para votar novamente ;-)"
+    }
+
+    "vote item title"
+    {
+        "pt"    "Vote no próximo mapa!"
+    }
+    
+    "NominateResult_NoMatch"
+    {
+        "pt"    "{silver}Não foi encontrada nenhuma correspondência para este nome de mapa. [{green}{1}{silver}]"
+    }
+
+    "NominateResult_CertainTimes"
+    {
+        "pt"    "{silver}Período não disponível"
+    }
+
+    "partyblock nominate menu item"
+    {
+        "pt"    "PB"
+    }
+
+    "nominate nominate menu item"
+    {
+        "pt"    "nominations"
+    }
+
+    "fuzzy title"
+    {
+        "pt"    "{1} results of [{2}] for {3}"
+    }
+}
