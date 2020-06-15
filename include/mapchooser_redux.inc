@@ -85,7 +85,9 @@ forward void OnMapVoteEnd(const char[] map);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
 forward bool OnNominateMap(const char[] map, int client, bool partyblock);
-forward bool OnNominatePrice(const char[] map, int client, int &price, bool partyblock); 
+forward bool OnNominatePrice(const char[] map, int client, int &price, bool partyblock);
+forward bool OnClearMapCooldown(const char[] map, int client);
+forward bool OnResetMapCooldown(const char[] map, int client);
 
 native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock = false);

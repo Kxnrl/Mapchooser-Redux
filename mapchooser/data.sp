@@ -523,7 +523,7 @@ static void SaveMapPool(const char[] map)
     Call_MapVotePoolChanged();
 }
 
-void ClearAllCooldown()
+void ClearAllCooldown(int client)
 {
     ArrayList maps = GetAllMapsName();
 
@@ -537,6 +537,9 @@ void ClearAllCooldown()
 
         if (mapdata.m_CooldownLeft > 0)
         {
+            if (!Call_OnClearMapCooldown(map, client))
+                continue;
+
             mapdata.m_CooldownLeft = 0;
             g_MapData.SetArray(map, mapdata, typeofdata, true);
             SaveMapPool(map);
@@ -551,7 +554,7 @@ void ClearMapCooldown(int client, const char[] map)
     {
         g_aMapList.GetString(i, alter, 128);
 
-        if (StrContains(alter, map, false) > -1)
+        if (StrContains(alter, map, false) > -1 && Call_OnClearMapCooldown(map, client))
         if (ClearCooldown(alter))
         {
             tChatAll("%t", "mcr clear map cd", alter);
@@ -567,7 +570,7 @@ void ResetMapCooldown(int client, const char[] map)
     {
         g_aMapList.GetString(i, alter, 128);
 
-        if (StrContains(alter, map, false) > -1)
+        if (StrContains(alter, map, false) > -1 && Call_OnResetMapCooldown(map, client))
         if (SetCooldown(alter))
         {
             tChatAll("%t", "mcr reset map cd", alter);

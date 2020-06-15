@@ -8,6 +8,8 @@ enum struct Forwards
     GlobalForward m_NominationsVoted;
     GlobalForward m_OnNominateMap;
     GlobalForward m_OnNominatePrice;
+    GlobalForward m_OnClearMapCooldown;
+    GlobalForward m_OnResetMapCooldown;
 }
 
 static Forwards g_Forward;
@@ -72,6 +74,28 @@ void Natives_OnPluginStart()
     g_Forward.m_MapVotePoolChanged = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
     g_Forward.m_OnNominateMap      = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell);
     g_Forward.m_OnNominatePrice    = new GlobalForward("OnNominatePrice",        ET_Hook,   Param_String, Param_Cell, Param_CellByRef, Param_Cell);
+    g_Forward.m_OnClearMapCooldown = new GlobalForward("OnClearMapCooldown",     ET_Hook,   Param_String, Param_Cell);
+    g_Forward.m_OnResetMapCooldown = new GlobalForward("OnResetMapCooldown",     ET_Hook,   Param_String, Param_Cell);
+}
+
+bool Call_OnClearMapCooldown(const char[] map, int _cell)
+{
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnClearMapCooldown);
+    Call_PushString(map);
+    Call_PushCell(_cell);
+    Call_Finish(allow);
+    return allow;
+}
+
+bool Call_OnResetMapCooldown(const char[] map, int _cell)
+{
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnResetMapCooldown);
+    Call_PushString(map);
+    Call_PushCell(_cell);
+    Call_Finish(allow);
+    return allow;
 }
 
 bool Call_OnNominatePrice(const char[] map, int _cell, int &_ref, bool _bool)

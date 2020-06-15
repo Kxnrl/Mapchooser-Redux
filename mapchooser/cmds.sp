@@ -58,7 +58,7 @@ public Action Command_ClearAllCD(int client, int args)
 {
     tChatAll("%t", "mcr clear cd");
     LogAction(client, -1, "%L -> Clear all cooldown.", client);
-    ClearAllCooldown();
+    ClearAllCooldown(client);
     CreateNextVote();
     return Plugin_Handled;
 }
