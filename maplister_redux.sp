@@ -114,7 +114,7 @@ static void DeleteMap()
     g_iMapCount = 0;
 
     FileType type = FileType_Unknown;
-    char map[128];
+    char map[128]; bool deleted = false;
     while(dir.GetNext(map, 128, type))
     {
         if (type != FileType_File || StrContains(map, ".bsp", false) == -1)
@@ -131,9 +131,13 @@ static void DeleteMap()
 
         Format(map, 128, "maps/%s.bsp", map);
         
+        deleted = true;
         LogMessage("%s delete offical map [%s]", DeleteFile(map) ? "Successful" : "Failed", map);
     }
     delete dir;
+
+    if (deleted)
+        ServerCommand("sm_reloadmcr");
 }
 
 static void MapCycle()
@@ -247,6 +251,8 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("cs_italy");
         officalmaps.PushString("cs_militia");
         officalmaps.PushString("cs_office");
+        officalmaps.PushString("de_swamp");
+        officalmaps.PushString("de_mutiny");
         officalmaps.PushString("de_bank");
         officalmaps.PushString("de_anubis");
         officalmaps.PushString("de_breach");
