@@ -2,9 +2,9 @@ void Cmds_OnPluginStart()
 {
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
     RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
-    RegAdminCmd("sm_clearallcd", Command_ClearAllCD, ADMFLAG_ROOT,      "sm_clearallcd - Forces Mapchooser to clear map history and cooldown.");
-    RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_ROOT,      "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
-    RegAdminCmd("sm_resetmapcd", Command_ResetMapCD, ADMFLAG_ROOT,      "sm_resetmapcd - Forces Mapchooser to reset specified map cooldown.");
+    RegAdminCmd("sm_clearallcd", Command_ClearAllCD, ADMFLAG_CONFIG,    "sm_clearallcd - Forces Mapchooser to clear map history and cooldown.");
+    RegAdminCmd("sm_clearmapcd", Command_ClearMapCD, ADMFLAG_CONFIG,    "sm_clearmapcd - Forces Mapchooser to clear specified map cooldown.");
+    RegAdminCmd("sm_resetmapcd", Command_ResetMapCD, ADMFLAG_CONFIG,    "sm_resetmapcd - Forces Mapchooser to reset specified map cooldown.");
     RegAdminCmd("sm_showmcrcd",  Command_ShowMCRCD,  ADMFLAG_CHANGEMAP, "sm_showmcrcd  - show old map list cooldown.");
     RegAdminCmd("sm_reloadmcr",  Command_ReloadMCR,  ADMFLAG_ROOT,      "sm_reloadmcr  - Reload this plugin.");
     RegAdminCmd("sm_dumpmcrmap", Command_DumpMap,    ADMFLAG_CHANGEMAP, "sm_dumpmcrmap - Dump map attributes.");
