@@ -130,6 +130,8 @@ static void SetAllMapsDefault(KeyValues kv)
 
 static void LoadAllMapsData(KeyValues kv)
 {
+    g_MapData.Clear();
+
     ArrayList maps = GetAllMapsName();
 
     char map[128];
@@ -201,6 +203,8 @@ static void LoadAllMapsData(KeyValues kv)
         g_MapData.SetArray(map, mapdata, typeofdata, true);
     }
 
+    LogMessage("Mapdata has been loaded with %d/%d maps...", g_MapData.Size, maps.Length);
+
     delete maps;
 }
 
@@ -209,7 +213,7 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetDescEx -> Failed to get map %s", map);
+        LogMessage("GetDescEx -> Failed to get map %s", map);
         return false;
     }
 
@@ -255,10 +259,7 @@ bool IsBigMap(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
-    {
-        LogStackTrace("IsBigMap -> Failed to get map %s", map);
         return GetMapFileSize(map) > 150;
-    }
 
     return mapdata.m_FileSize > 150;
 }
@@ -286,7 +287,7 @@ int GetPrice(const char[] map, bool recently = true, bool partyblock = false)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetPrice -> Failed to get map %s", map);
+        LogMessage("GetPrice -> Failed to get map %s", map);
         return 100;
     }
 
@@ -312,7 +313,7 @@ int GetMinPlayers(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetMinPlayers -> Failed to get map %s", map);
+        LogMessage("GetMinPlayers -> Failed to get map %s", map);
         return 0;
     }
 
@@ -324,7 +325,7 @@ int GetMaxPlayers(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetMaxPlayers -> Failed to get map %s", map);
+        LogMessage("GetMaxPlayers -> Failed to get map %s", map);
         return 0;
     }
 
@@ -336,7 +337,7 @@ bool IsNominateOnly(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("IsNominateOnly -> Failed to get map %s", map);
+        LogMessage("IsNominateOnly -> Failed to get map %s", map);
         return false;
     }
 
@@ -348,7 +349,7 @@ bool IsAdminOnly(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("IsAdminOnly -> Failed to get map %s", map);
+        LogMessage("IsAdminOnly -> Failed to get map %s", map);
         return false;
     }
 
@@ -360,7 +361,7 @@ bool IsVIPOnly(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("IsVIPOnly -> Failed to get map %s", map);
+        LogMessage("IsVIPOnly -> Failed to get map %s", map);
         return false;
     }
 
@@ -372,7 +373,7 @@ bool IsCertainTimes(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("IsCertainTimes -> Failed to get map %s", map);
+        LogMessage("IsCertainTimes -> Failed to get map %s", map);
         return false;
     }
 
@@ -384,7 +385,7 @@ bool SetLastPlayed(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("SetLastPlayed -> Failed to get map %s", map);
+        LogMessage("SetLastPlayed -> Failed to get map %s", map);
         return false;
     }
 
@@ -399,7 +400,7 @@ int GetLastPlayed(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetLastPlayed -> Failed to get map %s", map);
+        LogMessage("GetLastPlayed -> Failed to get map %s", map);
         return 0;
     }
 
@@ -411,7 +412,7 @@ int GetCooldown(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("GetCooldown -> Failed to get map %s", map);
+        LogMessage("GetCooldown -> Failed to get map %s", map);
         return 0;
     }
 
@@ -423,7 +424,7 @@ bool SetCooldown(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("SetCooldown -> Failed to get map %s", map);
+        LogMessage("SetCooldown -> Failed to get map %s", map);
         return false;
     }
 
@@ -438,7 +439,7 @@ bool ClearCooldown(const char[] map)
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
-        LogStackTrace("ClearCooldown -> Failed to get map %s", map);
+        LogMessage("ClearCooldown -> Failed to get map %s", map);
         return false;
     }
 
@@ -461,7 +462,7 @@ static void LoadMapPool()
     }
     if (!kv.ImportFromFile(path))
     {
-        LogStackTrace("LoadMapPool -> failed to import keyvalues from %s", path);
+        LogMessage("LoadMapPool -> failed to import keyvalues from %s", path);
         delete kv;
         return;
     }
@@ -499,7 +500,7 @@ static void SaveMapPool(const char[] map)
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
     {
         // ??
-        LogStackTrace("SaveMapPool -> Failed to save %s", map);
+        LogMessage("SaveMapPool -> Failed to save %s", map);
         return;
     }
 
