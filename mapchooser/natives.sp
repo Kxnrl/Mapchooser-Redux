@@ -35,6 +35,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("EndOfMapVoteEnabled",     Native_EndOfMapVoteEnabled);
     CreateNative("CanNominate",             Native_CanNominate);
     CreateNative("GetMapData",              Native_GetMapData);
+    CreateNative("GetPartyBlockOnwer",      Native_GetPartyBlockOnwer);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
@@ -262,4 +263,15 @@ public any Native_GetNominatedMapList(Handle plugin, int numParams)
 public any Native_EndOfMapVoteEnabled(Handle plugin, int numParams)
 {
     return true;
+}
+
+public any Native_GetPartyBlockOnwer(Handle plugin, int numParams)
+{
+    if (!g_bPartyblock || g_aNominations.Length == 0)
+        return -1;
+
+    Nominations n;
+    g_aNominations.GetArray(0, n, sizeof(Nominations));
+
+    return n.m_Owner;
 }

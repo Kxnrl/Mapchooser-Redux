@@ -538,7 +538,7 @@ stock bool IsNominateAllowed(int client)
 
         case CanNominate_No_PartyBlock:
         {
-            Chat(client, "%T", "nominate partyblock", client);
+            Chat(client, "%T", "nominate partyblock", client, GetPartyBlockOnwer());
             return false;
         }
     }

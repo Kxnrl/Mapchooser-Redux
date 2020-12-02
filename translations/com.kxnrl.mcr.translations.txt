@@ -100,8 +100,9 @@
 
     "nominate partyblock"
     {
-        "en"    "{red}The nomination is not allowed yet: partyblock."
-        "chi"   "{red}已被包场."
+        "#format" "{1:N}"
+        "en"    "{red}The nomination is not allowed yet: partyblock by {blue} {1} {red}."
+        "chi"   "{red}已被{blue} {1} {red}包场."
     }
     
     "nominate vote complete"
