@@ -36,6 +36,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("CanNominate",             Native_CanNominate);
     CreateNative("GetMapData",              Native_GetMapData);
     CreateNative("GetPartyBlockOnwer",      Native_GetPartyBlockOnwer);
+    CreateNative("ForceSetNextMap",         Native_ForceSetNextMap);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
@@ -274,4 +275,16 @@ public any Native_GetPartyBlockOnwer(Handle plugin, int numParams)
     g_aNominations.GetArray(0, n, sizeof(Nominations));
 
     return n.m_Owner;
+}
+
+public any Native_ForceSetNextMap(Handle plugin, int numParams)
+{
+    if (g_bMapVoteCompleted && !GetNativeCell(2))
+        return false;
+
+    char map[128];
+    GetNativeString(1, map, 128);
+    InternalSetNextMap(map);
+
+    return true;
 }

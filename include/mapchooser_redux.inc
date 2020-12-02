@@ -101,6 +101,7 @@ native bool GetMapData(const char[] map, any[] data, int size);
 native void GetExcludeMapList(ArrayList array);
 native void GetNominatedMapList(ArrayList array);
 native int  GetPartyBlockOnwer();
+native bool ForceSetNextMap(const char[] map, bool force = false);
 
 stock bool IsClientVIP(int client)
 {

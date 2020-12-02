@@ -230,6 +230,7 @@ void FuzzyNominate(int client, const char[] find)
     menu.SetTitle("%T", "fuzzy title", client, menu.ItemCount, find, g_bPartyblock[client] ? "partyblock nominate menu item" : "nominate nominate menu item", client);
     
     
+    menu.Pagination = 5;
     menu.Display(client, MENU_TIME_FOREVER);
 
     delete result;
@@ -289,6 +290,7 @@ void BuildMapMenu()
         g_smState.SetValue(map, status);
     }
 
+    g_hMapMenu.Pagination = 5;
     g_hMapMenu.ExitButton = true;
 }
 

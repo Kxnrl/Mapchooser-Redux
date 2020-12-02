@@ -819,6 +819,12 @@ bool CanVoteStart()
     return true;
 }
 
+void InternalSetNextMap(const char[] map)
+{
+    SetNextMap(map);
+    g_bMapVoteCompleted = true;
+}
+
 NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool partyblock)
 {
     if (!IsMapValid(map))

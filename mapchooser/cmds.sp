@@ -48,8 +48,7 @@ public Action Command_SetNextmap(int client, int args)
 
     LogAction(client, -1, "\"%L\" changed nextmap to \"%s\"", client, map);
 
-    SetNextMap(map);
-    g_bMapVoteCompleted = true;
+    InternalSetNextMap(map);
 
     return Plugin_Handled;
 }
