@@ -239,6 +239,16 @@ static bool IsOfficalMap(const char[] map)
         // create
         officalmaps = new ArrayList(ByteCountToCells(32));
 
+        // Operation Broken Fang
+        officalmaps.PushString("coop_autumn");
+        officalmaps.PushString("cs_apollo");
+        officalmaps.PushString("de_ancient");
+        officalmaps.PushString("de_elysion");
+        officalmaps.PushString("de_engage");
+        officalmaps.PushString("de_guard");
+        officalmaps.PushString("dz_frostbite");
+        officalmaps.PushString("lobby_mapveto");
+
         // input
         officalmaps.PushString("ar_baggage");
         officalmaps.PushString("ar_dizzy");
