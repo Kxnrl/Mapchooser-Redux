@@ -643,6 +643,8 @@ void DisplayNominationList(int client)
     }
 
     menu.Display(client, 10);
+
+    delete list;
 }
 
 public int MenuHandler_NList(Menu menu, MenuAction action, int client, int slot)
