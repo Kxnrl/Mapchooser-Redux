@@ -65,6 +65,8 @@ public void OnPluginStart()
     RegConsoleCmd("nominate",   Command_Nominate);
     RegConsoleCmd("nomination", Command_Nominate);
     RegConsoleCmd("sm_yd",      Command_Nominate);
+    RegConsoleCmd("sm_nlist",   Command_NList);
+    RegConsoleCmd("sm_ydlb",    Command_NList);
 
     RegConsoleCmd("sm_bc",      Command_Partyblock);
     RegConsoleCmd("partyblock", Command_Partyblock);
@@ -176,6 +178,22 @@ public Action Command_Partyblock(int client, int args)
         FuzzyNominate(client, map);
         return Plugin_Handled;
     }
+
+    return Plugin_Handled;
+}
+
+public Action Command_NList(int client, int args)
+{
+    if (!client)
+        return Plugin_Handled;
+
+    if (HasEndOfMapVoteFinished())
+    {
+        FakeClientCommandEx(client, "nextmap");
+        return Plugin_Handled;
+    }
+
+    DisplayNominationList(client);
 
     return Plugin_Handled;
 }
@@ -590,4 +608,45 @@ public void OnNominationVoted(const char[] map, const char[] name, const char[] 
     strcopy(owner.m_Auth, 32, auth);
     strcopy(owner.m_Name, 32, name);
     g_smOwner.SetArray(map, owner, sizeof(owner_t), true);
+}
+
+void DisplayNominationList(int client)
+{
+    ArrayList list = new ArrayList(sizeof(Nominations));
+    GetNominatedMapList(list);
+    if (list.Length == 0)
+    {
+        delete list;
+        Chat(client, "%T", "no nlist", client);
+        return;
+    }
+
+    Menu menu = new Menu(MenuHandler_NList);
+
+    menu.SetTitle("%t\n ", "nlist title", list.Length);
+
+    for (int i = 0; i < list.Length; i++)
+    {
+        Nominations n;
+        char buffer[128];
+        list.GetArray(i, n, sizeof(Nominations));
+        if (GetMapDesc(n.m_Map, buffer, 128))
+        {
+            Format(buffer, 128, "%s\n%s [by: %s]", n.m_Map, buffer, n.m_OwnerName);
+        }
+        else
+        {
+            Format(buffer, 128, "%s\n [by: %s]", n.m_Map, n.m_OwnerName);
+        }
+        
+        menu.AddItem("Lilia", buffer, ITEMDRAW_DISABLED);
+    }
+
+    menu.Display(client, 10);
+}
+
+public int MenuHandler_NList(Menu menu, MenuAction action, int client, int slot)
+{
+    if (action == MenuAction_End)
+        delete menu;
 }

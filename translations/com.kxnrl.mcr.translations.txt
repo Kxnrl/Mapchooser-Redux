@@ -431,4 +431,17 @@
         "en"    "{1} results of [{2}] for {3}"
         "chi"   "{3}: 在 [{2}] 中找到 {1} 条记录"
     }
+
+    "nlist title"
+    {
+        "#format"   "{1:d}"
+        "en" "Nomination list ({1} maps)"
+        "chi" "已被预订的地图列表 ({1} 地图)"
+    }
+
+    "no nlist"
+    {
+        "en" "There are no maps in the list"
+        "chi" "还没有地图被预订"
+    }
 }
