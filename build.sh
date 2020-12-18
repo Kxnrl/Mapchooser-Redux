@@ -79,5 +79,5 @@ RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./$FILE $RSYNC_USER@$RS
 if [ "$1" = "1.10" ]; then
     echo "Upload RAW RSYNC ..."
     RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./plugins/*.smx $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/
-    RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./translations/com.kxnrl.amp.translations.txt $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/translations/
+    RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./translations/com.kxnrl.mcr.translations.txt $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/translations/
 fi
