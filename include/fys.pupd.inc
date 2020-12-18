@@ -4,7 +4,10 @@
 
 #define _fys_Updater_Include_
 
+// 强制触发检查
 native bool Pupd_CheckPlugin(bool reload, const char[] url);
+native bool Pupd_CheckGamedata(const char[] file, const char[] url);
+native bool Pupd_CheckTranslation(const char[] file, const char[] url);
 
 forward void Pupd_OnCheckAllPlugins();
 forward void Pupd_OnPluginUpdated(const char[] file, bool reload);
@@ -21,8 +24,10 @@ public SharedPlugin __pl_fys_Updater =
 };
 
 #if !defined REQUIRE_PLUGIN
-public void __ext_fys_Updater_SetNTVOptional()
+public void __pl_fys_Updater_SetNTVOptional()
 {
     MarkNativeAsOptional("Pupd_CheckPlugin");
+    MarkNativeAsOptional("Pupd_CheckGamedata");
+    MarkNativeAsOptional("Pupd_CheckTranslation");
 }
 #endif
