@@ -120,6 +120,7 @@ public void OnAllPluginsLoaded()
 public void Pupd_OnCheckAllPlugins()
 {
     Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
+    Pupd_CheckTranslation("com.kxnrl.mcr.translations.txt", "https://build.kxnrl.com/updater/MCR/translation/");
 }
 
 public void OnConfigsExecuted()
