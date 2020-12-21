@@ -780,8 +780,8 @@ void CreateNextVote()
         // we remove big maps( >150 will broken fastdl .bz2), nice map, and only nominations, in cooldown, is not in certain times, requires min players.
         if (IsBigMap(map) || IsNominateOnly(map) || IsAdminOnly(map) || IsVIPOnly(map) || GetCooldown(map) > 0 || !IsCertainTimes(map) || GetMinPlayers(map) > 0)
         {
-            RemoveStringFromArray(tempMaps, map);
-            if (x > 0) x--;
+            tempMaps.Erase(x);
+            x--;
         }
     }
 
@@ -794,8 +794,19 @@ void CreateNextVote()
         int min = GetMinPlayers(map);
         if ((min != 0 && players < min) || (max != 0 && players > max))
         {
-            RemoveStringFromArray(tempMaps, map);
-            if (x > 0) x--;
+            tempMaps.Erase(x);
+            x--;
+        }
+    }
+
+    // check outside forward
+    for(int x = 0; x < tempMaps.Length; ++x)
+    {
+        tempMaps.GetString(x, map, 128);
+        if (!AllowInNextVotePool(map))
+        {
+            tempMaps.Erase(x);
+            x--;
         }
     }
 

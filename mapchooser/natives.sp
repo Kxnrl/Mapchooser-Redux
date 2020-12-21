@@ -10,6 +10,7 @@ enum struct Forwards
     GlobalForward m_OnNominatePrice;
     GlobalForward m_OnClearMapCooldown;
     GlobalForward m_OnResetMapCooldown;
+    GlobalForward m_OnNextMapListCreate;
 }
 
 static Forwards g_Forward;
@@ -68,16 +69,26 @@ public void OnLibraryRemoved(const char[] name)
 
 void Natives_OnPluginStart()
 {
-    g_Forward.m_NominationsReset   = new GlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell, Param_Cell);
-    g_Forward.m_NominationsVoted   = new GlobalForward("OnNominationVoted",      ET_Ignore, Param_String, Param_String, Param_String);
-    g_Forward.m_MapVoteStarted     = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
-    g_Forward.m_MapVoteEnd         = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String);
-    g_Forward.m_MapDataLoaded      = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
-    g_Forward.m_MapVotePoolChanged = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
-    g_Forward.m_OnNominateMap      = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell);
-    g_Forward.m_OnNominatePrice    = new GlobalForward("OnNominatePrice",        ET_Hook,   Param_String, Param_Cell, Param_CellByRef, Param_Cell);
-    g_Forward.m_OnClearMapCooldown = new GlobalForward("OnClearMapCooldown",     ET_Hook,   Param_String, Param_Cell);
-    g_Forward.m_OnResetMapCooldown = new GlobalForward("OnResetMapCooldown",     ET_Hook,   Param_String, Param_Cell);
+    g_Forward.m_NominationsReset    = new GlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell, Param_Cell);
+    g_Forward.m_NominationsVoted    = new GlobalForward("OnNominationVoted",      ET_Ignore, Param_String, Param_String, Param_String);
+    g_Forward.m_MapVoteStarted      = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
+    g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String);
+    g_Forward.m_MapDataLoaded       = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
+    g_Forward.m_MapVotePoolChanged  = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
+    g_Forward.m_OnNominateMap       = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell);
+    g_Forward.m_OnNominatePrice     = new GlobalForward("OnNominatePrice",        ET_Hook,   Param_String, Param_Cell, Param_CellByRef, Param_Cell);
+    g_Forward.m_OnClearMapCooldown  = new GlobalForward("OnClearMapCooldown",     ET_Hook,   Param_String, Param_Cell);
+    g_Forward.m_OnResetMapCooldown  = new GlobalForward("OnResetMapCooldown",     ET_Hook,   Param_String, Param_Cell);
+    g_Forward.m_OnNextMapListCreate = new GlobalForward("OnNextMapListCreate",    ET_Hook,   Param_String);
+}
+
+bool AllowInNextVotePool(const char[] map)
+{
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnNextMapListCreate);
+    Call_PushString(map);
+    Call_Finish(allow);
+    return allow;
 }
 
 bool Call_OnClearMapCooldown(const char[] map, int _cell)
