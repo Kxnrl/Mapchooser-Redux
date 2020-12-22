@@ -957,6 +957,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
         g_aNominations.PushArray(n, sizeof(Nominations));
         g_bPartyblock = true;
+        Call_OnNominatedMap(map, owner, partyblock);
         return NominateResult_PartyBlockAdded;
     }
 
@@ -996,6 +997,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
             n.m_Price = price;
             g_aNominations.SetArray(i, n, sizeof(Nominations));
 
+            Call_OnNominatedMap(map, owner, partyblock);
             return NominateResult_Replaced;
         }
     }
@@ -1034,7 +1036,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     GetClientName(owner, n.m_OwnerName, 32);
     GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
     g_aNominations.PushArray(n, sizeof(Nominations));
-
+    Call_OnNominatedMap(map, owner, partyblock);
     return NominateResult_Added;
 }
 
