@@ -66,6 +66,7 @@ enum struct Convars
     ConVar Refunds;
     ConVar Require;
     ConVar NoVotes;
+    ConVar MinRuns;
 }
 
 // cvars
@@ -160,7 +161,7 @@ public void OnMapEnd()
 
 public void OnClientConnected(int client)
 {
-    if (GetClientCount(false) >= 15)
+    if (GetClientCount(false) >= g_ConVars.MinRuns.IntValue)
     {
         // allow countdown cooldown
         if (!g_bAllowCountdown)

@@ -26,7 +26,7 @@ public void Event_WinPanel(Handle event, const char[] name, bool dontBroadcast)
 
 public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
-    if (g_bAllowCountdown && GetClientCount(false) >= 15)
+    if (g_bAllowCountdown && GetClientCount(false) >= g_ConVars.MinRuns.IntValue)
     {
         char map[128];
         GetCurrentMap(map, 128);
