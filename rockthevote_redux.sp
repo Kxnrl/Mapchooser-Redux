@@ -11,6 +11,7 @@
 bool g_bAllowRTV;
 bool g_bInChange;
 bool g_bVoted[MAXPLAYERS+1];
+ConVar mcr_map_delay_time;
 
 public Plugin myinfo =
 {
@@ -33,6 +34,8 @@ public void OnPluginStart()
     SMUtils_SetChatSpaces("   ");
     SMUtils_SetChatConSnd(false);
     SMUtils_SetTextDest(HUD_PRINTCENTER);
+
+    mcr_map_delay_time = CreateConVar("mcr_map_delay_time", "600", "How much time to allow rtv in seconds.", _, true, 1.0, true, 1800.0);
     
     LoadTranslations("com.kxnrl.mcr.translations");
 
@@ -44,11 +47,11 @@ public void Pupd_OnCheckAllPlugins()
     Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
-public void OnMapStart()
+public void OnConfigsExecuted()
 {
     g_bInChange = false;
     g_bAllowRTV = false;
-    CreateTimer(180.0, Timer_DelayRTV, _, TIMER_FLAG_NO_MAPCHANGE);
+    CreateTimer(mcr_map_delay_time.FloatValue, Timer_DelayRTV, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_DelayRTV(Handle timer)
