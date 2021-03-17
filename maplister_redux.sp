@@ -241,6 +241,7 @@ static bool IsOfficalMap(const char[] map)
 
         // Operation Broken Fang
         officalmaps.PushString("coop_autumn");
+        officalmaps.PushString("coop_fall");
         officalmaps.PushString("cs_apollo");
         officalmaps.PushString("de_ancient");
         officalmaps.PushString("de_elysion");
