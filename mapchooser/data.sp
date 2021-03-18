@@ -82,6 +82,7 @@ static void LoadMapData()
     else
     {
         kv.ImportFromFile(path);
+        CleanMapsData(kv);
         LoadAllMapsData(kv);
     }
 
@@ -206,6 +207,30 @@ static void LoadAllMapsData(KeyValues kv)
     LogMessage("Mapdata has been loaded with %d/%d maps...", g_MapData.Size, maps.Length);
 
     delete maps;
+}
+
+static void CleanMapsData(KeyValues kv)
+{
+    kv.Rewind();
+
+    if (!kv.GotoFirstSubKey(true))
+        return;
+
+    char map[128], path[128];
+
+    do
+    {
+        kv.GetSectionName(map, 128);
+        FormatEx(path, 128, "maps/%s.bsp", map);
+
+        if (!FileExists(path, true))
+        {
+            // this file not exists
+            kv.DeleteThis();
+        }
+    }
+    while (kv.GotoNextKey(true));
+    kv.Rewind();
 }
 
 bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
