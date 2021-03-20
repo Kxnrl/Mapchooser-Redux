@@ -209,7 +209,7 @@ static void LoadAllMapsData(KeyValues kv)
     delete maps;
 }
 
-static void CleanMapsData(KeyValues kv)
+stock void CleanMapsData(KeyValues kv)
 {
     kv.Rewind();
 
