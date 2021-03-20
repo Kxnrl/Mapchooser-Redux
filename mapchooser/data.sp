@@ -82,7 +82,7 @@ static void LoadMapData()
     else
     {
         kv.ImportFromFile(path);
-        CleanMapsData(kv);
+        //CleanMapsData(kv);
         LoadAllMapsData(kv);
     }
 
