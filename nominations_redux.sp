@@ -32,6 +32,8 @@ enum struct owner_t
 StringMap g_smOwner;
 StringMap g_smState;
 
+ConVar mcr_broadcast_nomination_owner;
+
 public Plugin myinfo =
 {
     name        = "Nominations Redux",
@@ -70,6 +72,14 @@ public void OnPluginStart()
 
     RegConsoleCmd("sm_bc",      Command_Partyblock);
     RegConsoleCmd("partyblock", Command_Partyblock);
+
+    mcr_broadcast_nomination_owner = CreateConVar("mcr_broadcast_nomination_owner", "1", "Boradcast nomination owner message of current map every 90 seconds.", _, true, 0.0, true, 1.0);
+
+    if (!DirExists("cfg/sourcemod/mapchooser"))
+        if (!CreateDirectory("cfg/sourcemod/mapchooser", 511))
+            SetFailState("Failed to create folder \"cfg/sourcemod/mapchooser\"");
+
+    AutoExecConfig(true, "nominations_redux", "sourcemod/mapchooser");
 }
 
 public void OnAllPluginsLoaded()
@@ -573,6 +583,9 @@ public void OnMapVotePoolChanged()
 
 public Action Timer_Broadcast(Handle timer)
 {
+    if (!mcr_broadcast_nomination_owner.BoolValue)
+        return Plugin_Continue;
+
     char map[128];
     GetCurrentMap(map, 128);
     
