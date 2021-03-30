@@ -266,6 +266,12 @@ void FuzzyNominate(int client, const char[] find)
 
 void AttemptNominate(int client)
 {
+    if (g_hMapMenu.ItemCount == 0)
+    {
+        Chat(client, "%T", "nominate not allowed", client);
+        return;
+    }
+
     g_hMapMenu.SetTitle("%T\n ", g_bPartyblock[client] ? "partyblock menu title" : "nominate menu title", client);
     g_hMapMenu.Display(client, MENU_TIME_FOREVER);
 }

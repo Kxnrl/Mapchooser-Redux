@@ -444,4 +444,10 @@
         "en" "There are no maps in the list"
         "chi" "还没有地图被预订"
     }
+
+    "nominate not allowed"
+    {
+        "en" "Nomination is not allow yet."
+        "chi" "当前无法预订地图."
+    }
 }
