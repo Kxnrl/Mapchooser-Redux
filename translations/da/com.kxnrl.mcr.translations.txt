@@ -1,0 +1,384 @@
+"Phrases"
+{
+    "rtv broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "da"    "{yellow}{1}{normal} vil gerne Rock the Vote. ({red}{2}{normal}/{green}{3}{normal} stemmer)"
+    }
+    
+    "rtv self"
+    {
+        "#format" "{1:d},{2:d}"
+        "da"    "Du har allerede stemt til Rock the Vote ({red}{1}{normal}/{green}{2}{normal} stemmer)"
+    }
+    
+    "force rtv"
+    {
+        "da"    "Gennemkræv Rock the Vote."
+    }
+    
+    "rtv change map"
+    {
+        "#format" "{1:s}"
+        "da"    "Skifter map til [{green}{1}{normal}]!"
+    }
+    
+    "rtv not allowed"
+    {
+        "da"    "{red}Rock the Vote er ikke tilladt endnu.."
+    }
+    
+    "rtv started"
+    {
+        "da"    "{green}Rock the Vote er allerede startet."
+    }
+    
+    "mtl broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "da"    "{yellow}{1}{normal} vil gerne forlænge map tiden. ({red}{2}{normal}/{green}{3}{normal} stemmer)"
+    }
+    
+    "mtl self"
+    {
+        "#format" "{1:d},{2:d}"
+        "da"    "Du har allerede voted til at forlænge map tiden. ({red}{1}{normal}/{green}{2}{normal} stemmer)"
+    }
+    
+    "mtl extend"
+    {
+        "da"    "Nuværende map er blevet forlænget med 20 minutter."
+    }
+
+    "mtl extend admin"
+    {
+        "#format" "{1:N}"
+        "da"    "Nuværende map er blevet for længe med 20 minutter af {blue}{1}"
+    }
+
+    "mtl not allowed"
+    {
+        "da"    "{red}Map forlængelse er endnu ikke tilladt."
+    }
+    
+    "mtl notification"
+    {
+        "da"    "{red}!rtv{normal} for at RTV, {red}!ext{normal} for at forlænge et map."
+    }
+    
+    "nominated by client"
+    {
+        "#format" "{1:N},{2:s}"
+        "da"    "Nuværende map blev nomineret af {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominated by name"
+    {
+        "#format" "{1:s},{2:s}"
+        "da"    "Nuværende map blev nomineret af {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominate full vote"
+    {
+        "da"    "Det maksimale antal nomineringer har nået grænsen."
+    }
+
+    "nominate partyblock"
+    {
+        "#format" "{1:N}"
+        "da"    "{red}Nomineringen er endnu ikke tilladt: partyblock af {blue} {1} {red}."
+    }
+    
+    "nominate vote complete"
+    {
+        "#format" "{1:s}"
+        "da"    "Næste map er [{yellow}{1}{normal}]"
+    }
+    
+    "nominate vote in progress"
+    {
+        "da"    "Afstemningen er igang."
+    }
+    
+    "nominate menu current Map"
+    {
+        "da"    "Nuværende Map"
+    }
+
+    "nominate menu was nominated"
+    {
+        "da"    "Nomineret"
+    }
+    
+    "nominate menu was nominated name"
+    {
+        "#format" "{1:s}"
+        "da"    "Nomineret af {1}"
+    }
+
+    "nominate changed map"
+    {
+        "#format" "{1:N},{2:s}"
+        "da"    "{1} har ændret sin nominering til {2}."
+    }
+    
+    "nominate nominate map"
+    {
+        "#format" "{1:N},{2:s}"
+        "da"    "{1} har nomineret {2}."
+    }
+
+    "nominate partyblock map"
+    {
+        "#format" "{1:N},{2:s}"
+        "da"    "{1} har nomineret {2}."
+    }
+    
+    "nominate nominate cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "da"    "{green}Det koster {2} credits at nominere {blue}{1}{green}"
+    }
+
+    "nominate partyblock cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "da"    "{green}Det koster {2} credits at nominere {blue}{1}{green}"
+    }
+    
+    "NominateResult_MaxPlayers"
+    {
+        "#format" "{1:d}"
+        "da"    "{red}Det valgte map kræver mindre end {green}{1}{red} spillere for at blive nomineret."
+    }
+    
+    "NominateResult_MinPlayers"
+    {
+        "#format" "{1:d}"
+        "da"    "{red}Det valgte map kræver mere end {green}{1}{red} spillere for at blive nomineret."
+    }
+    
+    "NominateResult_VIPOnly"
+    {
+        "da"    "{red}Det valgte map er nomineret af VIP only."
+    }
+    
+    "NominateResult_AdminOnly"
+    {
+        "da"    "{red}Det valgte ma er nomineret af Admin only."
+    }
+    
+    "NominateResult_VoteFull"
+    {
+        "da"    "{red}Det maksimale antal nomineringer er nået."
+    }
+    
+    "NominateResult_AlreadyInVote"
+    {
+        "da"    "{red}Mappet er allerede blevet nomineret."
+    }
+    
+    "NominateResult_InvalidMap"
+    {
+        "#format" "{1:s}"
+        "da"    "{red}Fejlede at nominere {1}."
+    }
+    
+    "NominateResult_NoCredits"
+    {
+        "#format" "{1:s}"
+        "da"    "{red}Du har ikke nok credits til at nominere {1}."
+    }
+
+    "NominateResult_RecentlyPlayed"
+    {
+        "da"    "{red}Mappet er for nyligt blevet spillet."
+    }
+
+    "NominateResult_PartyBlock"
+    {
+        "da"    "{red}Nuværende er blevet partyblocked."
+    }
+
+    "NominateResult_PartyBlockDisabled"
+    {
+        "da"    "{red}Partyblock is not allowed yet."
+    }
+    
+    "nominate menu title"
+    {
+        "da"    "Nominer Map:"
+    }
+
+    "partyblock menu title"
+    {
+        "da"    "Nominer Map:"
+    }
+    
+    "mcr clear cd"
+    {
+        "da"    "{green}Map historik er blevet slettet."
+    }
+
+    "mcr clear map cd"
+    {
+        "#format" "{1:s}"
+        "da"    "{green}{1} er blevet fjernet fra map nedkøling."
+    }
+
+    "mcr reset map cd"
+    {
+        "#format" "{1:s}"
+        "da"    "{green}{1} er blevet resat fra map nedkøling."
+    }
+
+    "mcr show cd"
+    {
+        "da"    "{green}Venligst kontroller din konsol."
+    }
+    
+    "mcr nominate fallback"
+    {
+        "#format" "{1:s},{2:d}"
+        "da"    "{green}[{blue}{1}{green}] din nominering er blevet afvist, {2} credits er blevet returneret.."
+    }
+    
+    "mcr runoff"
+    {
+        "#format" "{1:d}"
+        "da"    "Intet map fik over halvdelen af stemmerne ({1}%%), starter runoff afstemning."
+    }
+    
+    "mcr tier"
+    {
+        "#format" "{1:d}"
+        "da"    "Top {green}{1}{normal} maps havde det samme antal stemmer. En gen-afstemning er nødvendig!"
+    }
+    
+    "mcr dont change"
+    {
+        "#format" "{1:d},{2:d}"
+        "da"    "Nuværende map fortsætter! Stemmerne har talt! (Modtog {green}{1}{normal}/{red}{2}{normal}stemmer)"
+    }
+    
+    "mcr extend map"
+    {
+        "#format" "{1:d},{2:d}"
+        "da"    "Det nuværende map er blevet forlænget. (Modtog {green}{1}{normal}/{red}{2} {normal}stemmer)"
+    }
+    
+    "mcr next map"
+	{
+		"#format"   "{1:s},{2:d},{3:d}"
+		"da"    "{yellow}Map afstemning er afsluttet. Næste map bliver [{green}{1}{yellow}]. (Modtog {green}{2}{normal}/{red}{3} {yellow}stemmer)"
+	}
+    
+    "mcr voting started"
+    {
+        "da"    "Afstemningen om nææste map er startet."
+    }
+    
+    "mcr countdown hud"
+    {
+		"#format"   "{1:d}"
+		"da"    "Afstemningen om næste map vil begynde om {1} sekunder"
+	}
+
+    "mcr countdown hud shuffle"
+    {
+		"#format"   "{1:d}"
+		"da"    "Afstemningen om næste map vil begynde om {1} sekunder"
+	}
+    
+    "mcr countdown text hint"
+    {
+		"#format"   "{1:d}"
+		"da"    "Afstemningen om næste map vil begynde om {1} sekunder"
+	}
+
+    "mcr countdown text hint shuffle"
+    {
+        "#format"   "{1:d}"
+		"da"    "Afstemningen for næste map vil begynde om {1} sekunder"
+    }
+
+    "mcr countdown chat"
+    {
+		"#format"   "{1:d}"
+		"da"    "{silver}Afstemningen om det næste map vil begynde om {red}{1}{silver} sekunder"
+	}
+    
+    "mcr countdown chat shuffle"
+    {
+		"#format"   "{1:d}"
+		"da"    "{silver}Afstemningen om det næste map vil begyndee om {red}{1}{silver} sekunder"
+	}
+
+    "vote item extend"
+    {
+        "da"    "Forlæng map"
+    }
+    
+    "vote item dont change"
+    {
+        "da"    "Ikke skifte"
+    }
+    
+    "LINE_ONE"
+    {
+        "da"    "Vælg et map du gerne vil spille! "
+    }
+    
+    "LINE_TWO"
+    {
+        "da"    "Skriv !revote for at genstarte afstemnings menu ;-)"
+    }
+
+    "vote item title"
+    {
+        "da"    "Stem om det næste map!"
+    }
+    
+    "NominateResult_NoMatch"
+    {
+        "#format"   "{1:s}"
+        "da"    "{silver}Igen resultater med dette map navn blev fundet. [{green}{1}{silver}]"
+    }
+
+    "NominateResult_CertainTimes"
+    {
+        "da"    "{silver}Ikke tilgængelig i nuværende tids periode."
+    }
+
+    "partyblock nominate menu item"
+    {
+        "da"    "PB"
+    }
+
+    "nominate nominate menu item"
+    {
+        "da"    "nomineringer"
+    }
+
+    "fuzzy title"
+    {
+        "#format"   "{1:d},{2:s},{3:t}"
+        "da"    "{1} resultater af [{2}] for {3}"
+    }
+
+    "nlist title"
+    {
+        "#format"   "{1:d}"
+        "da" "Nominerings liste ({1} maps)"
+    }
+
+    "no nlist"
+    {
+        "da" "Der er ingen maps på listen"
+    }
+
+    "nominate not allowed"
+    {
+        "da" "Nominering er endnu ikke tilladt."
+    }
+}
