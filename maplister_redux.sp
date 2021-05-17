@@ -272,11 +272,13 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("de_cbble");
         officalmaps.PushString("de_chlorine");
         officalmaps.PushString("de_dust2");
+        officalmaps.PushString("de_grind");
         officalmaps.PushString("de_inferno");
         officalmaps.PushString("de_lake");
         officalmaps.PushString("de_mirage");
         officalmaps.PushString("de_nuke");
         officalmaps.PushString("de_overpass");
+        officalmaps.PushString("de_pitstop");
         officalmaps.PushString("de_safehouse");
         officalmaps.PushString("de_shortdust");
         officalmaps.PushString("de_shortnuke");

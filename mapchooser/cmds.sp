@@ -37,8 +37,14 @@ public Action Command_SetNextmap(int client, int args)
         return Plugin_Handled;
     }
 
-    char map[128];
-    GetCmdArg(1, map, 128);
+    char map[128], arg[256];
+    GetCmdArg(1, arg, 256);
+
+    if (FindMap(arg, map, 256) == FindMap_NotFound)
+    {
+        ReplyToCommand(client, "[\x04MCR\x01]  Map was not found [%s]", arg);
+        return Plugin_Handled;
+    }
 
     if (!IsMapValid(map))
     {
