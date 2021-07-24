@@ -276,6 +276,7 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("de_inferno");
         officalmaps.PushString("de_lake");
         officalmaps.PushString("de_mirage");
+        officalmaps.PushString("de_mocha");
         officalmaps.PushString("de_nuke");
         officalmaps.PushString("de_overpass");
         officalmaps.PushString("de_pitstop");
