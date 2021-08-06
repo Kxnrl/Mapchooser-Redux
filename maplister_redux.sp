@@ -269,6 +269,7 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("de_breach");
         officalmaps.PushString("de_cache");
         officalmaps.PushString("de_canals");
+        officalmaps.PushString("de_calavera");
         officalmaps.PushString("de_cbble");
         officalmaps.PushString("de_chlorine");
         officalmaps.PushString("de_dust2");
