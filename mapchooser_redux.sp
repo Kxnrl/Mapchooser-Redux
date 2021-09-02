@@ -836,6 +836,7 @@ void InternalSetNextMap(const char[] map)
 {
     SetNextMap(map);
     g_bMapVoteCompleted = true;
+    RefundAllCredits(map);
 }
 
 NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool partyblock)
