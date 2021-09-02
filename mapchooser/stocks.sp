@@ -175,6 +175,18 @@ stock ArrayList GetAllMapsName()
     return maps;
 }
 
+stock int GetNominationOwner(const char[] map)
+{
+    for (int i = 0; i < g_aNominations.Length; i++)
+    {
+        Nominations n;
+        g_aNominations.GetArray(i, n, sizeof(Nominations));
+        if (strcmp(map, n.m_Map) == 0)
+            return n.m_Owner;
+    }
+    return -1;
+}
+
 stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = false, int client = -1, int flag = ITEMDRAW_DEFAULT)
 {
     if (!ori)

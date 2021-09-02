@@ -505,7 +505,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 128);
 
             if (IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue);
+                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, GetNominationOwner(map));
             else if (StrEqual(map, VOTE_DONTCHANGE))
                 g_hVoteMenu.AddItem(VOTE_DONTCHANGE, "Don't Change");
             else if (StrEqual(map, VOTE_EXTEND))
