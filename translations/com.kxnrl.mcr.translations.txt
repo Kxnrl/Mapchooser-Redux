@@ -134,7 +134,7 @@
     {
         "#format" "{1:s}"
         "en"    "Nominated by {1}"
-        "chi"   "预订人: {1}"
+        "chi"   "by {1}"
     }
 
     "nominate changed map"
@@ -391,13 +391,13 @@
     "LINE_TWO"
     {
         "en"    "Type !revote to restart vote menu ;-)"
-        "chi"   "选错可使用 !revote 重新投票"
+        "chi"   "重新投票: !revote"
     }
 
     "vote item title"
     {
         "en"    "Vote the next map!"
-        "chi"   "投票选出下一张地图"
+        "chi"   "地图投票"
     }
     
     "NominateResult_NoMatch"

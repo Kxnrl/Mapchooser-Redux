@@ -310,7 +310,7 @@ void BuildMapMenu()
         {
             owner_t owner;
             GetClientAuthId(n.m_Owner, AuthId_Steam2, owner.m_Auth, 32, false);
-            GetClientName(n.m_Owner, owner.m_Name, 32);
+            GetClientName(n.m_Owner, owner.m_Name, 25);
             g_smOwner.SetArray(map, owner, sizeof(owner_t), true);
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED;
         }
@@ -526,8 +526,8 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             Nominations n;
             if (GetNominated(map, n))
             {
-                char name[32];
-                GetClientName(n.m_Owner, name, 32);
+                char name[25];
+                GetClientName(n.m_Owner, name, 25);
                 Format(display, sizeof(display), "%s\n%s (%T)", map, trans, "nominate menu was nominated name", param1, name);
                 return RedrawMenuItem(display);
             }

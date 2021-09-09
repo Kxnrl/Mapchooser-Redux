@@ -245,12 +245,23 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
     strcopy(desc, maxLen, mapdata.m_Description);
 
     if (includeName)
-        Format(desc, maxLen, "%s\n%s", map, desc);
-
-    if (includeTag)
     {
-        Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "[ADMIN] "   : "", desc);
-        Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "[VIP]     " : "", desc);
+        if (includeTag)
+        {
+            Format(desc, maxLen, "%s%s%s\n%s", map, mapdata.m_VipOnly ? " [VIP]" : "", mapdata.m_AdminOnly ? " [ADMIN]" : "", desc);
+        }
+        else
+        {
+            Format(desc, maxLen, "%s\n%s", map, desc);
+        }
+    }
+    else
+    {
+        if (includeTag)
+        {
+            Format(desc, maxLen, "%s%s", mapdata.m_VipOnly   ? "[VIP] "   : "", desc);
+            Format(desc, maxLen, "%s%s", mapdata.m_AdminOnly ? "[ADMIN] " : "", desc);
+        }
     }
 
     if (includePrice)
