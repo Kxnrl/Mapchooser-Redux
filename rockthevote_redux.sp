@@ -101,9 +101,10 @@ void AttemptRTV(int client)
             if (FindConVar("mcr_include_desctag").BoolValue)
             {
                 char desc[128];
-                if (GetMapDesc(map, desc, 128))
+                if (GetMapDescEx(map, desc, 128, false, false, false, FindConVar("mcr_include_tiertag").BoolValue))
                 {
-                    Chat(client, "\x0A -> \x0E[\x05%s\x0E]", desc);
+                    SMUtils_SkipNextPrefix();
+                    ChatAll("\x0E ➤ \x0E ➢ \x0E ➣ \x01  \x0A[\x05%s\x0A]", desc);
                 }
             }
         }

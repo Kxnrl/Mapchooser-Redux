@@ -57,6 +57,7 @@ enum struct Convars
 {
     ConVar TimeLoc;
     ConVar NameTag;
+    ConVar TierTag;
     ConVar DescTag;
     ConVar MaxExts;
     ConVar Recents;
@@ -68,6 +69,11 @@ enum struct Convars
     ConVar NoVotes;
     ConVar MinRuns;
 }
+
+// tier
+char g_TierString[MAX_TIER+1][32] = {
+    "", "Intro", "Easy", "Normal", "Hard", "Mars", "Death"
+};
 
 // cvars
 Convars g_ConVars;
@@ -377,7 +383,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         {
             Nominations n;
             g_aNominations.GetArray(0, n, sizeof(Nominations));
-            AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner, i == 0 ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+            AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner, i == 0 ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
         }
 
         //AddExtendToMenu(g_hVoteMenu, when);
@@ -441,7 +447,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 int i = RandomInt(0, votePool.Length - 1);
                 votePool.GetArray(i, n, sizeof(Nominations));
                 votePool.Erase(i);
-                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
+                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
             }
         }
         else
@@ -451,7 +457,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 Nominations n;
                 g_aNominations.GetArray(i, n, sizeof(Nominations));
 
-                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
+                AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
                 RemoveStringFromArray(g_aNextMapList, map);
 
                 Call_NominationsReset(n.m_Map, n.m_Owner, false);
@@ -488,7 +494,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 g_aNextMapList.GetString(count, map, 128);        
                 count++;
 
-                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue);
+                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue);
                 i++;
             }
         }
@@ -505,7 +511,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
             inputlist.GetString(i, map, 128);
 
             if (IsMapValid(map))
-                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, !g_ConVars.DescTag.BoolValue, GetNominationOwner(map));
+                AddMapItem(g_hVoteMenu, map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue, GetNominationOwner(map));
             else if (StrEqual(map, VOTE_DONTCHANGE))
                 g_hVoteMenu.AddItem(VOTE_DONTCHANGE, "Don't Change");
             else if (StrEqual(map, VOTE_EXTEND))
@@ -580,8 +586,9 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         if (g_ConVars.DescTag.BoolValue)
         {
             char desc[128];
-            GetDescEx(map, desc, 128, false, false);
-            ChatAll("\x0A -> \x0E[\x05%s\x0E]", desc);
+            GetDescEx(map, desc, 128, _, _, _, true);
+            SMUtils_SkipNextPrefix();
+            ChatAll("\x0E ➤ \x0E ➢ \x0E ➣ \x01  \x0A[\x05%s\x0A]", desc);
         }
         LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
     }

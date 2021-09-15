@@ -4,6 +4,7 @@ enum struct MapData
     // mapdata.kv
     char m_FileName[128];
     char m_Description[64];
+    int  m_Tier;
     int  m_Price;
     int  m_PricePartyBlock;
     int  m_FileSize;
@@ -174,6 +175,7 @@ static void LoadAllMapsData(KeyValues kv)
         MapData mapdata;
         strcopy(mapdata.m_FileName, 128, map);
         kv.GetString("m_Description", mapdata.m_Description, 32, "null");
+        mapdata.m_Tier            = clamp(0, MAX_TIER, kv.GetNum("m_Difficulty", 0));
         mapdata.m_Price           = kv.GetNum("m_Price", 100);
         mapdata.m_PricePartyBlock = kv.GetNum("m_PricePartyBlock", 3000);
         mapdata.m_FileSize        = GetMapFileSize(map);
@@ -233,7 +235,7 @@ stock void CleanMapsData(KeyValues kv)
     kv.Rewind();
 }
 
-bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
+bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName = false, bool includeTag = false, bool includePrice = false, bool includeTier = false)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
@@ -243,6 +245,13 @@ bool GetDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool
     }
 
     strcopy(desc, maxLen, mapdata.m_Description);
+
+    if (mapdata.m_Tier > 0 && includeTier)
+    {
+        char tier[32];
+        GetTierString(mapdata.m_Tier, tier, 32);
+        Format(desc, maxLen, "<%s>%s", tier, desc);
+    }
 
     if (includeName)
     {
@@ -664,6 +673,7 @@ void DisplayMapAttributes(int client, const char[] map)
             PrintToConsole(client, "===========[%s]===========", alter);
             PrintToConsole(client, "m_FileName       : %s", mapdata.m_FileName);
             PrintToConsole(client, "m_Description    : %s", mapdata.m_Description);
+            PrintToConsole(client, "m_Tier           : %d", mapdata.m_Tier);
             PrintToConsole(client, "m_Price          : %d", mapdata.m_Price);
             PrintToConsole(client, "m_PricePartyBlock: %d", mapdata.m_PricePartyBlock);
             PrintToConsole(client, "m_FileSize       : %d", mapdata.m_FileSize);

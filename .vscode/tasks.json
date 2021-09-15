@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile plugin",
+            "type": "shell",
+
+            "presentation": {
+                "panel": "new"
+            },
+
+            "windows":{
+                 "command": "E:\\WorkSpace\\SourcePawn\\spcomp.exe",
+                 "args": [
+                    "${file}",
+                    "-E",
+                    "-O2",
+                    "-v2",
+                    "-i\"E:\\WorkSpace\\SourcePawn\\include\"",
+                    "-i\"${fileWorkspaceFolder}\\include\"",
+                    "-o\"${fileWorkspaceFolder}\\compiled\\${fileBasenameNoExtension}.smx\""
+                ]
+            },
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

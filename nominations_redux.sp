@@ -245,6 +245,7 @@ void FuzzyNominate(int client, const char[] find)
 
     bool desctag = FindConVar("mcr_include_desctag").BoolValue;
     bool nametag = FindConVar("mcr_include_nametag").BoolValue;
+    bool tiertag = FindConVar("mcr_include_tiertag").BoolValue;
 
     Menu menu = new Menu(Handler_MapSelectMenu, MENU_ACTIONS_DEFAULT|MenuAction_DrawItem|MenuAction_DisplayItem);
 
@@ -252,7 +253,7 @@ void FuzzyNominate(int client, const char[] find)
     for(int x = 0; x < result.Length; ++x)
     {
         result.GetString(x, map, 128);
-        menu.AddItem(map, desctag && GetMapDescEx(map, desc, 128, true, nametag, (g_pStore || g_pShop)) ? desc : map);
+        menu.AddItem(map, desctag && GetMapDescEx(map, desc, 128, true, nametag, (g_pStore || g_pShop), tiertag) ? desc : map);
     }
 
     menu.SetTitle("%T", "fuzzy title", client, menu.ItemCount, find, g_bPartyblock[client] ? "partyblock nominate menu item" : "nominate nominate menu item", client);
@@ -296,6 +297,7 @@ void BuildMapMenu()
 
     bool desctag = FindConVar("mcr_include_desctag").BoolValue;
     bool nametag = FindConVar("mcr_include_nametag").BoolValue;
+    bool tiertag = FindConVar("mcr_include_tiertag").BoolValue;
 
     char desc[128], map[128]; Nominations n;
     for(int i = 0; i < g_aMapList.Length; i++)
@@ -320,7 +322,7 @@ void BuildMapMenu()
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_PREVIOUS;
         }
 
-        g_hMapMenu.AddItem(map, desctag && GetMapDescEx(map, desc, 128, true, nametag, (g_pStore || g_pShop)) ? desc : map);
+        g_hMapMenu.AddItem(map, desctag && GetMapDescEx(map, desc, 128, true, nametag, (g_pStore || g_pShop), tiertag) ? desc : map);
         g_smState.SetValue(map, status);
     }
 
@@ -438,9 +440,10 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             }
 
             char desc[128];
-            if (GetMapDesc(map, desc, 128))
+            if (GetMapDescEx(map, desc, 128, false, false, false, FindConVar("mcr_include_tiertag").BoolValue))
             {
-                ChatAll("\x0A -> \x0E[\x05%s\x0E]", desc);
+                SMUtils_SkipNextPrefix();
+                ChatAll("\x0E ➤ \x0E ➢ \x0E ➣ \x01  \x0A[\x05%s\x0A]", desc);
             }
         }
 
@@ -493,7 +496,7 @@ public int Handler_MapSelectMenu(Menu menu, MenuAction action, int param1, int p
             }
 
             char trans[128];
-            GetMapDescEx(map, trans, 128, false, false, false);
+            GetMapDescEx(map, trans, 128, false, true, false, FindConVar("mcr_include_tiertag").BoolValue);
             if (g_pStore || g_pShop)
             {
                 Format(trans, 128, "%s [%T: %d]", trans, g_bPartyblock[param1] ? "partyblock nominate menu item" : "nominate nominate menu item", param1, GetMapPrice(map, true, g_bPartyblock[param1]));
@@ -649,7 +652,7 @@ void DisplayNominationList(int client)
         Nominations n;
         char buffer[128];
         list.GetArray(i, n, sizeof(Nominations));
-        if (GetMapDesc(n.m_Map, buffer, 128))
+        if (GetMapDescEx(n.m_Map, buffer, 128, false, false, false, FindConVar("mcr_include_tiertag").BoolValue))
         {
             Format(buffer, 128, "%s\n%s [by: %s]", n.m_Map, buffer, n.m_OwnerName);
         }

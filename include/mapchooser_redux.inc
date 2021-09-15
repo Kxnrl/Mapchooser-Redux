@@ -10,6 +10,7 @@
 #define LINE_SPACER             "##linespacer##"
 #define FAILURE_TIMER_LENGTH    5
 #define typeofdata              sizeof(MapData)
+#define MAX_TIER                6
 
 enum MapChange
 {
@@ -52,6 +53,7 @@ enum struct MapData
     // mapdata.kv
     char m_FileName[128];
     char m_Description[32];
+    int  m_Tier;
     int  m_Price;
     int  m_PricePartyBlock;
     int  m_FileSize;
@@ -104,6 +106,8 @@ native void GetExcludeMapList(ArrayList array);
 native void GetNominatedMapList(ArrayList array);
 native int  GetPartyBlockOnwer();
 native bool ForceSetNextMap(const char[] map, bool force = false);
+native bool SetTierString(int tier, const char[] ts);
+native void GetTierString(int tier, char[] ts, int len);
 
 stock bool IsClientVIP(int client)
 {
@@ -125,13 +129,20 @@ stock bool GetMapDesc(const char[] map, char[] buffer, int maxlen)
     return false;
 }
 
-stock bool GetMapDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false)
+stock bool GetMapDescEx(const char[] map, char[] desc, int maxLen, bool includeName, bool includeTag, bool includePrice = false, bool includeTier = false)
 {
     MapData mapdata;
     if (!GetMapData(map, mapdata, typeofdata))
         return false;
 
     strcopy(desc, maxLen, mapdata.m_Description);
+
+    if (mapdata.m_Tier > 0 && includeTier)
+    {
+        char tier[32];
+        GetTierString(mapdata.m_Tier, tier, 32);
+        Format(desc, maxLen, "<%s>%s", tier, desc);
+    }
 
     if (includeName)
     {

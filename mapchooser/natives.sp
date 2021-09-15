@@ -39,6 +39,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("GetMapData",              Native_GetMapData);
     CreateNative("GetPartyBlockOnwer",      Native_GetPartyBlockOnwer);
     CreateNative("ForceSetNextMap",         Native_ForceSetNextMap);
+    CreateNative("SetTierString",           Native_OverrideTierString);
+    CreateNative("GetTierString",           Native_GetTierString);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
@@ -308,5 +310,24 @@ public any Native_ForceSetNextMap(Handle plugin, int numParams)
     GetNativeString(1, map, 128);
     InternalSetNextMap(map);
 
+    return true;
+}
+
+public any Native_OverrideTierString(Handle plugin, int numParams)
+{
+    int tier = GetNativeCell(1);
+    if (tier < 0 || tier > MAX_TIER)
+        return ThrowNativeError(SP_ERROR_PARAM, "Invalid tier <%d> gived.", tier);
+
+    return GetNativeString(2, g_TierString[tier], 32) == SP_ERROR_NONE;
+}
+
+public any Native_GetTierString(Handle plugin, int numParams)
+{
+    int tier = GetNativeCell(1);
+    if (tier < 0 || tier > MAX_TIER)
+        return ThrowNativeError(SP_ERROR_PARAM, "Invalid tier <%d> gived.", tier);
+
+    SetNativeString(2, g_TierString[tier], GetNativeCell(3));
     return true;
 }

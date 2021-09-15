@@ -187,12 +187,12 @@ stock int GetNominationOwner(const char[] map)
     return -1;
 }
 
-stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool ori = false, int client = -1, int flag = ITEMDRAW_DEFAULT)
+stock bool AddMapItem(Menu menu, const char[] map, bool includeTag, bool includeTier, bool ori = false, int client = -1, int flag = ITEMDRAW_DEFAULT)
 {
     if (!ori)
     {
         char trans[128];
-        if (GetDescEx(map, trans, 128, true, includeTag))
+        if (GetDescEx(map, trans, 128, true, includeTag, false, includeTier))
         {
             if (ClientIsValid(client))
             {
@@ -231,4 +231,13 @@ stock char[] PadLeft(int value, int len = 0, const char[] padleft = "  ")
     }
 
     return buffer;
+}
+
+stock any clamp(any min, any max, any value)
+{
+    if (value < min)
+        value = min;
+    if (value > max)
+        value = max;
+    return value;
 }

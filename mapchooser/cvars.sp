@@ -2,6 +2,7 @@ void Cvars_OnPluginStart()
 {
     g_ConVars.TimeLoc = CreateConVar("mcr_timer_hud_location",    "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game",                                                   _, true,  0.0, true,   3.0);
     g_ConVars.NameTag = CreateConVar("mcr_include_nametag",       "1", "include name tag in map desc",                                                                                    _, true,  0.0, true,   1.0);
+    g_ConVars.TierTag = CreateConVar("mcr_include_tiertag",       "1", "incluee tier tag in map desc",                                                                                    _, true,  0.0, true,   1.0);
     g_ConVars.DescTag = CreateConVar("mcr_include_desctag",       "1", "include desc tag in map desc",                                                                                    _, true,  0.0, true,   1.0);
     g_ConVars.MaxExts = CreateConVar("mcr_map_extend_times",      "3", "How many times can extend the map.",                                                                              _, true,  0.0, true,   9.0);
     g_ConVars.Recents = CreateConVar("mcr_rectplayed_interval", "144", "How much time in hours ago played can count to recently played pool, (-1 disable all recently played function) ", _, true, -1.0, true, 300.0);
