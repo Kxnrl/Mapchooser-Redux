@@ -250,7 +250,7 @@ static bool IsOfficalMap(const char[] map)
         officalmaps.PushString("dz_frostbite");
         officalmaps.PushString("lobby_mapveto");
 
-        // Opreation Riptide
+        // Operation Riptide
         officalmaps.PushString("dz_county");
         officalmaps.PushString("de_extraction");
         officalmaps.PushString("de_ravine");
