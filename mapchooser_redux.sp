@@ -215,14 +215,14 @@ void SetupTimeleftTimer()
 {
     if (g_bMapVoteCompleted)
     {
-        LogMessage("Map vote had been completed.");
+        PrintToServer("Map vote had been completed.");
         return;
     }
 
     int timeLeft;
     if (!GetMapTimeLeft(timeLeft) || timeLeft <= 0)
     {
-        LogMessage("Failed to GetMapTimeLeft()");
+        PrintToServer("Failed to GetMapTimeLeft()");
         return;
     }
 
@@ -408,14 +408,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 votePool.PushArray(n, sizeof(Nominations));
                 RemoveStringFromArray(g_aNextMapList, n.m_Map);
             }
-            /*
-            for(int i = 0; i < g_aNominations.Length; i++)
-            {
-                Nominations n;
-                g_aNominations.GetArray(i, n, sizeof(Nominations));
-                Call_NominationsReset(n.m_Map, n.m_Owner, false);
-            }
-            */
+
             if (votePool.Length < voteSize && g_aNextMapList.Length == 0)
             {
                 if (votePool.Length == 0)
@@ -425,7 +418,7 @@ void InitiateVote(MapChange when, ArrayList inputlist)
                 }
                 else
                 {
-                    LogMessage("Not enough maps to fill map list.");
+                    LogMessage("No enough maps to fill map list.");
                     voteSize = votePool.Length;
                 }
             }
@@ -462,15 +455,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
                 Call_NominationsReset(n.m_Map, n.m_Owner, false);
             }
-
-            /*
-            for(int i = nominationsToAdd; i < g_aNominations.Length; i++)
-            {
-                Nominations n;
-                g_aNominations.GetArray(i, n, sizeof(Nominations));
-                Call_NominationsReset(n.m_Map, n.m_Owner, false);
-            }
-            */
 
             int i = nominationsToAdd;
             int count = 0;

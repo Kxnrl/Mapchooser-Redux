@@ -40,6 +40,8 @@ public void OnPluginStart()
     LoadTranslations("com.kxnrl.mcr.translations");
 
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
+
+    AutoExecConfig(true, "rockthevote_redux", "sourcemod/mapchooser");
 }
 
 public void Pupd_OnCheckAllPlugins()
