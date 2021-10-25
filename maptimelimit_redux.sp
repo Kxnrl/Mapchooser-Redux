@@ -10,6 +10,7 @@
 
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
+ConVar mcr_extend_enabled;
 
 public Plugin myinfo =
 {
@@ -35,9 +36,18 @@ public void OnPluginStart()
 
     RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CHANGEMAP);
 
+    mcr_extend_enabled = CreateConVar("mcr_extend_enabled", "1", "Enable !ext command.", _, true, 0.0, true, 1.0);
+
     LoadTranslations("com.kxnrl.mcr.translations");
 
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
+
+    AutoExecConfig(true, "maptimelimit_redux", "sourcemod/mapchooser");
+}
+
+bool AllowExt()
+{
+    return g_bAllowEXT && mcr_extend_enabled.BoolValue;
 }
 
 public void Pupd_OnCheckAllPlugins()
@@ -93,7 +103,7 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 
 void AttemptEXT(int client)
 {
-    if (!g_bAllowEXT)
+    if (!AllowExt())
     {
         Chat(client, "%T", "mtl not allowed", client);
         return;
