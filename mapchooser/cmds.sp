@@ -52,9 +52,8 @@ public Action Command_SetNextmap(int client, int args)
         return Plugin_Handled;
     }
 
-    LogAction(client, -1, "\"%L\" changed nextmap to \"%s\"", client, map);
-
-    InternalSetNextMap(map);
+    if (InternalSetNextMap(map, client))
+        LogAction(client, -1, "\"%L\" changed nextmap to \"%s\"", client, map);
 
     return Plugin_Handled;
 }

@@ -92,6 +92,7 @@ forward bool OnNominatePrice(const char[] map, int client, int &price, bool part
 forward bool OnClearMapCooldown(const char[] map, int client);
 forward bool OnResetMapCooldown(const char[] map, int client);
 forward bool OnNextMapListCreate(const char[] map);
+forward bool OnSetNextMap(const char[] map, int client);
 
 native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock = false);
@@ -105,7 +106,7 @@ native bool GetMapData(const char[] map, any[] data, int size);
 native void GetExcludeMapList(ArrayList array);
 native void GetNominatedMapList(ArrayList array);
 native int  GetPartyBlockOnwer();
-native bool ForceSetNextMap(const char[] map, bool force = false);
+native bool ForceSetNextMap(const char[] map, bool force = false, int client = -1);
 native bool SetTierString(int tier, const char[] ts);
 native void GetTierString(int tier, char[] ts, int len);
 

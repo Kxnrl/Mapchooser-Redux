@@ -823,11 +823,15 @@ bool CanVoteStart()
     return true;
 }
 
-void InternalSetNextMap(const char[] map)
+bool InternalSetNextMap(const char[] map, int client)
 {
+    if (!Call_OnSetNextMap(map, client))
+        return false;
+
     SetNextMap(map);
     g_bMapVoteCompleted = true;
     RefundAllCredits(map);
+    return true;
 }
 
 NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool partyblock)

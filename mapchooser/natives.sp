@@ -12,6 +12,7 @@ enum struct Forwards
     GlobalForward m_OnClearMapCooldown;
     GlobalForward m_OnResetMapCooldown;
     GlobalForward m_OnNextMapListCreate;
+    GlobalForward m_OnSetNextMap;
 }
 
 static Forwards g_Forward;
@@ -84,6 +85,17 @@ void Natives_OnPluginStart()
     g_Forward.m_OnClearMapCooldown  = new GlobalForward("OnClearMapCooldown",     ET_Hook,   Param_String, Param_Cell);
     g_Forward.m_OnResetMapCooldown  = new GlobalForward("OnResetMapCooldown",     ET_Hook,   Param_String, Param_Cell);
     g_Forward.m_OnNextMapListCreate = new GlobalForward("OnNextMapListCreate",    ET_Hook,   Param_String);
+    g_Forward.m_OnSetNextMap        = new GlobalForward("OnSetNextMap",           ET_Hook,   Param_String, Param_Cell);
+}
+
+bool Call_OnSetNextMap(const char[] map, int caller)
+{
+    bool allow = true;
+    Call_StartForward(g_Forward.m_OnSetNextMap);
+    Call_PushString(map);
+    Call_PushCell(caller);
+    Call_Finish(allow);
+    return allow;
 }
 
 bool AllowInNextVotePool(const char[] map)
@@ -306,11 +318,12 @@ public any Native_ForceSetNextMap(Handle plugin, int numParams)
     if (g_bMapVoteCompleted && !GetNativeCell(2))
         return false;
 
+    int caller = numParams >= 3 ? GetNativeCell(3) ? -1;
+
     char map[128];
     GetNativeString(1, map, 128);
-    InternalSetNextMap(map);
 
-    return true;
+    return InternalSetNextMap(map, caller);
 }
 
 public any Native_OverrideTierString(Handle plugin, int numParams)
