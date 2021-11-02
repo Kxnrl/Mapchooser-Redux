@@ -318,7 +318,7 @@ public any Native_ForceSetNextMap(Handle plugin, int numParams)
     if (g_bMapVoteCompleted && !GetNativeCell(2))
         return false;
 
-    int caller = numParams >= 3 ? GetNativeCell(3) ? -1;
+    int caller = numParams >= 3 ? GetNativeCell(3) : -1;
 
     char map[128];
     GetNativeString(1, map, 128);
