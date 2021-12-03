@@ -117,7 +117,7 @@ stock bool IsClientVIP(int client)
 
 stock bool IsClientAdmin(int client)
 {
-    return CheckCommandAccess(client, "sm_map", ADMFLAG_CHANGEMAP, false);
+    return CheckCommandAccess(client, "sm_cvar", ADMFLAG_CONVARS, false);
 }
 
 stock bool GetMapDesc(const char[] map, char[] buffer, int maxlen)
