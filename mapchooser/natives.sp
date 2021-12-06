@@ -263,12 +263,13 @@ public any Native_RemoveNominationByOwner(Handle plugin, int numParams)
 
 public any Native_InitiateVote(Handle plugin, int numParams)
 {
-    MapChange when = view_as<MapChange>(GetNativeCell(1));
-    ArrayList maps = view_as<ArrayList>(GetNativeCell(2));
+    MapChange   when = view_as<MapChange>(GetNativeCell(1));
+    ArrayList   maps = view_as<ArrayList>(GetNativeCell(2));
+    WarningType type = numParams == 3 ? view_as<WarningType(GetNativeCell(3)) : WarningType_Vote;
 
     LogAction(-1, -1, "Starting map vote because outside request");
 
-    SetupWarningTimer(WarningType_Vote, when, maps);
+    SetupWarningTimer(type, when, maps);
 }
 
 public any Native_CanVoteStart(Handle plugin, int numParams)

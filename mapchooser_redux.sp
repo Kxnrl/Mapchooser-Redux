@@ -47,12 +47,6 @@ enum TimerLocation
     TimerLocation_HUD
 }
 
-enum WarningType
-{
-    WarningType_Vote,
-    WarningType_Revote
-}
-
 enum struct Convars
 {
     ConVar TimeLoc;

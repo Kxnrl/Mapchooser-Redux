@@ -28,6 +28,13 @@ enum CanNominateResult
     CanNominate_Yes
 };
 
+enum WarningType
+{
+    WarningType_Vote,
+    WarningType_Revote,
+    WarningType_Delay
+};
+
 enum NominateResult
 {
     NominateResult_Added,
@@ -98,7 +105,7 @@ native CanNominateResult CanNominate();
 native NominateResult NominateMap(const char[] map, bool force, int owner, bool partyblock = false);
 native bool RemoveNominationByMap(const char[] map);
 native bool RemoveNominationByOwner(int client);
-native void InitiateMapChooserVote(MapChange when, ArrayList inputarray = null);
+native void InitiateMapChooserVote(MapChange when, ArrayList inputarray = null, WarningType type = WarningType_Vote);
 native bool CanMapChooserStartVote();
 native bool HasEndOfMapVoteFinished();
 native bool EndOfMapVoteEnabled();
