@@ -265,7 +265,7 @@ public any Native_InitiateVote(Handle plugin, int numParams)
 {
     MapChange   when = view_as<MapChange>(GetNativeCell(1));
     ArrayList   maps = view_as<ArrayList>(GetNativeCell(2));
-    WarningType type = numParams == 3 ? view_as<WarningType(GetNativeCell(3)) : WarningType_Vote;
+    WarningType type = numParams == 3 ? view_as<WarningType>(GetNativeCell(3)) : WarningType_Vote;
 
     LogAction(-1, -1, "Starting map vote because outside request");
 
