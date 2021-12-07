@@ -119,6 +119,11 @@ stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd,
         {
             cvarTime = 5;
         }
+
+        case WarningType_Delay:
+        {
+            cvarTime = 30;
+        }
     }
 
     DataPack data = new DataPack();
