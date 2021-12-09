@@ -11,6 +11,7 @@
 bool g_bAllowRTV;
 bool g_bInChange;
 bool g_bVoted[MAXPLAYERS+1];
+int  g_iNext[MAXPLAYERS+1];
 ConVar mcr_map_delay_time;
 
 public Plugin myinfo =
@@ -88,6 +89,12 @@ void AttemptRTV(int client)
         return;
     }
 
+    int time = GetTime();
+    if (g_iNext[client] > time)
+        return;
+
+    g_iNext[client] = time + 10;
+
     if (!CanMapChooserStartVote())
     {
         Chat(client, "%T", "rtv started", client);
@@ -106,7 +113,7 @@ void AttemptRTV(int client)
                 if (GetMapDescEx(map, desc, 128, false, false, false, FindConVar("mcr_include_tiertag").BoolValue))
                 {
                     SMUtils_SkipNextPrefix();
-                    ChatAll("\x0E ➤ \x0E ➢ \x0E ➣ \x01  \x0A[\x05%s\x0A]", desc);
+                    Chat(client, "\x0E ➤ \x0E ➢ \x0E ➣ \x01  \x0A[\x05%s\x0A]", desc);
                 }
             }
         }
