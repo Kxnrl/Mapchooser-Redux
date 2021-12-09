@@ -168,8 +168,11 @@ public void OnClientConnected(int client)
         {
             char map[128];
             GetCurrentMap(map, 128);
-            SetCooldown(map);
-            SetLastPlayed(map);
+            SetCooldown(map, false);
+            SetLastPlayed(map, false);
+            SaveMapPool(map);
+
+            // marked
             g_bAllowCountdown = true;
         }
     }

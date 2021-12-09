@@ -48,12 +48,19 @@ void Data_OnAllPluginsLoaded()
 
 void Data_OnMapEnd()
 {
+    char map[128];
+    GetCurrentMap(map, 128);
+
+    SetCooldown(map, false);
+    SetLastPlayed(map, false);
+    SaveMapPool(map);
+
     if (!g_bAllowCountdown)
         return;
 
     ArrayList maps = GetAllMapsName();
 
-    char map[128]; MapData mapdata;
+    MapData mapdata;
     for(int index = 0; index < maps.Length; index++)
     {
         maps.GetString(index, map, 128);
@@ -425,7 +432,7 @@ bool IsCertainTimes(const char[] map)
     return mapdata.m_CertainTimes[GetTodayHours()];
 }
 
-bool SetLastPlayed(const char[] map)
+bool SetLastPlayed(const char[] map, bool save = true)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
@@ -436,7 +443,10 @@ bool SetLastPlayed(const char[] map)
 
     mapdata.m_RecentlyPlayed = GetTime();
     g_MapData.SetArray(map, mapdata, typeofdata, true);
-    SaveMapPool(map);
+
+    if (save)
+        SaveMapPool(map);
+
     return true;
 }
 
@@ -464,7 +474,7 @@ int GetCooldown(const char[] map)
     return mapdata.m_CooldownLeft;
 }
 
-bool SetCooldown(const char[] map)
+bool SetCooldown(const char[] map, bool save = true)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
@@ -475,7 +485,10 @@ bool SetCooldown(const char[] map)
 
     mapdata.m_CooldownLeft = mapdata.m_MaxCooldown;
     g_MapData.SetArray(map, mapdata, typeofdata, true);
-    SaveMapPool(map);
+
+    if (save)
+        SaveMapPool(map);
+
     return true;
 }
 
@@ -539,7 +552,7 @@ static void LoadMapPool()
     delete maps;
 }
 
-static void SaveMapPool(const char[] map)
+void SaveMapPool(const char[] map)
 {
     MapData mapdata;
     if (!g_MapData.GetArray(map, mapdata, typeofdata))
