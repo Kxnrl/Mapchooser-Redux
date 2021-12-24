@@ -169,7 +169,7 @@ void ResetRTV()
 public Action Timer_ChangeMap(Handle timer)
 {
     FindConVar("mp_halftime").SetInt(0);
-    FindConVar("mp_timelimit").SetInt(0);
+    FindConVar("mp_timelimit").SetInt(1);
     FindConVar("mp_maxrounds").SetInt(0);
     FindConVar("mp_roundtime").SetInt(1);
 
