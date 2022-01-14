@@ -217,11 +217,15 @@ void SetupTimeleftTimer()
     }
 
     int timeLeft;
-    if (!GetMapTimeLeft(timeLeft) || timeLeft <= 0)
+    if (!GetMapTimeLeft(timeLeft))
     {
         PrintToServer("Failed to GetMapTimeLeft()");
         return;
     }
+
+    // if timeLeft <= 0 meaning going to intermission
+    if (timeLeft <= 0)
+        return;
 
     if (timeLeft - 300 < 0 && !g_bHasVoteStarted)
     {

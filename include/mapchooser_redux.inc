@@ -116,6 +116,7 @@ native int  GetPartyBlockOnwer();
 native bool ForceSetNextMap(const char[] map, bool force = false, int client = -1);
 native bool SetTierString(int tier, const char[] ts);
 native void GetTierString(int tier, char[] ts, int len);
+native bool IsWarningTimerRunning();
 
 stock bool IsClientVIP(int client)
 {

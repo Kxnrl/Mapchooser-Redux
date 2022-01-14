@@ -42,6 +42,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("ForceSetNextMap",         Native_ForceSetNextMap);
     CreateNative("SetTierString",           Native_OverrideTierString);
     CreateNative("GetTierString",           Native_GetTierString);
+    CreateNative("IsWarningTimerRunning",   Native_IsWarningTimer);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
