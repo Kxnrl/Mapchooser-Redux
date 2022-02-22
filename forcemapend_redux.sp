@@ -24,9 +24,15 @@ public Plugin myinfo =
 
 ConVar mp_timelimit;
 
+bool g_pMaps;
+
+// HACK: import native directly
+native int Maps_GetTimeLeft();
+
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     MarkNativeAsOptional("Pupd_CheckPlugin");
+    MarkNativeAsOptional("Maps_GetTimeLeft");
     return APLRes_Success;
 }
 
@@ -38,6 +44,23 @@ public void OnPluginStart()
     SMUtils_SetTextDest(HUD_PRINTCENTER);
 
     mp_timelimit = FindConVar("mp_timelimit");
+}
+
+public void OnAllPluginsLoaded()
+{
+    g_pMaps = LibraryExists("fys-Maps");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+    if (strcmp(name, "fys-Maps") == 0)
+        g_pMaps = true;
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if (strcmp(name, "fys-Maps") == 0)
+        g_pMaps = false;
 }
 
 public void Pupd_OnCheckAllPlugins()
@@ -58,8 +81,7 @@ public void OnMapTimeLeftChanged()
 
 void Frame_TimeLeft(any unuse)
 {
-    int timeleft;
-    GetMapTimeLeft(timeleft);
+    int timeleft = GetTimeLeft();
 
     if(timeleft < 1) return; 
     if(timeleft > 32767)
@@ -84,9 +106,8 @@ public Action Timer_Tick(Handle timer)
         return Plugin_Continue;
     }
 
-    int timeleft;
-    GetMapTimeLeft(timeleft);
-    
+    int timeleft = GetTimeLeft();
+
     switch (timeleft)
     {
         case 1800:   ChatAll("{lightred}Timeleft: 30 minutes");
@@ -97,12 +118,12 @@ public Action Timer_Tick(Handle timer)
         case 60:     ChatAll("{lightred}Timeleft: 60 seconds");
         case 30:     ChatAll("{lightred}Timeleft: 30 seconds");
         case 15:     ChatAll("{lightred}Timeleft: 15 seconds");
-        case -1:     ChatAll("{lightred}Timeleft: 3..");
-        case -2:     ChatAll("{lightred}Timeleft: 2..");
-        case -3:     ChatAll("{lightred}Timeleft: 1..");
+        case  3:     ChatAll("{lightred}Timeleft: 3..");
+        case  2:     ChatAll("{lightred}Timeleft: 2..");
+        case  1:     ChatAll("{lightred}Timeleft: 1..");
     }
-    
-    if(timeleft < -3)
+
+    if(timeleft <= 0)
         CS_TerminateRound(0.0, CSRoundEnd_Draw, true);
 
     return Plugin_Continue;
@@ -111,4 +132,13 @@ public Action Timer_Tick(Handle timer)
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
     return Plugin_Handled;
+}
+
+stock int GetTimeLeft()
+{
+    if (g_pMaps)
+        return Maps_GetTimeLeft();
+
+    int timeLeft;
+    return GetMapTimeLeft(timeLeft) ? timeLeft : 0;
 }

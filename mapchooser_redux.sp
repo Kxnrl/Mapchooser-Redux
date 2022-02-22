@@ -38,6 +38,10 @@ bool g_bBlockedSlots;
 
 bool g_pStore;
 bool g_pShop;
+bool g_pMaps;
+
+// HACK: import native directly
+native int Maps_GetTimeLeft();
 
 enum TimerLocation
 {
@@ -114,6 +118,7 @@ public void OnAllPluginsLoaded()
 {
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
+    g_pMaps = LibraryExists("fys-Maps");
 
     Data_OnAllPluginsLoaded();
 }
@@ -216,12 +221,7 @@ void SetupTimeleftTimer()
         return;
     }
 
-    int timeLeft;
-    if (!GetMapTimeLeft(timeLeft))
-    {
-        PrintToServer("Failed to GetMapTimeLeft()");
-        return;
-    }
+    int timeLeft = GetTimeLeft();
 
     // if timeLeft <= 0 meaning going to intermission
     if (timeLeft <= 0)
