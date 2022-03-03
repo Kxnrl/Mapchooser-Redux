@@ -96,7 +96,7 @@ static void LoadMapData()
 
     kv.Rewind();
 
-    if (g_ConVars.AuthGen.BoolValue)
+    if (g_ConVars.AutoGen.BoolValue)
     {
         // save sata
         kv.ExportToFile(path);
