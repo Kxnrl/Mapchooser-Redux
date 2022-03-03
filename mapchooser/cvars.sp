@@ -13,6 +13,7 @@ void Cvars_OnPluginStart()
     g_ConVars.Require = CreateConVar("mcr_shuffle_require_maps",  "1", "How many nominations can shuaffle the map vote menu.",                                                            _, true,  0.0, true,   5.0);
     g_ConVars.NoVotes = CreateConVar("mcr_add_novote_button",     "1", "Add no vote button into menu.",                                                                                   _, true,  0.0, true,   1.0);
     g_ConVars.MinRuns = CreateConVar("mcr_min_players_run_cd",   "20", "How many players required to run cooldown.",                                                                      _, true,  0.0, true,  64.0);
+    g_ConVars.AutoGen = CreateConVar("mcr_mapdata_auto_generate", "0", "Auto generate map data if missing map.",                                                                          _, true,  0.0, true,   1.0);
 
     if (!DirExists("cfg/sourcemod/mapchooser"))
         if (!CreateDirectory("cfg/sourcemod/mapchooser", 511))

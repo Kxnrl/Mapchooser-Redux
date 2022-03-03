@@ -141,6 +141,8 @@ static void LoadAllMapsData(KeyValues kv)
 {
     g_MapData.Clear();
 
+    bool autoGen = g_ConVars.AutoGen.BoolValue;
+
     ArrayList maps = GetAllMapsName();
 
     char map[128];
@@ -153,6 +155,9 @@ static void LoadAllMapsData(KeyValues kv)
         {
             // ?
             LogMessage("%s is missing in mapdata.", map);
+
+            if (!autoGen)
+                continue;
 
             kv.JumpToKey(map, true);
             kv.SetString("m_Description",  "null");
@@ -430,6 +435,15 @@ bool IsCertainTimes(const char[] map)
     }
 
     return mapdata.m_CertainTimes[GetTodayHours()];
+}
+
+bool IsDisabled(const char[] map)
+{
+    MapData mapdata;
+    if (!g_MapData.GetArray(map, mapdata, typeofdata))
+        return true;
+
+    return false;
 }
 
 bool SetLastPlayed(const char[] map, bool save = true)

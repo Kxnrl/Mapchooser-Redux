@@ -255,3 +255,23 @@ stock int GetTimeLeft()
     int timeLeft;
     return GetMapTimeLeft(timeLeft) ? timeLeft : 0;
 }
+
+stock void ShuffleStringArray(ArrayList array)
+{
+    char buffer[256];
+    ArrayList dummy = new ArrayList(ByteCountToCells(256));
+    while (array.Length > 0)
+    {
+        array.GetString(0, buffer, 256);
+        dummy.PushString(buffer);
+        array.Erase(0);
+    }
+
+    while (dummy.Length > 0)
+    {
+        int index = RandomInt(0, dummy.Length -1);
+        dummy.GetString(index, buffer, 256);
+        dummy.Erase(index);
+        array.PushString(buffer);
+    }
+}

@@ -66,6 +66,7 @@ enum struct Convars
     ConVar Require;
     ConVar NoVotes;
     ConVar MinRuns;
+    ConVar AutoGen;
 }
 
 // tier
@@ -763,6 +764,8 @@ void CreateNextVote()
 
     ArrayList tempMaps = g_aMapList.Clone();
 
+    ShuffleStringArray(tempMaps);
+
     char map[128];
     GetCurrentMap(map, 128);
     RemoveStringFromArray(tempMaps, map);
@@ -771,7 +774,14 @@ void CreateNextVote()
     {
         tempMaps.GetString(x, map, 128);
         // we remove big maps( >150 will broken fastdl .bz2), nice map, and only nominations, in cooldown, is not in certain times, requires min players.
-        if (IsBigMap(map) || IsNominateOnly(map) || IsAdminOnly(map) || IsVIPOnly(map) || GetCooldown(map) > 0 || !IsCertainTimes(map) || GetMinPlayers(map) > 0)
+        if (IsBigMap(map) || 
+            IsNominateOnly(map) || 
+            IsAdminOnly(map) || 
+            IsVIPOnly(map) || 
+            GetCooldown(map) > 0 || 
+            IsCertainTimes(map) == false || 
+            GetMinPlayers(map) > 0 ||
+            IsDisabled(map))
         {
             tempMaps.Erase(x);
             x--;
@@ -826,7 +836,7 @@ bool CanVoteStart()
 
 bool InternalSetNextMap(const char[] map, int client)
 {
-    if (!Call_OnSetNextMap(map, client))
+    if (!Call_OnSetNextMap(map, client) || IsDisabled(map))
         return false;
 
     SetNextMap(map);
@@ -837,7 +847,7 @@ bool InternalSetNextMap(const char[] map, int client)
 
 NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool partyblock)
 {
-    if (!IsMapValid(map))
+    if (!IsMapValid(map) || IsDisabled(map))
         return NominateResult_InvalidMap;
 
     if (!Call_OnNominateMap(map, owner, partyblock))
