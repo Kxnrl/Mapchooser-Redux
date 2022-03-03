@@ -90,12 +90,17 @@ static void LoadMapData()
     else
     {
         kv.ImportFromFile(path);
-        //CleanMapsData(kv);
+        CleanMapsData(kv);
         LoadAllMapsData(kv);
     }
 
     kv.Rewind();
-    kv.ExportToFile(path);
+
+    if (g_ConVars.AuthGen.BoolValue)
+    {
+        // save sata
+        kv.ExportToFile(path);
+    }
 
     delete kv;
 }
@@ -225,6 +230,9 @@ static void LoadAllMapsData(KeyValues kv)
 
 stock void CleanMapsData(KeyValues kv)
 {
+    if (!g_ConVars.AutoGen.BoolValue)
+        return;
+
     kv.Rewind();
 
     if (!kv.GotoFirstSubKey(true))
