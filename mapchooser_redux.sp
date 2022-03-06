@@ -35,6 +35,7 @@ bool g_bChangeMapInProgress;
 bool g_bChangeMapAtRoundEnd;
 bool g_bWarningInProgress;
 bool g_bBlockedSlots;
+bool g_bMapLoaded;
 
 bool g_pStore;
 bool g_pShop;
@@ -136,14 +137,15 @@ public void OnConfigsExecuted()
         if (g_iMapFileSerial == -1)
             SetFailState("Unable to create a valid map list.");
 
+    g_aNominations.Clear();
+
     g_iExtends = 0;
     g_bPartyblock = false;
     g_bAllowCountdown = false;
     g_bMapVoteCompleted = false;
     g_bChangeMapAtRoundEnd = false;
     g_iNominateCount = 0;
-
-    g_aNominations.Clear();
+    g_bMapLoaded = true;
 
     CreateNextVote();
     SetupTimeleftTimer();
@@ -153,6 +155,7 @@ public void OnConfigsExecuted()
 
 public void OnMapEnd()
 {
+    g_bMapLoaded = false;
     g_bHasVoteStarted = false;
     g_bWaitingForVote = false;
     g_bChangeMapInProgress = false;
@@ -209,8 +212,26 @@ public void OnClientDisconnect(int client)
     }
 }
 
+/**
+ * Notification that the map's time left has changed via a change in the time
+ * limit or a change in the game rules (such as mp_restartgame).  This is useful
+ * for plugins trying to create timers based on the time left in the map.
+ *
+ * Calling ExtendMapTimeLimit() from here, without proper precaution, will
+ * cause infinite recursion.
+ *
+ * If the operation is not supported, this will never be called.
+
+ * If the server has not yet processed any frames (i.e. no players have joined
+ * the map yet), then this will be called once the server begins ticking, even
+ * if there is no time limit set.
+ */
 public void OnMapTimeLeftChanged()
 {
+    // anyhow?
+    if (!g_bMapLoaded)
+        return;
+
     SetupTimeleftTimer();
 }
 
