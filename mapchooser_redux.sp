@@ -897,7 +897,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     if (GetCooldown(map) > 0)
         return NominateResult_RecentlyPlayed;
 
-    if (!partyblock && !IsCertainTimes(map))
+    if (!IsCertainTimes(map))
         return NominateResult_CertainTimes;
 
     int max = GetMaxPlayers(map);
