@@ -399,8 +399,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     g_hVoteMenu.SetTitle("选择下一张地图\n ");
     g_hVoteMenu.VoteResultCallback = Handler_MapVoteFinished;
 
-    int shuffleStart = -2;
-
     if (g_bPartyblock)
     {
         for(int i = 0; i < 5; i++)
@@ -424,9 +422,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         if (g_ConVars.Shuffle.BoolValue && g_aNominations.Length >= g_ConVars.Require.IntValue)
         {
-            // all maps should be shuffle.
-            shuffleStart = -1;
-
             // randomly pool
             for(int i = 0; i < nominationsToAdd; i++)
             {
@@ -472,9 +467,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         }
         else
         {
-            // we just shuffle random maps
-            shuffleStart = nominationsToAdd - 1;
-            
             for(int i = 0; i < nominationsToAdd; i++)
             {
                 Nominations n;
@@ -536,9 +528,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
     if (5 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
         g_hVoteMenu.Pagination = MENU_NO_PAGINATION;
-
-    if (shuffleStart > -2)
-        g_hVoteMenu.ShufflePerClient(shuffleStart);
 
     g_hVoteMenu.DisplayVoteToAll(15);
 

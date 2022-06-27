@@ -1,8 +1,5 @@
 {
-    "sourcepawn.SourcemodHome": "E:\\WorkSpace\\SourcePawn\\include",
+    "sourcepawn.SourcemodHome": "e:/WorkSpace/Github/Mapchooser-Redux/include",
     "sourcepawn.AuthorName": "Kyle",
-    "sourcepawn.GithubName": "Kxnrl",
-    "sourcepawn.outputDirectoryPath": "",
-    "sourcepawn.MainPath": "E:\\WorkSpace\\Github\\Mapchooser-Redux\\mapchooser_redux.sp",
-    "sourcepawn.SpcompPath": "E:\\WorkSpace\\SourcePawn\\spcomp.exe"
+    "sourcepawn.GithubName": "Kxnrl"
 }
