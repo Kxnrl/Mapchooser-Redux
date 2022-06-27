@@ -1,7 +1,7 @@
 
 stock void GetMapItem(Menu menu, int position, char[] map, int mapLen)
 {
-    menu.GetItem(position, map, mapLen);
+    menu.GetItem(position, map, mapLen, _, _, _, -1);
 }
 
 stock void AddExtendToMenu(Menu menu, MapChange when)

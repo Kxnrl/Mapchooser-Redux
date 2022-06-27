@@ -399,6 +399,8 @@ void InitiateVote(MapChange when, ArrayList inputlist)
     g_hVoteMenu.SetTitle("选择下一张地图\n ");
     g_hVoteMenu.VoteResultCallback = Handler_MapVoteFinished;
 
+    int shuffleStart = -2;
+
     if (g_bPartyblock)
     {
         for(int i = 0; i < 5; i++)
@@ -422,6 +424,9 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
         if (g_ConVars.Shuffle.BoolValue && g_aNominations.Length >= g_ConVars.Require.IntValue)
         {
+            // all maps should be shuffle.
+            shuffleStart = -1;
+
             // randomly pool
             for(int i = 0; i < nominationsToAdd; i++)
             {
@@ -467,6 +472,9 @@ void InitiateVote(MapChange when, ArrayList inputlist)
         }
         else
         {
+            // we just shuffle random maps
+            shuffleStart = nominationsToAdd - 1;
+            
             for(int i = 0; i < nominationsToAdd; i++)
             {
                 Nominations n;
@@ -528,6 +536,16 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
     if (5 <= GetMaxPageItems(GetMenuStyle(g_hVoteMenu)))
         g_hVoteMenu.Pagination = MENU_NO_PAGINATION;
+
+    LogMessage("g_hVoteMenu -> shuffleStart = %d | count = %d", shuffleStart, g_hVoteMenu.ItemCount);
+
+    if (shuffleStart > -2)
+    {
+        // HACK
+        // if using shuffle
+        // we start at index 4 ~ 8
+        g_hVoteMenu.ShufflePerClient(shuffleStart + 4, 8);
+    }
 
     g_hVoteMenu.DisplayVoteToAll(15);
 
@@ -705,7 +723,7 @@ public int Handler_MapVoteMenu(Menu menu, MenuAction action, int param1, int par
             char map[128];
             char buffer[128];
 
-            menu.GetItem(param2, map, 128);
+            menu.GetItem(param2, map, 128, _, _, _, param1);
 
             if (StrEqual(map, VOTE_EXTEND, false))
                 FormatEx(buffer, 128, "%T", "vote item extend", param1);
@@ -734,7 +752,7 @@ public int Handler_MapVoteMenu(Menu menu, MenuAction action, int param1, int par
                     if (g_bBlockedSlots)
                         startInt = 2;
                     item = RandomInt(startInt, count - 1);
-                    menu.GetItem(item, map, 128);
+                    menu.GetItem(item, map, 128, _, _, _, -1);
                 }
                 while(strcmp(map, VOTE_EXTEND, false) == 0);
 
