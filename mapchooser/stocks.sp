@@ -37,13 +37,6 @@ stock int GetLtpPrice(const char[] map)
     return RoundToCeil(price * mtp);
 }
 
-stock int GetNtpPrice(const char[] map)
-{
-    int price = GetMapPrice(map);
-    float mtp = 1.0 - g_ConVars.NtpMtpl.FloatValue;
-    return RoundToFloor(price * mtp);
-}
-
 stock bool IsRecentlyPlayedMap(const char[] map)
 {
     int lastPlayed = GetLastPlayed(map);
@@ -96,7 +89,7 @@ stock bool CleanPlugin()
     return true;
 }
 
-stock int SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd, Handle mapList = null, bool force = false)
+stock void SetupWarningTimer(WarningType type, MapChange when = MapChange_MapEnd, Handle mapList = null, bool force = false)
 {
     if (g_aMapList.Length <= 0 || g_bChangeMapInProgress || g_bHasVoteStarted || (!force && g_bMapVoteCompleted))
         return;

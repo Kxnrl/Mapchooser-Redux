@@ -76,7 +76,7 @@ mv *.smx plugins
 echo "Upload file RSYNC ..."
 RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./$FILE $RSYNC_USER@$RSYNC_HOST::TravisCI/MapChooser-Redux/$1/
 
-if [ "$1" = "1.10" ]; then
+if [ "$1" = "1.11" ]; then
     echo "Upload RAW RSYNC ..."
     RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./plugins/*.smx $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/
     RSYNC_PASSWORD=$RSYNC_PSWD rsync -avz --port $RSYNC_PORT ./translations/com.kxnrl.mcr.translations.txt $RSYNC_USER@$RSYNC_HOST::TravisCI/_Raw/translations/

@@ -60,6 +60,7 @@ public void OnConfigsExecuted()
 public Action Timer_DelayRTV(Handle timer)
 {
     g_bAllowRTV = true;
+    return Plugin_Stop;
 }
 
 public void OnClientConnected(int client)

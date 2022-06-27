@@ -2,7 +2,6 @@
 #pragma newdecls required
 
 #include <sourcemod>
-#include <nextmap>
 #include <smutils>
 #include <mapchooser_redux>
 

@@ -669,8 +669,10 @@ void DisplayNominationList(int client)
     delete list;
 }
 
-public int MenuHandler_NList(Menu menu, MenuAction action, int client, int slot)
+static int MenuHandler_NList(Menu menu, MenuAction action, int client, int slot)
 {
     if (action == MenuAction_End)
         delete menu;
+
+    return 0;
 }
