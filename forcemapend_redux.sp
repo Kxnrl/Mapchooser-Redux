@@ -24,15 +24,9 @@ public Plugin myinfo =
 
 ConVar mp_timelimit;
 
-bool g_pMaps;
-
-// HACK: import native directly
-native int Maps_GetTimeLeft();
-
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     MarkNativeAsOptional("Pupd_CheckPlugin");
-    MarkNativeAsOptional("Maps_GetTimeLeft");
     return APLRes_Success;
 }
 
@@ -46,23 +40,6 @@ public void OnPluginStart()
     mp_timelimit = FindConVar("mp_timelimit");
 }
 
-public void OnAllPluginsLoaded()
-{
-    g_pMaps = LibraryExists("fys-Maps");
-}
-
-public void OnLibraryAdded(const char[] name)
-{
-    if (strcmp(name, "fys-Maps") == 0)
-        g_pMaps = true;
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-    if (strcmp(name, "fys-Maps") == 0)
-        g_pMaps = false;
-}
-
 public void Pupd_OnCheckAllPlugins()
 {
     Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
@@ -70,18 +47,20 @@ public void Pupd_OnCheckAllPlugins()
 
 public void OnMapStart()
 {
-    RequestFrame(Frame_TimeLeft, _);
+    RequestFrame(Frame_TimeLeft);
     CreateTimer(1.0, Timer_Tick, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public void OnMapTimeLeftChanged()
 {
-    RequestFrame(Frame_TimeLeft, _);
+    RequestFrame(Frame_TimeLeft);
 }
 
 void Frame_TimeLeft(any unuse)
 {
-    int timeleft = GetTimeLeft();
+    int timeleft;
+    if (!GetMapTimeLeft(timeleft))
+        return;
 
     if(timeleft < 1) return; 
     if(timeleft > 32767)
@@ -106,7 +85,8 @@ public Action Timer_Tick(Handle timer)
         return Plugin_Continue;
     }
 
-    int timeleft = GetTimeLeft();
+    int timeleft;
+    GetMapTimeLeft(timeleft);
 
     switch (timeleft)
     {
@@ -125,6 +105,8 @@ public Action Timer_Tick(Handle timer)
 
     if(timeleft <= 0)
         CS_TerminateRound(0.0, CSRoundEnd_Draw, true);
+    else
+        GameRules_SetProp("m_iRoundTime", timeleft-1, 4, 0, true);
 
     return Plugin_Continue;
 }
@@ -132,13 +114,4 @@ public Action Timer_Tick(Handle timer)
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
     return Plugin_Handled;
-}
-
-stock int GetTimeLeft()
-{
-    if (g_pMaps)
-        return Maps_GetTimeLeft();
-
-    int timeLeft;
-    return GetMapTimeLeft(timeLeft) ? timeLeft : 0;
 }

@@ -53,8 +53,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
     MarkNativeAsOptional("Pupd_CheckPlugin");
 
-    MarkNativeAsOptional("Maps_GetTimeLeft");
-
     return APLRes_Success;
 }
 
@@ -64,8 +62,6 @@ public void OnLibraryAdded(const char[] name)
         g_pStore = true;
     if (strcmp(name, "shop-core") == 0)
         g_pShop = true;
-    if (strcmp(name, "fys-Maps") == 0)
-        g_pMaps = true;
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -74,8 +70,6 @@ public void OnLibraryRemoved(const char[] name)
         g_pStore = false;
     if (strcmp(name, "shop-core") == 0)
         g_pShop = false;
-    if (strcmp(name, "fys-Maps") == 0)
-        g_pMaps = false;
 }
 
 void Natives_OnPluginStart()

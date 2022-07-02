@@ -38,10 +38,6 @@ bool g_bMapLoaded;
 
 bool g_pStore;
 bool g_pShop;
-bool g_pMaps;
-
-// HACK: import native directly
-native int Maps_GetTimeLeft();
 
 enum TimerLocation
 {
@@ -119,7 +115,6 @@ public void OnAllPluginsLoaded()
 {
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
-    g_pMaps = LibraryExists("fys-Maps");
 
     Data_OnAllPluginsLoaded();
 }

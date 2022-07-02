@@ -242,9 +242,6 @@ stock any clamp(any min, any max, any value)
 
 stock int GetTimeLeft()
 {
-    if (g_pMaps)
-        return Maps_GetTimeLeft();
-
     int timeLeft;
     return GetMapTimeLeft(timeLeft) ? timeLeft : 0;
 }
