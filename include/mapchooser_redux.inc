@@ -117,6 +117,7 @@ native bool ForceSetNextMap(const char[] map, bool force = false, int client = -
 native bool SetTierString(int tier, const char[] ts);
 native void GetTierString(int tier, char[] ts, int len);
 native bool IsWarningTimerRunning();
+native int  GetMapExtendVoteRemaining();
 
 stock bool IsClientVIP(int client)
 {

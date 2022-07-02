@@ -27,22 +27,23 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
     RegPluginLibrary("mapchooser");
 
-    CreateNative("NominateMap",             Native_NominateMap);
-    CreateNative("RemoveNominationByMap",   Native_RemoveNominationByMap);
-    CreateNative("RemoveNominationByOwner", Native_RemoveNominationByOwner);
-    CreateNative("InitiateMapChooserVote",  Native_InitiateVote);
-    CreateNative("CanMapChooserStartVote",  Native_CanVoteStart);
-    CreateNative("HasEndOfMapVoteFinished", Native_CheckVoteDone);
-    CreateNative("GetExcludeMapList",       Native_GetExcludeMapList);
-    CreateNative("GetNominatedMapList",     Native_GetNominatedMapList);
-    CreateNative("EndOfMapVoteEnabled",     Native_EndOfMapVoteEnabled);
-    CreateNative("CanNominate",             Native_CanNominate);
-    CreateNative("GetMapData",              Native_GetMapData);
-    CreateNative("GetPartyBlockOnwer",      Native_GetPartyBlockOnwer);
-    CreateNative("ForceSetNextMap",         Native_ForceSetNextMap);
-    CreateNative("SetTierString",           Native_OverrideTierString);
-    CreateNative("GetTierString",           Native_GetTierString);
-    CreateNative("IsWarningTimerRunning",   Native_IsWarningTimer);
+    CreateNative("NominateMap",               Native_NominateMap);
+    CreateNative("RemoveNominationByMap",     Native_RemoveNominationByMap);
+    CreateNative("RemoveNominationByOwner",   Native_RemoveNominationByOwner);
+    CreateNative("InitiateMapChooserVote",    Native_InitiateVote);
+    CreateNative("CanMapChooserStartVote",    Native_CanVoteStart);
+    CreateNative("HasEndOfMapVoteFinished",   Native_CheckVoteDone);
+    CreateNative("GetExcludeMapList",         Native_GetExcludeMapList);
+    CreateNative("GetNominatedMapList",       Native_GetNominatedMapList);
+    CreateNative("EndOfMapVoteEnabled",       Native_EndOfMapVoteEnabled);
+    CreateNative("CanNominate",               Native_CanNominate);
+    CreateNative("GetMapData",                Native_GetMapData);
+    CreateNative("GetPartyBlockOnwer",        Native_GetPartyBlockOnwer);
+    CreateNative("ForceSetNextMap",           Native_ForceSetNextMap);
+    CreateNative("SetTierString",             Native_OverrideTierString);
+    CreateNative("GetTierString",             Native_GetTierString);
+    CreateNative("IsWarningTimerRunning",     Native_IsWarningTimer);
+    CreateNative("GetMapExtendVoteRemaining", Native_ExtVoteRemaning);
 
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
@@ -350,4 +351,10 @@ static any Native_GetTierString(Handle plugin, int numParams)
 
     SetNativeString(2, g_TierString[tier], GetNativeCell(3));
     return true;
+}
+
+static any Native_ExtVoteRemaning(Handle plugin, int numParams)
+{
+    int left = g_ConVars.MaxExts.IntValue - g_iExtends;
+    return left > 0 ? left : 0;
 }
