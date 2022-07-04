@@ -966,29 +966,35 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
 
             int refund = GetRefundCreditsByNomination(n);
 
+            char reason[128];
+            FormatEx(reason, sizeof(reason), "nomination-refund-partyblock-[%s]", n.m_Map);
+
             if (ClientIsValid(n.m_Owner) && refund > 0)
             if (g_pStore)
             {
-                Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, "nomination-fallback-partyblock");
+                Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, reason);
                 Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
             }
             else if (g_pShop)
             {
-                MG_Shop_ClientEarnMoney(n.m_Owner, refund, "nomination-fallback-partyblock");
+                MG_Shop_ClientEarnMoney(n.m_Owner, refund, reason);
                 Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
             }
 
             LogMessage("%L was remove from nominations list with map [%s]", n.m_Owner, n.m_Map);
         }
 
+        char reason[128];
+        FormatEx(reason, sizeof(reason), "nomination-partyblock-[%s]", map);
+
         if (g_pStore)
         {
-            Store_SetClientCredits(owner, Store_GetClientCredits(owner)-price, "nomination-partyblock");
+            Store_SetClientCredits(owner, Store_GetClientCredits(owner)-price, reason);
             Chat(owner, "%T", "nominate partyblock cost", owner, map, price);
         }
         else if (g_pShop)
         {
-            MG_Shop_ClientCostMoney(owner, price, "nomination-partyblock");
+            MG_Shop_ClientCostMoney(owner, price, reason);
             Chat(owner, "%T", "nominate partyblock cost", owner, map, price);
         }
 
@@ -1022,15 +1028,18 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
 
             int refund = GetRefundCreditsByNomination(n);
 
+            char reason[256];
+            FormatEx(reason, sizeof(reason), "nomination-replace-[%s]->[%s]", n.m_Map, map);
+
             if (g_pStore)
             {
-                Store_SetClientCredits(owner, Store_GetClientCredits(owner)+refund-price, "nomination-replace");
+                Store_SetClientCredits(owner, Store_GetClientCredits(owner)+refund-price, reason);
                 Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
                 Chat(owner, "%T", "nominate nominate cost", owner, map, price);
             }
             else if (g_pShop)
             {
-                MG_Shop_ClientEarnMoney(owner, refund, "nomination-fallback");
+                MG_Shop_ClientEarnMoney(owner, refund, reason);
                 Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
                 MG_Shop_ClientCostMoney(owner, price, "nomination-nominate");
                 Chat(owner, "%T", "nominate nominate cost", owner, map, price);
@@ -1062,15 +1071,20 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     }
 
     if (ClientIsValid(owner) && price > 0)
-    if (g_pStore)
     {
-        Store_SetClientCredits(owner, Store_GetClientCredits(owner)-price, "nomination-nominate");
-        Chat(owner, "%T", "nominate nominate cost", owner, map, price);
-    }
-    else if (g_pShop)
-    {
-        MG_Shop_ClientCostMoney(owner, price, "nomination-nominate");
-        Chat(owner, "%T", "nominate nominate cost", owner, map, price);
+        char reason[256];
+        FormatEx(reason, sizeof(reason), "nomination-nominate-[%s]", map);
+
+        if (g_pStore)
+        {
+            Store_SetClientCredits(owner, Store_GetClientCredits(owner)-price, reason);
+            Chat(owner, "%T", "nominate nominate cost", owner, map, price);
+        }
+        else if (g_pShop)
+        {
+            MG_Shop_ClientCostMoney(owner, price, reason);
+            Chat(owner, "%T", "nominate nominate cost", owner, map, price);
+        }
     }
 
     Nominations n;
@@ -1095,15 +1109,20 @@ bool InternalRemoveNominationByOwner(int owner)
             int refund = GetRefundCreditsByNomination(n);
 
             if (ClientIsValid(n.m_Owner) && refund > 0)
-            if (g_pStore)
             {
-                Store_SetClientCredits(owner, Store_GetClientCredits(owner)+refund, "nomination-fallback-internal-owner");
-                Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
-            }
-            else if (g_pShop)
-            {
-                MG_Shop_ClientEarnMoney(owner, refund, "nomination-fallback-internal-owner");
-                Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
+                char reason[128];
+                FormatEx(reason, sizeof(reason), "nomination-refund-internal-owner-[%s]", n.m_Map);
+
+                if (g_pStore)
+                {
+                    Store_SetClientCredits(owner, Store_GetClientCredits(owner)+refund, reason);
+                    Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
+                }
+                else if (g_pShop)
+                {
+                    MG_Shop_ClientEarnMoney(owner, refund, reason);
+                    Chat(owner, "%T", "mcr nominate fallback", owner, n.m_Map, refund);
+                }
             }
 
             g_aNominations.Erase(i);
@@ -1126,15 +1145,20 @@ bool InternalRemoveNominationByMap(const char[] map)
             int refund = GetRefundCreditsByNomination(n);
 
             if (ClientIsValid(n.m_Owner) && refund > 0)
-            if (g_pStore)
             {
-                Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, "nomination-fallback-internal-map");
-                Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
-            }
-            else if (g_pShop)
-            {
-                MG_Shop_ClientEarnMoney(n.m_Owner, refund, "nomination-fallback-internal-map");
-                Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+                char reason[128];
+                FormatEx(reason, sizeof(reason), "nomination-refund-internal-map-[%s]", n.m_Map);
+
+                if (g_pStore)
+                {
+                    Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, reason);
+                    Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+                }
+                else if (g_pShop)
+                {
+                    MG_Shop_ClientEarnMoney(n.m_Owner, refund, reason);
+                    Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+                }
             }
 
             g_aNominations.Erase(i);
@@ -1172,15 +1196,20 @@ void RefundAllCredits(const char[] map)
         int refund = GetRefundCreditsByNomination(n);
 
         if (refund > 0 && ClientIsValid(n.m_Owner))
-        if (g_pStore)
         {
-            Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, "nomination-fallback-refund");
-            Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
-        }
-        else if (g_pShop)
-        {
-            MG_Shop_ClientEarnMoney(n.m_Owner, refund, "nomination-fallback-refund");
-            Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+            char reason[128];
+            FormatEx(reason, sizeof(reason), "nomination-refund-fallback-map-[%s]", n.m_Map);
+            
+            if (g_pStore)
+            {
+                Store_SetClientCredits(n.m_Owner, Store_GetClientCredits(n.m_Owner)+refund, reason);
+                Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+            }
+            else if (g_pShop)
+            {
+                MG_Shop_ClientEarnMoney(n.m_Owner, refund, reason);
+                Chat(n.m_Owner, "%T", "mcr nominate fallback", n.m_Owner, n.m_Map, refund);
+            }
         }
     }
 
