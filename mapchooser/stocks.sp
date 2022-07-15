@@ -244,6 +244,10 @@ stock int GetTimeLeft()
 {
     if (GetEngineVersion() == Engine_CSGO)
     {
+        static ConVar mp_timelimit = null;
+        if (mp_timelimit == null)
+            mp_timelimit  = FindConVar("mp_timelimit");
+
         float m_flGameStartTime = GameRules_GetPropFloat("m_flGameStartTime");
         float flTimeLeft =  ( m_flGameStartTime + mp_timelimit.IntValue * 60.0 ) - GetGameTime();
         if (flTimeLeft < 0.0)
