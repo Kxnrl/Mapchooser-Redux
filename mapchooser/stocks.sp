@@ -242,6 +242,15 @@ stock any clamp(any min, any max, any value)
 
 stock int GetTimeLeft()
 {
+    if (GetEngineVersion() == Engine_CSGO)
+    {
+        float m_flGameStartTime = GameRules_GetPropFloat("m_flGameStartTime");
+        float flTimeLeft =  ( m_flGameStartTime + mp_timelimit.IntValue * 60.0 ) - GetGameTime();
+        if (flTimeLeft < 0.0)
+            flTimeLeft = 0.0;
+        return RoundToFloor(flTimeLeft);
+    }
+
     int timeLeft;
     return GetMapTimeLeft(timeLeft) ? timeLeft : 0;
 }

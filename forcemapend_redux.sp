@@ -18,11 +18,10 @@ public Plugin myinfo =
     url         = "https://www.kxnrl.com"
 };
 
-//credits: https://forums.alliedmods.net/showthread.php?t=254830
-
 #define MAXTIME 546
 
 ConVar mp_timelimit;
+ConVar mp_maxrounds;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -32,12 +31,23 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
+    if (GetEngineVersion() != Engine_CSGO)
+        SetFailState("Engine not support!");
+
     SMUtils_SetChatPrefix("[\x02M\x04C\x0CR\x01]");
     SMUtils_SetChatSpaces("   ");
     SMUtils_SetChatConSnd(true);
     SMUtils_SetTextDest(HUD_PRINTCENTER);
 
     mp_timelimit = FindConVar("mp_timelimit");
+    mp_maxrounds = FindConVar("mp_maxrounds");
+    mp_maxrounds.IntValue = 0;
+    mp_maxrounds.AddChangeHook(OnLock);
+}
+
+void OnLock(ConVar cvar, const char[] unuse1, const char[] unuse2)
+{
+    cvar.IntValue = 0;
 }
 
 public void Pupd_OnCheckAllPlugins()
@@ -45,7 +55,7 @@ public void Pupd_OnCheckAllPlugins()
     Pupd_CheckPlugin(false, "https://build.kxnrl.com/updater/MCR/");
 }
 
-public void OnMapStart()
+public void OnConfigsExecuted()
 {
     RequestFrame(Frame_TimeLeft);
     CreateTimer(1.0, Timer_Tick, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
@@ -56,20 +66,28 @@ public void OnMapTimeLeftChanged()
     RequestFrame(Frame_TimeLeft);
 }
 
-void Frame_TimeLeft(any unuse)
+void Frame_TimeLeft()
 {
-    int timeleft;
-    if (!GetMapTimeLeft(timeleft))
-        return;
+    int timeleft = GetTimeLeft();
 
     if(timeleft < 1) return; 
     if(timeleft > 32767)
     {
         RequestFrame(SetMapTime, MAXTIME);
-        return;
     }
 
-    GameRules_SetProp("m_iRoundTime", timeleft-1, 4, 0, true);
+    RequestFrame(UpdateHudTime);
+}
+
+void UpdateHudTime()
+{
+    int realTime = GetRoundElapsed() + GetTimeLeft();
+    int m_iRoundTime = GameRules_GetProp("m_iRoundTime");
+    if (m_iRoundTime != realTime)
+    {
+        GameRules_SetProp("m_iRoundTime", realTime, 4, 0, true);
+        PrintToServer("[MCR]  Adjust m_iRoundTime = %d from %d", realTime, m_iRoundTime);
+    }
 }
 
 void SetMapTime(int time)
@@ -85,8 +103,7 @@ public Action Timer_Tick(Handle timer)
         return Plugin_Continue;
     }
 
-    int timeleft;
-    GetMapTimeLeft(timeleft);
+    int timeleft = GetTimeLeft();
 
     switch (timeleft)
     {
@@ -104,14 +121,40 @@ public Action Timer_Tick(Handle timer)
     }
 
     if(timeleft <= 0)
-        CS_TerminateRound(0.0, CSRoundEnd_Draw, true);
+        CS_TerminateRound(10.0, CSRoundEnd_Draw, true);
     else
-        GameRules_SetProp("m_iRoundTime", timeleft-1, 4, 0, true);
+        UpdateHudTime();
 
     return Plugin_Continue;
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
+    if (reason == CSRoundEnd_GameStart)
+    {
+        CreateTimer(1.0, FixSurftimerShit, _, TIMER_FLAG_NO_MAPCHANGE);
+    }
+
     return Plugin_Handled;
+}
+
+Action FixSurftimerShit(Handle timer)
+{
+    CS_TerminateRound(1.0, CSRoundEnd_GameStart, true);
+    return Plugin_Stop;
+}
+
+stock int GetTimeLeft()
+{
+    float m_flGameStartTime = GameRules_GetPropFloat("m_flGameStartTime");
+    float flTimeLeft =  ( m_flGameStartTime + mp_timelimit.IntValue * 60.0 ) - GetGameTime();
+    if (flTimeLeft < 0.0)
+        flTimeLeft = 0.0;
+    return RoundToFloor(flTimeLeft);
+}
+
+stock int GetRoundElapsed()
+{
+    int iTimeLeft = RoundToFloor(GetGameTime() - GameRules_GetPropFloat("m_fRoundStartTime"));
+    return iTimeLeft > 0 ? iTimeLeft : 0;
 }
