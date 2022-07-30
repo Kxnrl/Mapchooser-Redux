@@ -11,6 +11,7 @@
 bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
 ConVar mcr_extend_enabled;
+ConVar mcr_command_broadcast;
 
 public Plugin myinfo =
 {
@@ -43,6 +44,11 @@ public void OnPluginStart()
     CreateTimer(180.0, Timer_BroadCast, _, TIMER_REPEAT);
 
     AutoExecConfig(true, "maptimelimit_redux", "sourcemod/mapchooser");
+}
+
+public void OnAllPluginsLoaded()
+{
+    mcr_command_broadcast = FindConVar("mcr_command_broadcast");
 }
 
 bool AllowExt()
@@ -111,13 +117,13 @@ void AttemptEXT(int client)
 
     if (g_bVoted[client])
     {
-        EXT_CheckStatus(client, true, true);
+        EXT_CheckStatus(client, true, false);
         return;
     }
 
     g_bVoted[client] = true;
 
-    if (EXT_CheckStatus(client, true, false)) 
+    if (EXT_CheckStatus(client, true, mcr_command_broadcast.BoolValue)) 
         ExtendMap();
 }
 
@@ -142,14 +148,14 @@ void ResetEXT()
         g_bVoted[i] = false;
 }
 
-bool EXT_CheckStatus(int client, bool notice, bool self)
+bool EXT_CheckStatus(int client, bool notice, bool broadcast)
 {
     int need, done;
     _CheckPlayer(need, done);
 
     if (notice)
     {
-        if (self)
+        if (!broadcast)
             Chat(client, "%T", "mtl self", client, done, need);
         else
             tChatAll("%t", "mtl broadcast", client, done, need);

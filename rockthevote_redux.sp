@@ -13,6 +13,7 @@ bool g_bInChange;
 bool g_bVoted[MAXPLAYERS+1];
 int  g_iNext[MAXPLAYERS+1];
 ConVar mcr_map_delay_time;
+ConVar mcr_command_broadcast;
 
 public Plugin myinfo =
 {
@@ -43,6 +44,11 @@ public void OnPluginStart()
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 
     AutoExecConfig(true, "rockthevote_redux", "sourcemod/mapchooser");
+}
+
+public void OnAllPluginsLoaded()
+{
+    mcr_command_broadcast = FindConVar("mcr_command_broadcast");
 }
 
 public void Pupd_OnCheckAllPlugins()
@@ -122,13 +128,13 @@ void AttemptRTV(int client)
 
     if (g_bVoted[client])
     {
-        RTV_CheckStatus(client, true, true);
+        RTV_CheckStatus(client, true, false);
         return;
     }
 
     g_bVoted[client] = true;
 
-    if (RTV_CheckStatus(client, true, false)) 
+    if (RTV_CheckStatus(client, true, mcr_command_broadcast.BoolValue)) 
         StartRTV();
 }
 
@@ -189,14 +195,14 @@ public Action Command_ForceRTV(int client, int args)
     return Plugin_Handled;
 }
 
-bool RTV_CheckStatus(int client, bool notice, bool self)
+bool RTV_CheckStatus(int client, bool notice, bool broadcast)
 {
     int need, done;
     _CheckPlayer(need, done);
 
     if (notice)
     {
-        if (self)
+        if (!broadcast)
             Chat(client, "%T", "rtv self", client, done, need);
         else
             tChatAll("%t", "rtv broadcast", client, done, need);
