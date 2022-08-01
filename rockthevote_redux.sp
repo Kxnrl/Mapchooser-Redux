@@ -43,6 +43,8 @@ public void OnPluginStart()
 
     RegAdminCmd("sm_forcertv", Command_ForceRTV, ADMFLAG_CHANGEMAP, "Force an RTV vote");
 
+    RegConsoleCmd("sm_rtv", Command_RTV);
+
     AutoExecConfig(true, "rockthevote_redux", "sourcemod/mapchooser");
 }
 
@@ -79,12 +81,20 @@ public void OnClientDisconnect(int client)
     g_bVoted[client] = false;
 }
 
+Action Command_RTV(int client, int args)
+{
+    if (client)
+        AttemptRTV(client);
+
+    return Plugin_Handled;
+}
+
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
     if (!client)
         return;
 
-    if (strcmp(sArgs, "rtv", false) == 0 || strcmp(sArgs[1], "rtv", false) == 0)
+    if (strcmp(sArgs, "rtv", false) == 0)
         AttemptRTV(client);
 }
 

@@ -37,6 +37,8 @@ public void OnPluginStart()
 
     RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CHANGEMAP);
 
+    RegConsoleCmd("sm_ext", Command_Ext);
+
     mcr_extend_enabled = CreateConVar("mcr_extend_enabled", "1", "Enable !ext command.", _, true, 0.0, true, 1.0);
 
     LoadTranslations("com.kxnrl.mcr.translations");
@@ -96,15 +98,21 @@ public Action Command_Extend(int client, int args)
     return Plugin_Handled;
 }
 
+Action Command_Ext(int client, int args)
+{
+    if (client)
+        AttemptEXT(client);
+
+    return Plugin_Handled;
+}
+
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
     if (!client)
         return;
 
-    if (strcmp(sArgs, ".ext", false) != 0 && strcmp(sArgs, "!ext", false) != 0)
-        return;
-
-    AttemptEXT(client);
+    if (strcmp(sArgs, "ext", false) == 0)
+        AttemptEXT(client);
 }
 
 void AttemptEXT(int client)
