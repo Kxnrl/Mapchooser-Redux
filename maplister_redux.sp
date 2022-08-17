@@ -309,6 +309,11 @@ static bool IsOfficalMap(const char[] map)
         officialmaps.PushString("gd_cbble");
         officialmaps.PushString("gd_rialto");
         officialmaps.PushString("training1");
+
+        // late
+        officialmaps.PushString("de_blagai");
+        officialmaps.PushString("de_prime");
+        officialmaps.PushString("de_tuscan");
     }
 
     return (officialmaps.FindString(map) > -1);
