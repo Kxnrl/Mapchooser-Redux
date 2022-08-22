@@ -592,7 +592,10 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
         else if (g_MapChange == MapChange_RoundEnd)
         {
             g_bChangeMapAtRoundEnd = true;
-            SetConVarInt(FindConVar("mp_timelimit"), 1);
+            FindConVar("mp_halftime").SetInt(0);
+            FindConVar("mp_timelimit").SetInt(0);
+            FindConVar("mp_maxrounds").SetInt(0);
+            FindConVar("mp_roundtime").SetInt(1);
         }
 
         FindConVar("nextlevel").SetString(map);
