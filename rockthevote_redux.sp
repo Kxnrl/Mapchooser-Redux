@@ -172,8 +172,8 @@ void StartRTV()
 
     if (CanMapChooserStartVote())
     {
-        InitiateMapChooserVote(MapChange_RoundEnd, null);
-        CreateTimer(300.0, Timer_DelayRTV, _, TIMER_FLAG_NO_MAPCHANGE);
+        InitiateMapChooserVote(MapChange_RoundEnd);
+        CreateTimer(mcr_map_delay_time.FloatValue, Timer_DelayRTV, _, TIMER_FLAG_NO_MAPCHANGE);
     }
 }
 
