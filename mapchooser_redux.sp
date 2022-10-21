@@ -876,6 +876,7 @@ bool InternalSetNextMap(const char[] map, int client)
         return false;
 
     SetNextMap(map);
+    Call_SetNextMapManually(map, client);
     g_bMapVoteCompleted = true;
     RefundAllCredits(map);
     return true;
