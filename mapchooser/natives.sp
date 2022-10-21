@@ -78,7 +78,7 @@ void Natives_OnPluginStart()
     g_Forward.m_NominationsReset    = new GlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell, Param_Cell);
     g_Forward.m_NominationsVoted    = new GlobalForward("OnNominationVoted",      ET_Ignore, Param_String, Param_String, Param_String);
     g_Forward.m_MapVoteStarted      = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
-    g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String);
+    g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String, Param_Cell, Param_Cell);
     g_Forward.m_MapDataLoaded       = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged  = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
     g_Forward.m_OnNominateMap       = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell);
@@ -189,10 +189,12 @@ void Call_MapVoteStarted()
     Call_Finish();
 }
 
-void Call_MapVoteEnd(const char[] map)
+void Call_MapVoteEnd(const char[] map, bool pb, int client)
 {
     Call_StartForward(g_Forward.m_MapVoteEnd);
     Call_PushString(map);
+    Call_PushCell(pb);
+    Call_PushCell(client);
     Call_Finish();
 }
 

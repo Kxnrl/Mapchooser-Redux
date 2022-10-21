@@ -555,7 +555,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
     char map[128];
     GetMapItem(menu, item_info[0][VOTEINFO_ITEM_INDEX], map, 128);
 
-    Call_MapVoteEnd(map);
+    Call_MapVoteEnd(map, g_bPartyblock, GetMapNominator(map));
 
     if (strcmp(map, VOTE_EXTEND, false) == 0)
     {
@@ -1171,6 +1171,23 @@ bool InternalRemoveNominationByMap(const char[] map)
     }
 
     return false;
+}
+
+int GetMapNominator(const char[] map)
+{
+    while (g_aNominations.Length > 0)
+    {
+        Nominations n;
+        g_aNominations.GetArray(0, n, sizeof(Nominations));
+
+        if (strcmp(map, n.m_Map) == 0)
+        {
+            // skip passing map
+            return FindClientByAuth(n.m_OwnerAuth);
+        }
+    }
+
+    return -1;
 }
 
 void RefundAllCredits(const char[] map)
