@@ -192,8 +192,8 @@ public void OnClientDisconnect(int client)
         g_aNominations.GetArray(index, n, sizeof(Nominations));
         if (n.m_Owner == client)
         {
-            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
             g_aNominations.Erase(index);
+            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock, NominateResetReason_Disconnect);
 
             LogMessage("Removed [%s] by %L from nomination list.", n.m_Map, n.m_Owner);
 
@@ -477,8 +477,6 @@ void InitiateVote(MapChange when, ArrayList inputlist)
 
                 AddMapItem(g_hVoteMenu, n.m_Map, g_ConVars.NameTag.BoolValue, g_ConVars.TierTag.BoolValue, !g_ConVars.DescTag.BoolValue, n.m_Owner);
                 RemoveStringFromArray(g_aNextMapList, map);
-
-                Call_NominationsReset(n.m_Map, n.m_Owner, false);
             }
 
             int i = nominationsToAdd;
@@ -887,7 +885,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     if (!IsMapValid(map) || IsDisabled(map))
         return NominateResult_InvalidMap;
 
-    if (!Call_OnNominateMap(map, owner, partyblock))
+    if (!Call_OnNominateMap(map, owner, partyblock, false))
     {
         // rejected
         return NominateResult_Reject;
@@ -965,7 +963,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         {
             g_aNominations.GetArray(0, n, sizeof(Nominations));
             g_aNominations.Erase(0);
-            Call_NominationsReset(n.m_Map, n.m_Owner, false);
+            Call_NominationsReset(n.m_Map, n.m_Owner, false, NominateResetReason_PartyBlock);
             PrintToServer("Erase [%s] niminations list.", n.m_Map);
 
             int refund = GetRefundCreditsByNomination(n);
@@ -1009,7 +1007,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
         GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
         g_aNominations.PushArray(n, sizeof(Nominations));
         g_bPartyblock = true;
-        Call_OnNominatedMap(map, owner, partyblock);
+        Call_OnNominatedMap(map, owner, partyblock, false);
         return NominateResult_PartyBlockAdded;
     }
 
@@ -1021,7 +1019,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
 
         if (n.m_Owner == owner)
         {
-            Call_NominationsReset(n.m_Map, n.m_Owner, false);
+            Call_NominationsReset(n.m_Map, n.m_Owner, false, NominateResetReason_Replace);
 
             int price = GetPrice(map);
             if (!Call_OnNominatePrice(map, owner, price, partyblock))
@@ -1054,7 +1052,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
             n.m_Price = price;
             g_aNominations.SetArray(i, n, sizeof(Nominations));
 
-            Call_OnNominatedMap(map, owner, partyblock);
+            Call_OnNominatedMap(map, owner, partyblock, true);
             return NominateResult_Replaced;
         }
     }
@@ -1063,7 +1061,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     {
         Nominations n;
         g_aNominations.GetArray(0, n, sizeof(Nominations));
-        Call_NominationsReset(n.m_Map, n.m_Owner, false);
+        Call_NominationsReset(n.m_Map, n.m_Owner, false, NominateResetReason_ForceFull);
         g_aNominations.Erase(0);
     }
 
@@ -1098,7 +1096,7 @@ NominateResult InternalNominateMap(const char[] map, bool force, int owner, bool
     GetClientName(owner, n.m_OwnerName, 25);
     GetClientAuthId(owner, AuthId_Steam2, n.m_OwnerAuth, 32);
     g_aNominations.PushArray(n, sizeof(Nominations));
-    Call_OnNominatedMap(map, owner, partyblock);
+    Call_OnNominatedMap(map, owner, partyblock, false);
     return NominateResult_Added;
 }
 
@@ -1130,7 +1128,7 @@ bool InternalRemoveNominationByOwner(int owner)
             }
 
             g_aNominations.Erase(i);
-            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
+            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock, NominateResetReason_Remove);
             return true;
         }
     }
@@ -1166,7 +1164,7 @@ bool InternalRemoveNominationByMap(const char[] map)
             }
 
             g_aNominations.Erase(i);
-            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
+            Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock, NominateResetReason_Remove);
             return true;
         }
     }
@@ -1199,7 +1197,7 @@ void RefundAllCredits(const char[] map)
         g_aNominations.GetArray(0, n, sizeof(Nominations));
 
         g_aNominations.Erase(0);
-        Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock);
+        Call_NominationsReset(n.m_Map, n.m_Owner, g_bPartyblock, NominateResetReason_Refund);
 
         if (strcmp(map, n.m_Map) == 0)
         {

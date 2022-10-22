@@ -55,6 +55,17 @@ enum NominateResult
     NominateResult_Reject
 };
 
+enum NominateResetReason_t
+{
+    NominateResetReason_Disconnect,
+    NominateResetReason_Voted,
+    NominateResetReason_PartyBlock,
+    NominateResetReason_Replace,
+    NominateResetReason_ForceFull,
+    NominateResetReason_Remove,
+    NominateResetReason_Refund
+}
+
 enum struct MapData
 {
     // mapdata.kv
@@ -87,15 +98,15 @@ enum struct Nominations
     char m_OwnerAuth[32];
 }
 
-forward void OnNominationRemoved(const char[] map, int client, bool partyblock);
+forward void OnNominationRemoved(const char[] map, int client, bool partyblock, NominateResetReason_t reason);
 forward void OnNominationVoted(const char[] map, const char[] name, const char[] auth);
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map, bool partyblock, int client);
 forward void OnSetNextMapManually(const char[] map, int client);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
-forward bool OnNominateMap(const char[] map, int client, bool partyblock);
-forward void OnNominatedMap(const char[] map, int client, bool partyblock);
+forward bool OnNominateMap(const char[] map, int client, bool partyblock, bool replace);
+forward void OnNominatedMap(const char[] map, int client, bool partyblock, bool replace);
 forward bool OnNominatePrice(const char[] map, int client, int &price, bool partyblock);
 forward bool OnClearMapCooldown(const char[] map, int client);
 forward bool OnResetMapCooldown(const char[] map, int client);

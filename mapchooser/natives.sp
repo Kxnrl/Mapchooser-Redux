@@ -76,15 +76,15 @@ public void OnLibraryRemoved(const char[] name)
 
 void Natives_OnPluginStart()
 {
-    g_Forward.m_NominationsReset    = new GlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell, Param_Cell);
+    g_Forward.m_NominationsReset    = new GlobalForward("OnNominationRemoved",    ET_Ignore, Param_String, Param_Cell, Param_Cell, Param_Cell);
     g_Forward.m_NominationsVoted    = new GlobalForward("OnNominationVoted",      ET_Ignore, Param_String, Param_String, Param_String);
     g_Forward.m_MapVoteStarted      = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
     g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String, Param_Cell, Param_Cell);
     g_Forward.m_SetNextMapManually  = new GlobalForward("OnSetNextMapManually",   ET_Ignore, Param_String, Param_Cell);
     g_Forward.m_MapDataLoaded       = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged  = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
-    g_Forward.m_OnNominateMap       = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell);
-    g_Forward.m_OnNominatedMap      = new GlobalForward("OnNominatedMap",         ET_Ignore, Param_String, Param_Cell, Param_Cell);
+    g_Forward.m_OnNominateMap       = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell, Param_Cell);
+    g_Forward.m_OnNominatedMap      = new GlobalForward("OnNominatedMap",         ET_Ignore, Param_String, Param_Cell, Param_Cell, Param_Cell);
     g_Forward.m_OnNominatePrice     = new GlobalForward("OnNominatePrice",        ET_Hook,   Param_String, Param_Cell, Param_CellByRef, Param_Cell);
     g_Forward.m_OnClearMapCooldown  = new GlobalForward("OnClearMapCooldown",     ET_Hook,   Param_String, Param_Cell);
     g_Forward.m_OnResetMapCooldown  = new GlobalForward("OnResetMapCooldown",     ET_Hook,   Param_String, Param_Cell);
@@ -147,32 +147,35 @@ bool Call_OnNominatePrice(const char[] map, int _cell, int &_ref, bool _bool)
     return allow;
 }
 
-bool Call_OnNominateMap(const char[] map, int _cell, bool _bool)
+bool Call_OnNominateMap(const char[] map, int _cell, bool _bool1, bool _bool2)
 {
     bool allow = true;
     Call_StartForward(g_Forward.m_OnNominateMap);
     Call_PushString(map);
     Call_PushCell(_cell);
-    Call_PushCell(_bool);
+    Call_PushCell(_bool1);
+    Call_PushCell(_bool2);
     Call_Finish(allow);
     return allow;
 }
 
-void Call_OnNominatedMap(const char[] map, int _cell, bool _bool)
+void Call_OnNominatedMap(const char[] map, int _cell, bool _bool1, bool _bool2)
 {
     Call_StartForward(g_Forward.m_OnNominatedMap);
     Call_PushString(map);
     Call_PushCell(_cell);
-    Call_PushCell(_bool);
+    Call_PushCell(_bool1);
+    Call_PushCell(_bool2);
     Call_Finish();
 }
 
-void Call_NominationsReset(const char[] map, int _cell, bool _bool)
+void Call_NominationsReset(const char[] map, int _cell, bool _bool, NominateResetReason_t _int)
 {
     Call_StartForward(g_Forward.m_NominationsReset);
     Call_PushString(map);
     Call_PushCell(_cell);
     Call_PushCell(_bool);
+    Call_PushCell(_int);
     Call_Finish();
 }
 
