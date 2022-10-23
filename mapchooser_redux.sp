@@ -1174,10 +1174,10 @@ bool InternalRemoveNominationByMap(const char[] map)
 
 int GetMapNominator(const char[] map)
 {
-    while (g_aNominations.Length > 0)
+    for (int i = 0; i < g_aNominations.Length; i++)
     {
         Nominations n;
-        g_aNominations.GetArray(0, n, sizeof(Nominations));
+        g_aNominations.GetArray(i, n, sizeof(Nominations));
 
         if (strcmp(map, n.m_Map) == 0)
         {
