@@ -130,8 +130,9 @@ public Action Timer_Tick(Handle timer)
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-    if (reason == CSRoundEnd_GameStart)
+    if (reason == CSRoundEnd_GameStart && FindPluginByFile("SurfTimer") != null)
     {
+        LogMessage("Fix SurfTimer restart game...");
         CreateTimer(1.0, FixSurftimerShit, _, TIMER_FLAG_NO_MAPCHANGE);
     }
 
