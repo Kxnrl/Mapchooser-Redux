@@ -314,6 +314,9 @@ static bool IsOfficalMap(const char[] map)
         officialmaps.PushString("de_blagai");
         officialmaps.PushString("de_prime");
         officialmaps.PushString("de_tuscan");
+
+        officialmaps.PushString("de_boyard");
+        officialmaps.PushString("de_chalice");
     }
 
     return (officialmaps.FindString(map) > -1);

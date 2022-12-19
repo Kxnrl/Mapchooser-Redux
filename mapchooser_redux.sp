@@ -38,6 +38,7 @@ bool g_bMapLoaded;
 
 bool g_pStore;
 bool g_pShop;
+bool g_pMaps;
 
 enum TimerLocation
 {
@@ -74,6 +75,10 @@ char g_TierString[MAX_TIER+1][32] = {
 Convars g_ConVars;
 
 MapChange g_MapChange;
+
+// external 
+native int  Maps_GetTier(const char[] map);
+native bool Maps_GetName(const char[] map, char[] buffer, int maxLen);
 
 #include "mapchooser/cmds.sp"
 #include "mapchooser/cvars.sp"
@@ -115,6 +120,7 @@ public void OnAllPluginsLoaded()
 {
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
+    g_pMaps = LibraryExists("fys-Maps");
 
     Data_OnAllPluginsLoaded();
 }
@@ -204,6 +210,13 @@ public void OnClientDisconnect(int client)
             break;
         }
     }
+}
+
+public void Maps_OnDataFetched()
+{
+    Data_OnAllPluginsLoaded();
+    Call_MapDataLoaded();
+    PrintToServer("[MCR]  Mapchooser-Redux has beed reloaded with Maps.");
 }
 
 /**

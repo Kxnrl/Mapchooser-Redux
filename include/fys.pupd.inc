@@ -5,11 +5,11 @@
 #define _fys_Updater_Include_
 
 // 强制触发检查
-native bool Pupd_CheckPlugin(bool reload, const char[] url);
-native bool Pupd_CheckGamedata(const char[] file, const char[] url);
-native bool Pupd_CheckTranslation(const char[] file, const char[] url);
+native bool Pupd_CheckPlugin(bool reload, const char[] url, const char[] auth = NULL_STRING);
+native bool Pupd_CheckGamedata(const char[] file, const char[] url, const char[] auth = NULL_STRING);
+native bool Pupd_CheckTranslation(const char[] file, const char[] url, const char[] auth = NULL_STRING);
 
-forward void Pupd_OnCheckAllPlugins();
+forward void Pupd_OnCheckAllPlugins(bool auto);
 forward void Pupd_OnPluginUpdated(const char[] file, bool reload);
 
 public SharedPlugin __pl_fys_Updater =

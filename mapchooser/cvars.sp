@@ -1,3 +1,5 @@
+// MAIN_FILE ../mapchooser_redux.sp
+
 void Cvars_OnPluginStart()
 {
     g_ConVars.TimeLoc = CreateConVar("mcr_timer_hud_location",    "3", "Timer Location of HUD - 0: Hint,  1: Text,  2: Chat,  3: Game",                                                   _, true,  0.0, true,   3.0);

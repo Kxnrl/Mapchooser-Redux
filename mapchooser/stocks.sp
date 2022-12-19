@@ -1,3 +1,4 @@
+// MAIN_FILE ../mapchooser_redux.sp
 
 stock void GetMapItem(Menu menu, int position, char[] map, int mapLen)
 {

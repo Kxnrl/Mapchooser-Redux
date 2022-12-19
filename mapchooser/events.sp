@@ -1,3 +1,5 @@
+// MAIN_FILE ../mapchooser_redux.sp
+
 void Events_OnPluginStart()
 {
     HookEvent("cs_win_panel_match", Event_WinPanel, EventHookMode_Post);

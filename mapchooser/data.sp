@@ -1,27 +1,4 @@
-/*
-enum struct MapData
-{
-    // mapdata.kv
-    char m_FileName[128];
-    char m_Description[64];
-    int  m_Tier;
-    int  m_Price;
-    int  m_PricePartyBlock;
-    int  m_FileSize;
-    int  m_MinPlayers;
-    int  m_MaxPlayers;
-    int  m_MaxCooldown;
-    bool m_NominateOnly;
-    bool m_VipOnly;
-    bool m_AdminOnly;
-    bool m_CertainTimes[24]; // 0-23
-    float m_RefundRatio;
-
-    // mappool.kv
-    int  m_CooldownLeft;
-    int  m_RecentlyPlayed;
-}
-*/
+// MAIN_FILE ../mapchooser_redux.sp
 
 static StringMap g_MapData;
 
@@ -218,6 +195,17 @@ static void LoadAllMapsData(KeyValues kv)
             int c = ExplodeString(m_CertainTimes, ",", o, 24, 4, false);
             for (int i = 0; i < c; i++) if (strlen(o[i]) > 0)
                 mapdata.m_CertainTimes[StringToInt(o[i])] = true;
+        }
+
+        // update from upstream
+        if (g_pMaps)
+        {
+            int tier = Maps_GetTier(map);
+            if (tier > 0)
+                mapdata.m_Tier = tier;
+            char name[32];
+            if (Maps_GetName(map, name, sizeof(name)))
+                strcopy(mapdata.m_Description, 32, name);
         }
 
         g_MapData.SetArray(map, mapdata, typeofdata, true);

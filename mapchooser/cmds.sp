@@ -1,3 +1,5 @@
+// MAIN_FILE ../mapchooser_redux.sp
+
 void Cmds_OnPluginStart()
 {
     RegAdminCmd("sm_mapvote",    Command_Mapvote,    ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
