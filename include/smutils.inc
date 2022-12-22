@@ -177,7 +177,7 @@ stock bool HasClientUserFlags(int client, int flags)
 stock bool HasClientAdminFlags(int client, AdminFlag flag)
 {
     char steamid[32];
-    GetClientAuthId(client, AuthId_Steam2, steamid, 32);
+    GetClientAuthId(client, AuthId_SteamID64, steamid, 32);
     AdminId admin = FindAdminByIdentity(steamid, AUTHMETHOD_STEAM);
     if (admin != INVALID_ADMIN_ID)
         return (admin.HasFlag(flag, Access_Real) || admin.HasFlag(flag, Access_Effective));

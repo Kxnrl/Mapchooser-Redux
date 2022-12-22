@@ -26,7 +26,7 @@ stock int FindClientByAuth(const char[] steamid)
     char m_szAuth[32];
     for(int client = 1; client <= MaxClients; ++client)
         if (IsClientAuthorized(client))
-            if (GetClientAuthId(client, AuthId_Steam2, m_szAuth, 32, true))
+            if (GetClientAuthId(client, AuthId_SteamID64, m_szAuth, 32, true))
                 if (StrEqual(m_szAuth, steamid))
                     return client;
 

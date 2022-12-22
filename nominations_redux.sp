@@ -311,7 +311,7 @@ void BuildMapMenu()
         else if (GetNominated(map, n))
         {
             owner_t owner;
-            GetClientAuthId(n.m_Owner, AuthId_Steam2, owner.m_Auth, 32, false);
+            GetClientAuthId(n.m_Owner, AuthId_SteamID64, owner.m_Auth, 32, false);
             GetClientName(n.m_Owner, owner.m_Name, 25);
             g_smOwner.SetArray(map, owner, sizeof(owner_t), true);
             status = MAPSTATUS_DISABLED|MAPSTATUS_EXCLUDE_NOMINATED;
@@ -617,7 +617,7 @@ int FindClientByAuth(const char[] steamid)
     char m_szAuth[32];
     for(int client = 1; client <= MaxClients; ++client)
         if (IsClientAuthorized(client))
-            if (GetClientAuthId(client, AuthId_Steam2, m_szAuth, 32, true))
+            if (GetClientAuthId(client, AuthId_SteamID64, m_szAuth, 32, true))
                 if (StrEqual(m_szAuth, steamid))
                     return client;
 
