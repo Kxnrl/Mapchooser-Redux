@@ -10,9 +10,7 @@
     #define _MCR_Version_Include_ "000"
 #endif
 
-#define PI_VERSION "2.0" ... "." ... MCR_VERSION
-
-#define MCR_VERSION "2.0.<commits>"
+#define MCR_VERSION "2.0" ... "." ... MCR_AUTO_VERSION
 
 //credits: https://github.com/powerlord/sourcemod-mapchooser-extended
 //credits: https://github.com/alliedmodders/sourcemod/blob/master/plugins/
