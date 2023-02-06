@@ -609,8 +609,7 @@ public void Handler_VoteFinishedGeneric(Menu menu, int num_votes, int num_client
             FindConVar("mp_roundtime").SetInt(1);
         }
 
-        FindConVar("nextlevel").SetString(map);
-        SetNextMap(map);
+        SetEngineNextMap(map);
 
         g_bHasVoteStarted = false;
         g_bMapVoteCompleted = true;
@@ -765,7 +764,7 @@ public int Handler_MapVoteMenu(Menu menu, MenuAction action, int param1, int par
                 }
                 while(strcmp(map, VOTE_EXTEND, false) == 0);
 
-                SetNextMap(map);
+                SetEngineNextMap(map);
                 g_bMapVoteCompleted = true;
             }
             g_bHasVoteStarted = false;
@@ -886,7 +885,7 @@ bool InternalSetNextMap(const char[] map, int client)
     if (!Call_OnSetNextMap(map, client) || IsDisabled(map))
         return false;
 
-    SetNextMap(map);
+    SetEngineNextMap(map);
     Call_SetNextMapManually(map, client);
     g_bMapVoteCompleted = true;
     RefundAllCredits(map);

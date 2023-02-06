@@ -291,3 +291,13 @@ stock void ShuffleStringArray(ArrayList array)
         array.PushString(buffer);
     }
 }
+
+stock void SetEngineNextMap(const char[] map)
+{
+    static ConVar nextmap = null;
+    if (nextmap == null)
+        nextmap = FindConVar("nextmap");
+
+    nextmap.SetString(map);
+    SetNextMap(map);
+}

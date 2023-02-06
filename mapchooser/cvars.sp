@@ -28,15 +28,15 @@ void Cvars_OnPluginStart()
     ConVar cvar;
 
     cvar = FindConVar("mp_endmatch_votenextmap");
-    cvar.SetBool(false, true);
+    cvar.SetBool(false);
     cvar.AddChangeHook(OnCvarChanged_Disable);
 
     cvar = FindConVar("mp_match_end_restart");
-    cvar.SetBool(false, true);
+    cvar.SetBool(false);
     cvar.AddChangeHook(OnCvarChanged_Disable);
 
     cvar = FindConVar("mp_match_end_changelevel");
-    cvar.SetBool(false, true);
+    cvar.SetBool(true);
     cvar.AddChangeHook(OnCvarChanged_Enable);
 }
 
