@@ -294,10 +294,10 @@ stock void ShuffleStringArray(ArrayList array)
 
 stock void SetEngineNextMap(const char[] map)
 {
-    static ConVar nextmap = null;
-    if (nextmap == null)
-        nextmap = FindConVar("nextmap");
+    static ConVar nextlevel = null;
+    if (nextlevel == null)
+        nextlevel = FindConVar("nextlevel");
 
-    nextmap.SetString(map);
     SetNextMap(map);
+    nextlevel.SetString(map);
 }
