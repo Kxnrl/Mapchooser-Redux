@@ -36,13 +36,12 @@ jobs:
 
     - name: Build
       shell: bash
-      working-directory: scripts
       run: |
         mkdir $GITHUB_WORKSPACE/plugins
         for file in *.sp
         do
           echo -e "\nCompiling $file..."
-          spcomp $file -O2 -v2 -h -i $GITHUB_WORKSPACE/include -o"../plugins/$file"
+          spcomp $file -O2 -v2 -h -i $GITHUB_WORKSPACE/include -o"./plugins/$file"
         done
 
     - name: Package
