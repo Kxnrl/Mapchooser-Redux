@@ -2,13 +2,11 @@
 {
     "rtv broadcast"
     {
-        "#format" "{1:N},{2:d},{3:d}"
-        "ru"    "{yellow}{1}{normal} хочет поднять голосование. ({red}{2}{normal}/{green}{3}{normal} голосов)"
+        "ru"    "{yellow}{1}{normal} хочет начать голосование по смене карты. ({red}{2}{normal}/{green}{3}{normal} голосов)"
     }
     
     "rtv self"
     {
-        "#format" "{1:d},{2:d}"
         "ru"    "Вы уже проголосовали. ({red}{1}{normal}/{green}{2}{normal} голосов)"
     }
     
@@ -19,7 +17,6 @@
     
     "rtv change map"
     {
-        "#format" "{1:s}"
         "ru"    "Смена карты на [{green}{1}{normal}]!"
     }
     
@@ -35,13 +32,11 @@
     
     "mtl broadcast"
     {
-        "#format" "{1:N},{2:d},{3:d}"
         "ru"    "{yellow}{1}{normal} хочет продлить время карты. ({red}{2}{normal}/{green}{3}{normal} голосов)"
     }
     
     "mtl self"
     {
-        "#format" "{1:d},{2:d}"
         "ru"    "Вы уже проголосовали за продление карты. ({red}{1}{normal}/{green}{2}{normal} голосов)"
     }
     
@@ -52,7 +47,6 @@
 
     "mtl extend admin"
     {
-        "#format" "{1:N}"
         "ru"    "Текущая карта была продлена на 20 минут игроком {blue}{1}"
     }
 
@@ -63,34 +57,31 @@
     
     "mtl notification"
     {
-        "ru"    "{red}!rtv{normal} чтобы проголосовать за карту, {red}!ext{normal} чтобы продлить карту."
+        "ru"    "{red}!rtv{normal} - проголосовать за карту, {red}!ext{normal} для продления карты."
     }
     
     "nominated by client"
     {
-        "#format" "{1:N},{2:s}"
-        "ru"    "Текущая карта была номинирована игроком {blue}{1}{normal}({green}{2}{normal})"
+        "ru"    "Текущая карта была предложена игроком {blue}{1}{normal}({green}{2}{normal})"
     }
     
     "nominated by name"
     {
-        "#format" "{1:s},{2:s}"
-        "ru"    "Текущая карта была номинирована игроком {blue}{1}{normal}({green}{2}{normal})"
+        "ru"    "Текущая карта была предложена игроком {blue}{1}{normal}({green}{2}{normal})"
     }
     
     "nominate full vote"
     {
-        "ru"    "Максимально допустимые номинации достигнуты."
+        "ru"    "Максимально допустимые предложения достигнуты."
     }
 
     "nominate partyblock"
     {
-        "ru"    "{red}Номинация пока не разрешена: partyblock."
+        "ru"    "{red}Карта зарезервирована{blue} {1} {red}."
     }
     
     "nominate vote complete"
     {
-        "#format" "{1:s}"
         "ru"    "Следующая карта [{yellow}{1}{normal}]"
     }
     
@@ -106,87 +97,77 @@
 
     "nominate menu was nominated"
     {
-        "ru"    "Номинирована"
+        "ru"    "Предложена"
     }
     
     "nominate menu was nominated name"
     {
-        "#format" "{1:s}"
-        "ru"    "Номинирована игроком {1}"
+        "ru"    "Предложена игроком {1}"
     }
 
     "nominate changed map"
     {
-        "#format" "{1:N},{2:s}"
-        "ru"    "{1} изменил свою номинацию на {2}."
+        "ru"    "{1} меняет своё предложение на {2}."
     }
     
     "nominate nominate map"
     {
-        "#format" "{1:N},{2:s}"
-        "ru"    "{1} номинировал {2}."
+        "ru"    "{1} предлагает {2}."
     }
 
     "nominate partyblock map"
     {
-        "#format" "{1:N},{2:s}"
-        "ru"    "{1} номинировал {2}."
+        "ru"    "{1} предлагает {2}."
     }
     
     "nominate nominate cost"
     {
-        "#format" "{1:s},{2:d}"
-        "ru"    "{green}Вам будет стоить {2} кредитов для номинирования {blue}{1}{green}"
+        "ru"    "{green}Вам будет стоить {2} кредитов для предложения {blue}{1}{green}"
     }
 
     "nominate partyblock cost"
     {
-        "#format" "{1:s},{2:d}"
-        "ru"    "{green}Вам будет стоить {2} кредитов для номинирования {blue}{1}{green}"
+        "ru"    "{green}Вам будет стоить {2} кредитов для предложения {blue}{1}{green}"
     }
     
     "NominateResult_MaxPlayers"
     {
-        "#format" "{1:d}"
-        "ru"    "{red}Эта карта требует меньше, чем {green}{1}{red} игроков на сервере, для номинации."
+        "ru"    "{red}Эта карта требует меньше, чем {green}{1}{red} игроков на сервере, для предложения."
     }
     
     "NominateResult_MinPlayers"
     {
-        "#format" "{1:d}"
-        "ru"    "{red}Эта карта требует больше, чем {green}{1}{red} игроков на сервере, для номинации."
+        "ru"    "{red}Эта карта требует больше, чем {green}{1}{red} игроков на сервере, для предложения."
     }
     
     "NominateResult_VIPOnly"
     {
-        "ru"    "{red}Эта карта номинируется только VIP."
+        "ru"    "{red}Эта карта предлагается только VIP."
     }
     
     "NominateResult_AdminOnly"
     {
-        "ru"    "{red}Эта карта номинируется только Администраторами."
+        "ru"    "{red}Эта карта предлагается только администраторами."
     }
     
     "NominateResult_VoteFull"
     {
-        "ru"    "{red}Максимально допустимые номинации достигнуты."
+        "ru"    "{red}Максимально допустимые предложения достигнуты."
     }
     
     "NominateResult_AlreadyInVote"
     {
-        "ru"    "{red}Выбранная вами карта уже номинирована."
+        "ru"    "{red}Выбранная вами карта уже предложена."
     }
     
     "NominateResult_InvalidMap"
     {
-        "#format" "{1:s}"
-        "ru"    "{red}Не удалось номинировать {1}."
+        "ru"    "{red}Не удалось предложить {1}."
     }
     
     "NominateResult_NoCredits"
     {
-        "#format" "{1:s}"
-        "ru"    "{red}У вас недостаточно кредитов для номинирования {1}."
+        "ru"    "{red}У вас недостаточно кредитов для предложения {1}."
     }
 
     "NominateResult_RecentlyPlayed"
@@ -196,22 +177,22 @@
 
     "NominateResult_PartyBlock"
     {
-        "ru"    "{red}Текущая была partyblock."
+        "ru"    "{red}Следующая карта была зарезервирована."
     }
 
     "NominateResult_PartyBlockDisabled"
     {
-        "ru"    "{red}Partyblock пока не разрешена."
+        "ru"    "{red}Функция резервации отключена."
     }
     
     "nominate menu title"
     {
-        "ru"    "Номинация карты:"
+        "ru"    "Предложение карты:"
     }
 
     "partyblock menu title"
     {
-        "ru"    "Номинация карты:"
+        "ru"    "Предложение карты:"
     }
     
     "mcr clear cd"
@@ -221,14 +202,12 @@
 
     "mcr clear map cd"
     {
-        "#format" "{1:s}"
-        "ru"    "{green}{1} был удален из перезарядки."
+        "ru"    "{green}{1} был удален из ожидания."
     }
 
     "mcr reset map cd"
     {
-        "#format" "{1:s}"
-        "ru"    "{green}{1} был сброшен из перезарядки."
+        "ru"    "{green}{1} был сброшен из ожидания."
     }
 
     "mcr show cd"
@@ -238,79 +217,73 @@
     
     "mcr nominate fallback"
     {
-        "#format" "{1:s},{2:d}"
-        "ru"    "{green}[{blue}{1}{green}] ваша номинация была отменена, {2} кредитов было возвращено."
+        "ru"    "{green}[{blue}{1}{green}] ваше предложение было отменено, {2} кредитов было возвращено."
     }
     
     "mcr runoff"
     {
-        "#format" "{1:d}"
         "ru"    "Ни одна карта не набрала более половины голосов ({1}%%), начинаем второй тур голосования."   
     }
     
     "mcr tier"
     {
-        "#format" "{1:d}"
         "ru"    "Карты {green}{1}{normal} имели одинаковое количество голосов. Нужно переголосовать!"
     }
     
     "mcr dont change"
     {
-        "#format" "{1:d},{2:d}"
         "ru"    "Текущая карта продолжается! Голосование выступило! (Получено {green}{1}{normal}/{red}{2}{normal} голосов)"
     }
     
     "mcr extend map"
     {
-        "#format" "{1:d},{2:d}"
         "ru"    "Текущая карта была продлена. (Получено {green}{1}{normal}/{red}{2} {normal}голосов)"
     }
     
     "mcr next map"
 	{
-		"#format"   "{1:s},{2:d},{3:d}"
-		"ru"    "{yellow}Голосование по карте завершено. Следующая карта будет [{green}{1}{yellow}]. (Получено {green}{2}{normal}/{red}{3} {yellow}голосов)"
+		"ru"    "{yellow}Голосование по карте завершено. Следующей картой будет [{green}{1}{yellow}]. (Получено {green}{2}{normal}/{red}{3} {yellow}голосов)"
 	}
     
     "mcr voting started"
     {
-        "ru"    "Voting for next map has started."
+        "ru"    "Начато голосование за следующую карту."
     }
     
     "mcr countdown hud"
     {
 		"#format"   "{1:d}"
-		"ru"    "Голосование за следующую карту начнется через {1} секунд"
+		"ru"    "Голосование за следующую карту начнётся через {1} сек."
 	}
 
     "mcr countdown hud shuffle"
     {
 		"#format"   "{1:d}"
-		"ru"    "Голосование за следующую карту начнется через {1} секунд"
+		"ru"    "Голосование за следующую карту начнётся через {1} сек."
 	}
     
     "mcr countdown text hint"
     {
 		"#format"   "{1:d}"
-		"ru"    "Голосование за следующую карту начнется через {1} секунд"
+		"ru"    "Голосование за следующую карту начнётся через {1} сек."
 	}
 
     "mcr countdown text hint shuffle"
     {
         "#format"   "{1:d}"
-		"ru"    "Голосование за следующую карту начнется через {1} секунд"
+		"ru"    "Голосование за следующую карту начнётся через {1} сек."
     }
 
     "mcr countdown chat"
     {
 		"#format"   "{1:d}"
-		"ru"    "{silver}Голосование за следующую карту начнется через {red}{1}{silver} секунд"
+		"ru"    "{silver}Голосование за следующую карту начнётся через {red}{1}{silver} сек."
 	}
     
     "mcr countdown chat shuffle"
     {
 		"#format"   "{1:d}"
-		"ru"    "{silver}Голосование за следующую карту начнется через {red}{1}{silver} секунд"
+		"ru"    "{silver}Голосование за следующую карту начнётся через {red}{1}{silver} сек."
 	}
 
     "vote item extend"
@@ -330,7 +303,7 @@
     
     "LINE_TWO"
     {
-        "ru"    "Напишите !revote чтобы перезапустить меню голосования ;-)"
+        "ru"    "Напишите !revote, чтобы перезапустить меню голосования ;-)"
     }
 
     "vote item title"
@@ -340,28 +313,40 @@
     
     "NominateResult_NoMatch"
     {
-        "#format"   "{1:s}"
         "ru"    "{silver}Не найдено совпадений для этого имени карты. [{green}{1}{silver}]"
     }
 
     "NominateResult_CertainTimes"
     {
-        "ru"    "{silver}Нет в наличии времени"
+        "ru"    "{silver}Нет в доступном периоде времени"
     }
 
     "partyblock nominate menu item"
     {
-        "ru"    "PB"
+        "ru"    "РЕЗЕРВ"
     }
 
     "nominate nominate menu item"
     {
-        "ru"    "номинации"
+        "ru"    "предложений"
     }
 
     "fuzzy title"
     {
-        "#format"   "{1:d},{2:s},{3:t}"
         "ru"    "{1} результаты для [{2}] на {3}"
+    }
+	"nlist title"
+    {
+        "ru" "Список предложенных ({1} карт)"
+    }
+
+    "no nlist"
+    {
+        "ru" "В списке нет карт"
+    }
+
+    "nominate not allowed"
+    {
+        "ru" "Предложение карт пока не разрешено."
     }
 }
