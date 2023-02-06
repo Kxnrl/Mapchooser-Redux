@@ -20,7 +20,7 @@
 
 #define __SourceMod_UTILs__
 
-#define SMUtils_Version "1.3.1"
+#define SMUtils_Version "1.3.2"
 #define SMUtils_Author  "Kyle"
 #define SMUtils_URL     "https://github.com/Kxnrl/sourcemod-utils"
 
@@ -177,7 +177,7 @@ stock bool HasClientUserFlags(int client, int flags)
 stock bool HasClientAdminFlags(int client, AdminFlag flag)
 {
     char steamid[32];
-    GetClientAuthId(client, AuthId_SteamID64, steamid, 32);
+    GetClientAuthId(client, AuthId_Steam2, steamid, 32);
     AdminId admin = FindAdminByIdentity(steamid, AUTHMETHOD_STEAM);
     if (admin != INVALID_ADMIN_ID)
         return (admin.HasFlag(flag, Access_Real) || admin.HasFlag(flag, Access_Effective));
