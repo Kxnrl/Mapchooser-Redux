@@ -1,3 +1,17 @@
+#if defined _MCR_Include_
+    #endinput
+#endif
+
+#define _MCR_Include_
+
+#tryinclude <mcr.version>
+
+#if !defined _MCR_Version_Include_
+    #define _MCR_Version_Include_ "000"
+#endif
+
+#define PI_VERSION "2.0" ... "." ... MCR_VERSION
+
 #define MCR_VERSION "2.0.<commits>"
 
 //credits: https://github.com/powerlord/sourcemod-mapchooser-extended

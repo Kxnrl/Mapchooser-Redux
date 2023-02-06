@@ -1,0 +1,62 @@
+name: GitHub Action
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    continue-on-error: false
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 9999
+
+    - name: Setup SourcePawn
+      uses: rumblefrog/setup-sp@master
+      with:
+        version: 1.11
+
+    - name: Create auto version
+      shell: bash
+      run: |
+        COMMIT_VERSION=$(git rev-list --count HEAD)
+        echo "GITCOMMIT=$COMMIT_VERSION" >> $GITHUB_ENV
+        echo "#if defined _MCR_Version_Include_" > mcr.version.inc
+        echo "  #endinput" >> mcr.version.inc
+        echo "#endif" >> mcr.version.inc
+        echo "" >> mcr.version.inc
+        echo "#define _MCR_Version_Include_" >> mcr.version.inc
+        echo "" >> mcr.version.inc
+        echo "#define MCR_AUTO_VERSION \"$COMMIT_VERSION\"" >> mcr.version.inc
+        cat mcr.version.inc
+        mv mcr.version.inc include/mcr.version.inc
+
+    - name: Build
+      shell: bash
+      run: |
+        mkdir $GITHUB_WORKSPACE/plugins
+        for file in *.sp
+        do
+          echo -e "\nCompiling $file..."
+          spcomp $file -O2 -v2 -h -i $GITHUB_WORKSPACE/include -o"./plugins/$file"
+        done
+
+    - name: Package
+      shell: bash
+      run: |
+        mkdir build
+        mkdir build/scripts
+        cp -r *.sp    ./build/scripts
+        cp -r include ./build/scripts/include
+        cp -r plugins ./build/plugins
+        cp -r translations ./build/translations
+        cp -r README.md ./build
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Build.${{ env.GITCOMMIT }}
+        path: build
