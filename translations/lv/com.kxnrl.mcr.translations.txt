@@ -1,0 +1,386 @@
+"Phrases"
+{
+    "rtv broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "lv"    "{yellow}{1}{normal} Vēlās balsot par nākošo karti (Rock The Vote). ({red}{2}{normal}/{green}{3}{normal} balsis)"
+
+    }
+    
+    "rtv self"
+    {
+        "#format" "{1:d},{2:d}"
+        "lv"    "Tu jau nobalsoji par Rock The Vote. ({red}{1}{normal}/{green}{2}{normal} balsis)"
+    }
+    
+    "force rtv"
+    {
+        "lv"    "Piespiest balsot par rock the vote."
+    }
+    
+    "rtv change map"
+    {
+        "#format" "{1:s}"
+        "lv"    "Karte tiek mainīta uz [{green}{1}{normal}]!"
+    }
+    
+    "rtv not allowed"
+    {
+        "lv"    "{red}Rock the vote vēl nav pieejams."
+    }
+    
+    "rtv started"
+    {
+        "lv"    "{green}Rock the Vote jau sākās."
+    }
+    
+    "mtl broadcast"
+    {
+        "#format" "{1:N},{2:d},{3:d}"
+        "lv"    "{yellow}{1}{normal} vēlās pagarināt kartes laiku. ({red}{2}{normal}/{green}{3}{normal} balsis)"
+    }
+    
+    "mtl self"
+    {
+        "#format" "{1:d},{2:d}"
+        "lv"    "Tu jau nobalsoji par kartes pagarināšanas laiku. ({red}{1}{normal}/{green}{2}{normal} balsis)"
+    }
+    
+    "mtl extend"
+    {
+        "lv"    "Esošā karte tika pagarinātā par 20 minūtēm."
+    }
+
+    "mtl extend admin"
+    {
+        "#format" "{1:N}"
+        "lv"    "Esošā karte tika pagarinātā par 20 minūtēm. Darbību veica: {blue}{1}"
+    }
+
+    "mtl not allowed"
+    {
+        "lv"    "{red}kartes laika limita pagarināšana vēl nav atļauta."
+    }
+    
+    "mtl notification"
+    {
+        "lv"    "Raksti {red}!rtv{normal}, lai varētu balsot par kartes maiņu, {red}!ext{normal} lai pagarinātu karti."
+    }
+    
+    "nominated by client"
+    {
+        "#format" "{1:N},{2:s}"
+        "lv"    "Karti nominēja spēlētājs: {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominated by name"
+    {
+        "#format" "{1:s},{2:s}"
+        "lv"    "Karti nominēja spēlētājs: {blue}{1}{normal}({green}{2}{normal})"
+    }
+    
+    "nominate full vote"
+    {
+        "lv"    "Nomināciju limits ir sasniegts. Nominācijas vairs nav pieejamas."
+    }
+
+    "nominate partyblock"
+    {
+        "#format" "{1:N}"
+        "lv"    "{red}Nominācijas vēl nav atļautas: partyblock izvēlējās: {blue} {1} {red}."
+    }
+    
+    "nominate vote complete"
+    {
+        "#format" "{1:s}"
+        "lv"    "Nākošo karte ir [{yellow}{1}{normal}]"
+    }
+    
+    "nominate vote in progress"
+    {
+        "lv"    "Balsošana ir progresā."
+    }
+    
+    "nominate menu current Map"
+    {
+        "lv"    "Esošā karte"
+    }
+
+    "nominate menu was nominated"
+    {
+        "lv"    "Nominēta jau"
+    }
+    
+    "nominate menu was nominated name"
+    {
+        "#format" "{1:s}"
+        "lv"    "Nomināciju veica: {1}"
+    }
+
+    "nominate changed map"
+    {
+        "#format" "{1:N},{2:s}"
+        "lv"    "{1} mainīja savu nomināciju uz {2}."
+    }
+    
+    "nominate nominate map"
+    {
+        "#format" "{1:N},{2:s}"
+        "lv"    "{1} nominēja karti {2}."
+    }
+
+    "nominate partyblock map"
+    {
+        "#format" "{1:N},{2:s}"
+        "lv"    "{1} nominēja karti {2}."
+    }
+    
+    "nominate nominate cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "lv"    "{green}Nominācija maksā {2} kredītus lai nominētu {blue}{1}{green}"
+    }
+
+    "nominate partyblock cost"
+    {
+        "#format" "{1:s},{2:d}"
+        "lv"    "{green}Nominācija maksā {2} kredītus lai nominētu {blue}{1}{green}"
+    }
+    
+    "NominateResult_MaxPlayers"
+    {
+        "#format" "{1:d}"
+        "lv"    "{red}Lai šo karti nominētu ir vajadzīgi vismaz {green}{1}{red} spēlētāji serverī."
+    }
+    
+    "NominateResult_MinPlayers"
+    {
+        "#format" "{1:d}"
+        "lv"    "{red}Lai šo karti nominētu ir vajadzīgi vairāk kā {green}{1}{red} spēlētāji serverī."
+    }
+    
+    "NominateResult_VIPOnly"
+    {
+        "lv"    "{red}Šo karti var nominēt tikai VIP spēlētāji."
+    }
+    
+    "NominateResult_AdminOnly"
+    {
+        "lv"    "{red}Šo karti var nominēt tikai Admini."
+    }
+    
+    "NominateResult_VoteFull"
+    {
+        "lv"    "{red}Nomimāciju limits ir sasniegts."
+    }
+    
+    "NominateResult_AlreadyInVote"
+    {
+        "lv"    "{red}Karte ko tu izvēlējies jau tika nominēta."
+    }
+    
+    "NominateResult_InvalidMap"
+    {
+        "#format" "{1:s}"
+        "lv"    "{red}Neizdevās nominēt karti {1}."
+    }
+    
+    "NominateResult_NoCredits"
+    {
+        "#format" "{1:s}"
+        "lv"    "{red}Tev nav gana daudz kredītu lai nominētu šo karti {1}."
+    }
+
+    "NominateResult_RecentlyPlayed"
+    {
+        "lv"    "{red}Ši karte tika spēlētā jau pārāk nesen."
+    }
+
+    "NominateResult_PartyBlock"
+    {
+        "lv"    "{red}Šī karte tika party bloķēta."
+    }
+
+    "NominateResult_PartyBlockDisabled"
+    {
+        "lv"    "{red}Partyblock vēl nav pieejams."
+    }
+    
+    "nominate menu title"
+    {
+        "lv"    "Nominēt karti:"
+    }
+
+    "partyblock menu title"
+    {
+        "lv"    "Nominēt karti:"
+    }
+    
+    "mcr clear cd"
+    {
+        "lv"    "{green}karšu vēsture tika notīrīta"
+    }
+
+    "mcr clear map cd"
+    {
+        "#format" "{1:s}"
+        "lv"    "{green}{1} Tika noņemta no karšu cooldown poola."
+    }
+
+    "mcr reset map cd"
+    {
+        "#format" "{1:s}"
+        "lv"    "{green}{1} Tika noņemta no karšu cooldown poola."
+    }
+
+    "mcr show cd"
+    {
+        "lv"    "{green}Lūdzu pārbaudi savu konsolēs izrakstu."
+    }
+    
+    "mcr nominate fallback"
+    {
+        "#format" "{1:s},{2:d}"
+        "lv"    "{green}[{blue}{1}{green}] Tava nominācija tika atcelta, {2} kredīti tika agriezti."
+    }
+    
+    "mcr runoff"
+    {
+        "#format" "{1:d}"
+        "lv"    "Neviena karte nesaņēma vairāk par ({1}%%), tiks uzsākta jauna balsošana."   
+    }
+    
+    "mcr tier"
+    {
+        "#format" "{1:d}"
+        "lv"    "Top {green}{1}{normal} kartes saņēma vienadu balšu skaitu. Tiks uzsākta jauna balsošana!"
+    }
+    
+    "mcr dont change"
+    {
+        "#format" "{1:d},{2:d}"
+        "lv"    "Balsošana ir beigusies. Karte netiks mainīta! (Saņēma {green}{1}{normal}/{red}{2}{normal} balsis)"
+    }
+    
+    "mcr extend map"
+    {
+        "#format" "{1:d},{2:d}"
+        "lv"    "Esošā karte tiks pagarināta. (Saņēmtas {green}{1}{normal}/{red}{2} {normal}balsis)"
+    }
+    
+    "mcr next map"
+	{
+		"#format"   "{1:s},{2:d},{3:d}"
+		"lv"    "{yellow}Balsošana par kartēm ir beigusies. Nakošā karte būs [{green}{1}{yellow}]. (Saņemtas {green}{2}{normal}/{red}{3} {yellow}balsis)"
+	}
+    
+    "mcr voting started"
+    {
+        "lv"    "Balsošana par nakošo karti ir sākusies"
+    }
+    
+    "mcr countdown hud"
+    {
+		"#format"   "{1:d}"
+		"lv"    "Balsošana par nākošo karti sāksies pēc {1} sekundēm"
+	}
+
+    "mcr countdown hud shuffle"
+    {
+		"#format"   "{1:d}"
+		"lv"    "Balsošana par nākošo karti sāksies pēc {1} sekundēm"
+	}
+    
+    "mcr countdown text hint"
+    {
+		"#format"   "{1:d}"
+		"lv"   "Balsošana par nākošo karti sāksies pēc {1} sekundēm"
+	}
+
+    "mcr countdown text hint shuffle"
+    {
+        "#format"   "{1:d}"
+		"lv"   "Balsošana par nākošo karti sāksies pēc {1} sekundēm"
+    }
+
+    "mcr countdown chat"
+    {
+		"#format"   "{1:d}"
+		"lv"   "{silver}Balsošana par nākošo karti sāksies pēc {red}{1}{silver} sekundēm"
+	}
+    
+    "mcr countdown chat shuffle"
+    {
+		"#format"   "{1:d}"
+		"lv"   "{silver}Balsošana par nākošo karti sāksies pēc {red}{1}{silver} sekundēm"
+	}
+
+    "vote item extend"
+    {
+        "lv"    "Pagarināt karti"
+    }
+    
+    "vote item dont change"
+    {
+        "lv"   "Nemainīt"
+    }
+    
+    "LINE_ONE"
+    {
+        "lv"    "Izvēlies karti kuru tu gribi spēlēt! "
+    }
+    
+    "LINE_TWO"
+    {
+        "lv"   "Raksti !revote lai veiktu izvēli pajaunu ;-)"
+    }
+
+    "vote item title"
+    {
+        "lv"    "Balsošana par nākošo karti ir sākusies!"
+    }
+    
+    "NominateResult_NoMatch"
+    {
+        "#format"   "{1:s}"
+       "lv"   "{silver}Neviens rezultāts ar šo kartes nosaukumu netika atrasts [{green}{1}{silver}]"
+    }
+
+    "NominateResult_CertainTimes"
+    {
+        "lv"   "{silver}Nav pieejama šajā laika periodā"
+    }
+
+    "partyblock nominate menu item"
+    {
+       "lv"   "PB"
+    }
+
+    "nominate nominate menu item"
+    {
+        "lv"    "nominācijas"
+    }
+
+    "fuzzy title"
+    {
+        "#format"   "{1:d},{2:s},{3:t}"
+        "lv"   "{1} Rezultāti [{2}] par {3}"
+
+    }
+
+    "nlist title"
+    {
+        "#format"   "{1:d}"
+        "lv" "Nomināciju saraksts ({1} kartes)"
+    }
+
+    "no nlist"
+    {
+        "lv" "Nav nevienas kartes sarakstā"
+    }
+
+    "nominate not allowed"
+    {
+        "lv" "Nominācijas vēl nav atļautas."
+    }
+}
