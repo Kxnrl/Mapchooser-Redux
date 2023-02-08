@@ -77,7 +77,7 @@ jobs:
 
     - name: Upload build package
       run: |
-        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port $RSYNC_PORT ./build/${{ env.GITFILE }} ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}::${{secrets.RSYNC_PATH}}/MapChooser-Redux/1.11/
-        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port $RSYNC_PORT ./build/plugins/*.smx ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}::${{secrets.RSYNC_PATH}}/_Raw/
-        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port $RSYNC_PORT ./build/translations/com.kxnrl.mcr.translations.txt ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}::${{secrets.RSYNC_PATH}}/_Raw/translations/
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port ${{secrets.RSYNC_PORT}} ./${{ env.GITFILE }} ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PATH}}/MapChooser-Redux/1.11/
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port ${{secrets.RSYNC_PORT}} ./build/plugins/*.smx ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PATH}}/_Raw/
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz --port ${{secrets.RSYNC_PORT}} ./build/translations/com.kxnrl.mcr.translations.txt ${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PATH}}/_Raw/translations/
         
