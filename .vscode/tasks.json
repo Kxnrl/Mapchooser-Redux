@@ -10,15 +10,12 @@
             },
 
             "windows":{
-                 "command": "E:\\WorkSpace\\SourcePawn\\spcomp.exe",
-                 "args": [
-                    "${file}",
-                    "-E",
-                    "-O2",
-                    "-v2",
-                    "-i\"E:\\WorkSpace\\SourcePawn\\include\"",
-                    "-i\"${fileWorkspaceFolder}\\include\"",
-                    "-o\"${fileWorkspaceFolder}\\compiled\\${fileBasenameNoExtension}.smx\""
+                "command": "E:\\Documents\\GitHub\\SPBuild\\SPBuild\\bin\\Debug\\SPBuild.exe",
+                "args": [
+                        "\"${file}\"",
+                        "\"${fileWorkspaceFolder}\\compiled\\${fileBasenameNoExtension}.smx\"",
+                        "\"E:\\WorkSpace\\SourcePawn\\include\"",
+                        "\"${fileWorkspaceFolder}\\include\"",
                 ]
             },
 
