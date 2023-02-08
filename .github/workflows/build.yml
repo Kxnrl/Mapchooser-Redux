@@ -40,7 +40,7 @@ jobs:
         mv mcr.version.inc include/mcr.version.inc
         COMMIT_HASH=${GITHUB_SHA::7}
         echo "GITHASH=$COMMIT_VERSION" >> $GITHUB_ENV
-        PACKAGE_FILE=MapChooser-Redux-git$GITCOMMIT-$COMMIT_HASH.zip
+        PACKAGE_FILE=MapChooser-Redux-git-$COMMIT_VERSION-$COMMIT_HASH.zip
         echo "GITFILE=$PACKAGE_FILE" >> $GITHUB_ENV
 
     - name: Build
