@@ -19,6 +19,11 @@ jobs:
       with:
         version: 1.11
 
+    #https://github.com/GuillaumeFalourd/setup-rsync
+    #https://github.com/up9cloud/action-rsync
+    - name: Setup Rsync
+      uses: GuillaumeFalourd/setup-rsync@main
+
     - name: Create auto version
       shell: bash
       run: |
@@ -33,6 +38,10 @@ jobs:
         echo "#define MCR_AUTO_VERSION \"$COMMIT_VERSION\"" >> mcr.version.inc
         cat mcr.version.inc
         mv mcr.version.inc include/mcr.version.inc
+        COMMIT_HASH=${GITHUB_SHA::7}
+        echo "GITHASH=$COMMIT_VERSION" >> $GITHUB_ENV
+        PACKAGE_FILE=MapChooser-Redux-git$COMMIT_VERSION-$COMMIT_HASH.zip
+        echo "GITFILE=$PACKAGE_FILE" >> $GITHUB_ENV
 
     - name: Build
       shell: bash
@@ -60,3 +69,15 @@ jobs:
       with:
         name: Build.${{ env.GITCOMMIT }}
         path: build
+
+    - name: Zip artifact
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -9 -r ${{ env.GITFILE }} build
+
+    - name: Upload build package
+      run: |
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz ./${{ env.GITFILE }} rsync://${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PORT}}/${{secrets.RSYNC_PATH}}/MapChooser-Redux/1.11/
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz ./build/plugins/*.smx rsync://${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PORT}}/${{secrets.RSYNC_PATH}}/_Raw/
+        RSYNC_PASSWORD=${{secrets.RSYNC_PSWD}} rsync -avz ./build/translations/com.kxnrl.mcr.translations.txt rsync://${{secrets.RSYNC_USER}}@${{secrets.RSYNC_HOST}}:${{secrets.RSYNC_PORT}}/${{secrets.RSYNC_PATH}}/_Raw/translations/
+        
