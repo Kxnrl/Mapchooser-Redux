@@ -35,7 +35,7 @@ public void OnPluginStart()
     SMUtils_SetChatConSnd(false);
     SMUtils_SetTextDest(HUD_PRINTCENTER);
 
-    RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CHANGEMAP);
+    RegAdminCmd("sm_extend", Command_Extend, ADMFLAG_CONVARS);
 
     RegConsoleCmd("sm_ext", Command_Ext);
 
