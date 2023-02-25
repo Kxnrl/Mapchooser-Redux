@@ -115,6 +115,7 @@ forward void OnNominationVoted(const char[] map, const char[] name, const char[]
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map, bool partyblock, int client);
 forward void OnSetNextMapManually(const char[] map, int client);
+forward void OnMapDataInit(StringMap mapdata);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
 forward bool OnNominateMap(const char[] map, int client, bool partyblock, bool replace);

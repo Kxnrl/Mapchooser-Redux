@@ -80,6 +80,8 @@ static void LoadMapData()
     }
 
     delete kv;
+
+    Call_MapDataInit(g_MapData);
 }
 
 static void SetAllMapsDefault(KeyValues kv)
