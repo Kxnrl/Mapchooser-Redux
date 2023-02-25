@@ -6,6 +6,7 @@ enum struct Forwards
     GlobalForward m_MapVoteStarted;
     GlobalForward m_MapVoteEnd;
     GlobalForward m_SetNextMapManually;
+    GlobalForward m_MapDataInit;
     GlobalForward m_MapDataLoaded;
     GlobalForward m_MapVotePoolChanged;
     GlobalForward m_NominationsVoted;
@@ -90,6 +91,7 @@ void Natives_OnPluginStart()
     g_Forward.m_MapVoteStarted      = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
     g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String, Param_Cell, Param_Cell);
     g_Forward.m_SetNextMapManually  = new GlobalForward("OnSetNextMapManually",   ET_Ignore, Param_String, Param_Cell);
+    g_Forward.m_MapDataInit         = new GlobalForward("OnMapDataInit",          ET_Ignore);
     g_Forward.m_MapDataLoaded       = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged  = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
     g_Forward.m_OnNominateMap       = new GlobalForward("OnNominateMap",          ET_Hook,   Param_String, Param_Cell, Param_Cell, Param_Cell);
@@ -217,6 +219,13 @@ void Call_SetNextMapManually(const char[] map, int client)
     Call_StartForward(g_Forward.m_SetNextMapManually);
     Call_PushString(map);
     Call_PushCell(client);
+    Call_Finish();
+}
+
+void Call_MapDataInit(any cell)
+{
+    Call_StartForward(g_Forward.m_MapDataInit);
+    Call_PushCell(cell);
     Call_Finish();
 }
 
