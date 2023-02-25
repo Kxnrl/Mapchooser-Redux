@@ -12,11 +12,6 @@ public any Native_GetMapData(Handle plugin, int numParams)
     return r;
 }
 
-StringMap MapDataInstance()
-{
-    return g_MapData;
-}
-
 void Data_OnPluginStart()
 {
     g_MapData = new StringMap();
