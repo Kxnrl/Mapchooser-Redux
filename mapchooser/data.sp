@@ -629,7 +629,7 @@ void ClearMapCooldown(int client, const char[] map)
         if (ClearCooldown(alter))
         {
             tChatAll("%t", "mcr clear map cd", alter);
-            LogAction(client, -1, "%L -> Clear [%s] cooldown.", client, alter);
+            LogAdminAction(client, "ClearMapCooldown", alter);
         }
     }
 }
@@ -645,7 +645,7 @@ void ResetMapCooldown(int client, const char[] map)
         if (SetCooldown(alter))
         {
             tChatAll("%t", "mcr reset map cd", alter);
-            LogAction(client, -1, "%L -> Reset [%s] cooldown.", client, alter);
+            LogAdminAction(client, "ResetMapCooldown", alter);
         }
     }
 }

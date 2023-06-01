@@ -201,6 +201,7 @@ public Action Timer_ChangeMap(Handle timer)
 public Action Command_ForceRTV(int client, int args)
 {
     StartRTV();
+    MCR_LogAdminAction(client, "ForceRTV", "Force start map vote.");
     tChatAll("%t", "force rtv");
     return Plugin_Handled;
 }

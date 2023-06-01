@@ -114,7 +114,7 @@ forward void OnNominationRemoved(const char[] map, int client, bool partyblock, 
 forward void OnNominationVoted(const char[] map, const char[] name, const char[] auth);
 forward void OnMapVoteStarted();
 forward void OnMapVoteEnd(const char[] map, bool partyblock, int client);
-forward void OnSetNextMapManually(const char[] map, int client);
+forward void OnSetNextMapManually(const char[] map, int client, bool isCommand);
 forward void OnMapDataInit(StringMap mapdata);
 forward void OnMapDataLoaded();
 forward void OnMapVotePoolChanged();
@@ -143,6 +143,7 @@ native bool SetTierString(int tier, const char[] ts);
 native void GetTierString(int tier, char[] ts, int len);
 native bool IsWarningTimerRunning();
 native int  GetMapExtendVoteRemaining();
+native void MCR_LogAdminAction(int admin, const char[] action, const char[] fmt, any ...);
 
 stock bool IsClientVIP(int client)
 {

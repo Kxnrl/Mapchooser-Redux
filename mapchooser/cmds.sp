@@ -54,8 +54,8 @@ public Action Command_SetNextmap(int client, int args)
         return Plugin_Handled;
     }
 
-    if (InternalSetNextMap(map, client))
-        LogAction(client, -1, "\"%L\" changed nextmap to \"%s\"", client, map);
+    if (InternalSetNextMap(map, client, true))
+        LogAdminAction(client, "SetNextMap", map);
 
     return Plugin_Handled;
 }
@@ -63,7 +63,7 @@ public Action Command_SetNextmap(int client, int args)
 public Action Command_ClearAllCD(int client, int args)
 {
     tChatAll("%t", "mcr clear cd");
-    LogAction(client, -1, "%L -> Clear all cooldown.", client);
+    LogAdminAction(client, "ClearMapCooldown", "All");
     ClearAllCooldown(client);
     CreateNextVote();
     return Plugin_Handled;

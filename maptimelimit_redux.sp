@@ -94,7 +94,7 @@ public void OnClientDisconnect(int client)
 public Action Command_Extend(int client, int args)
 {
     ExtendMap(client);
-    LogAction(client, -1, "%L -> extend.", client);
+    MCR_LogAdminAction(client, "ExtendMap", "20 minutes");
     return Plugin_Handled;
 }
 

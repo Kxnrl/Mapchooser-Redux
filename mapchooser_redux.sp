@@ -10,6 +10,7 @@
 #include <store>
 #include <shop>
 #include <fys.pupd>
+#include <fys.bans>
 
 Handle g_tVote;
 Handle g_tRetry;
@@ -39,6 +40,7 @@ bool g_bMapLoaded;
 bool g_pStore;
 bool g_pShop;
 bool g_pMaps;
+bool g_pBans;
 
 enum TimerLocation
 {
@@ -121,6 +123,7 @@ public void OnAllPluginsLoaded()
     g_pStore = LibraryExists("store");
     g_pShop = LibraryExists("shop-core");
     g_pMaps = LibraryExists("fys-Maps");
+    g_pBans = LibraryExists("fys-Bans");
 
     Data_OnAllPluginsLoaded();
 }
@@ -339,7 +342,7 @@ public Action Command_Mapvote(int client, int args)
 
     SetupWarningTimer(WarningType_Vote, MapChange_MapEnd, null, true);
 
-    LogAction(client, -1, "%L -> called mapvote.", client);
+    LogAdminAction(client, "CallMapVote", "Start vote manually.");
 
     return Plugin_Handled;    
 }
@@ -880,13 +883,13 @@ bool CanVoteStart()
     return true;
 }
 
-bool InternalSetNextMap(const char[] map, int client)
+bool InternalSetNextMap(const char[] map, int client, bool isCommand)
 {
     if (!Call_OnSetNextMap(map, client) || IsDisabled(map))
         return false;
 
     SetEngineNextMap(map);
-    Call_SetNextMapManually(map, client);
+    Call_SetNextMapManually(map, client, isCommand);
     g_bMapVoteCompleted = true;
     RefundAllCredits(map);
     return true;

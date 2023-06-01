@@ -49,6 +49,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("IsWarningTimerRunning",     Native_IsWarningTimer);
     CreateNative("GetMapExtendVoteRemaining", Native_ExtVoteRemaning);
 
+    CreateNative("MCR_LogAdminAction",        Native_LogAdminAction);
+
     MarkNativeAsOptional("Store_GetClientCredits");
     MarkNativeAsOptional("Store_SetClientCredits");
 
@@ -72,6 +74,8 @@ public void OnLibraryAdded(const char[] name)
         g_pShop = true;
     if (strcmp(name, "fys-Maps") == 0)
         g_pMaps = true;
+    if (strcmp(name, "fys-Bans") == 0)
+        g_pBans = true;
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -82,6 +86,8 @@ public void OnLibraryRemoved(const char[] name)
         g_pShop = false;
     if (strcmp(name, "fys-Maps") == 0)
         g_pMaps = false;
+    if (strcmp(name, "fys-Bans") == 0)
+        g_pBans = false;
 }
 
 void Natives_OnPluginStart()
@@ -90,7 +96,7 @@ void Natives_OnPluginStart()
     g_Forward.m_NominationsVoted    = new GlobalForward("OnNominationVoted",      ET_Ignore, Param_String, Param_String, Param_String);
     g_Forward.m_MapVoteStarted      = new GlobalForward("OnMapVoteStarted",       ET_Ignore);
     g_Forward.m_MapVoteEnd          = new GlobalForward("OnMapVoteEnd",           ET_Ignore, Param_String, Param_Cell, Param_Cell);
-    g_Forward.m_SetNextMapManually  = new GlobalForward("OnSetNextMapManually",   ET_Ignore, Param_String, Param_Cell);
+    g_Forward.m_SetNextMapManually  = new GlobalForward("OnSetNextMapManually",   ET_Ignore, Param_String, Param_Cell, Param_Cell);
     g_Forward.m_MapDataInit         = new GlobalForward("OnMapDataInit",          ET_Ignore, Param_Cell);
     g_Forward.m_MapDataLoaded       = new GlobalForward("OnMapDataLoaded",        ET_Ignore);
     g_Forward.m_MapVotePoolChanged  = new GlobalForward("OnMapVotePoolChanged",   ET_Ignore);
@@ -214,11 +220,12 @@ void Call_MapVoteEnd(const char[] map, bool pb, int client)
     Call_Finish();
 }
 
-void Call_SetNextMapManually(const char[] map, int client)
+void Call_SetNextMapManually(const char[] map, int client, bool isCommand)
 {
     Call_StartForward(g_Forward.m_SetNextMapManually);
     Call_PushString(map);
     Call_PushCell(client);
+    Call_PushCell(isCommand);
     Call_Finish();
 }
 
@@ -364,7 +371,7 @@ static any Native_ForceSetNextMap(Handle plugin, int numParams)
     char map[128];
     GetNativeString(1, map, 128);
 
-    return InternalSetNextMap(map, caller);
+    return InternalSetNextMap(map, caller, false);
 }
 
 static any Native_OverrideTierString(Handle plugin, int numParams)
@@ -390,4 +397,33 @@ static any Native_ExtVoteRemaning(Handle plugin, int numParams)
 {
     int left = g_ConVars.MaxExts.IntValue - g_iExtends;
     return left > 0 ? left : 0;
+}
+
+static any Native_LogAdminAction(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+
+    if (!client)
+        return 0;
+
+    char action[32];
+    GetNativeString(2, action, sizeof(action));
+
+    char format[256];
+    GetNativeString(3, format, sizeof(format));
+
+    char message[512];
+    FormatNativeString(0, 0, 4, sizeof(message), _, message, format);
+
+    LogAdminAction(client, action, message);
+
+    return 0;
+}
+
+void LogAdminAction(int client, const char[] action, const char[] message)
+{
+    if (g_pBans && client > 0)
+        Admin_LogAction(client, action, message);
+    else
+        LogAction(client, -1, "%L -> %s -> %s", client, action, message);
 }
