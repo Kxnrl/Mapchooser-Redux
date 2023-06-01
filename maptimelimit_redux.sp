@@ -12,6 +12,7 @@ bool g_bAllowEXT;
 bool g_bVoted[MAXPLAYERS+1];
 ConVar mcr_extend_enabled;
 ConVar mcr_command_broadcast;
+Handle g_pTimer;
 
 public Plugin myinfo =
 {
@@ -72,11 +73,17 @@ public Action Timer_BroadCast(Handle timer)
 public void OnMapStart()
 {
     g_bAllowEXT = false;
-    CreateTimer(300.0, Timer_DelayEXT, _, TIMER_FLAG_NO_MAPCHANGE);
+    g_pTimer = CreateTimer(300.0, Timer_DelayEXT);
+}
+
+public void OnMapEnd()
+{
+    delete g_pTimer;
 }
 
 public Action Timer_DelayEXT(Handle timer)
 {
+    g_pTimer = null;
     g_bAllowEXT = true;
     return Plugin_Stop;
 }
@@ -191,4 +198,10 @@ void _CheckPlayer(int &need, int &done)
 
     if (need == 1 && players >= 2)
         need = 2;
+}
+
+public void OnSetNextMapManually(const char[] map, int client, bool isCommand)
+{
+    g_bAllowEXT = false;
+    delete g_pTimer;
 }
